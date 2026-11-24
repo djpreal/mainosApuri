@@ -392,21 +392,21 @@
 
         <label class="field-label">Valmiit väri- ja teemapohjat (12 kpl)</label>
         <div class="preset-grid" id="presetButtons">
-          <button type="button" class="btn active" data-preset="kampanja"><span class="swatch" style="background:#ff3b7f"></span>Kampanja</button>
-          <button type="button" class="btn" data-preset="uutuus"><span class="swatch" style="background:#ffb703"></span>Uutuus</button>
-          <button type="button" class="btn" data-preset="tyylikas"><span class="swatch" style="background:#e5e7eb"></span>Tyylikäs</button>
+          <button type="button" class="btn preset-btn active" data-preset="kampanja"><span class="swatch" style="background:#ff3b7f"></span>Kampanja</button>
+          <button type="button" class="btn preset-btn" data-preset="uutuus"><span class="swatch" style="background:#ffb703"></span>Uutuus</button>
+          <button type="button" class="btn preset-btn" data-preset="tyylikas"><span class="swatch" style="background:#e5e7eb"></span>Tyylikäs</button>
 
-          <button type="button" class="btn" data-preset="joulu_ale"><span class="swatch" style="background:#d92638"></span>Joulu &amp; Ale</button>
-          <button type="button" class="btn" data-preset="joulu_taika"><span class="swatch" style="background:#1b7a43"></span>Joulun Taika</button>
-          <button type="button" class="btn" data-preset="joulu_kulta"><span class="swatch" style="background:#d49b27"></span>Pipari &amp; Kulta</button>
+          <button type="button" class="btn preset-btn" data-preset="joulu_ale"><span class="swatch" style="background:#d92638"></span>Joulu &amp; Ale</button>
+          <button type="button" class="btn preset-btn" data-preset="joulu_taika"><span class="swatch" style="background:#1b7a43"></span>Joulun Taika</button>
+          <button type="button" class="btn preset-btn" data-preset="joulu_kulta"><span class="swatch" style="background:#d49b27"></span>Pipari &amp; Kulta</button>
 
-          <button type="button" class="btn" data-preset="kesa_ale"><span class="swatch" style="background:#ff6b2b"></span>Kesäale</button>
-          <button type="button" class="btn" data-preset="kesa_tropiikki"><span class="swatch" style="background:#00b4d8"></span>Kesä &amp; Meri</button>
-          <button type="button" class="btn" data-preset="kesa_ilta"><span class="swatch" style="background:#f77f00"></span>Kesäilta</button>
+          <button type="button" class="btn preset-btn" data-preset="kesa_ale"><span class="swatch" style="background:#ff6b2b"></span>Kesäale</button>
+          <button type="button" class="btn preset-btn" data-preset="kesa_tropiikki"><span class="swatch" style="background:#00b4d8"></span>Kesä &amp; Meri</button>
+          <button type="button" class="btn preset-btn" data-preset="kesa_ilta"><span class="swatch" style="background:#f77f00"></span>Kesäilta</button>
 
-          <button type="button" class="btn" data-preset="talvi_kampanja"><span class="swatch" style="background:#38bdf8"></span>Talvikampanja</button>
-          <button type="button" class="btn" data-preset="talvi_jainen"><span class="swatch" style="background:#6366f1"></span>Jäinen Sininen</button>
-          <button type="button" class="btn" data-preset="talvi_hygge"><span class="swatch" style="background:#94a3b8"></span>Pakkanen &amp; Hygge</button>
+          <button type="button" class="btn preset-btn" data-preset="talvi_kampanja"><span class="swatch" style="background:#38bdf8"></span>Talvikampanja</button>
+          <button type="button" class="btn preset-btn" data-preset="talvi_jainen"><span class="swatch" style="background:#6366f1"></span>Jäinen Sininen</button>
+          <button type="button" class="btn preset-btn" data-preset="talvi_hygge"><span class="swatch" style="background:#94a3b8"></span>Pakkanen &amp; Hygge</button>
         </div>
       </div>
 
@@ -523,736 +523,595 @@
   </div>
 
   <script>
-    const canvas = document.getElementById("adCanvas");
-    const ctx = canvas.getContext("2d");
+    (function () {
+      const canvas = document.getElementById("adCanvas");
+      if (!canvas || !canvas.getContext) return;
+      const ctx = canvas.getContext("2d");
 
-    const PRESETS = {
-      kampanja: {
-        accentColor: "#ff3b7f",
-        textColor: "#ffffff",
-        overlay: 0.48,
-        pos: "bottom",
-        align: "left",
-        badge: "VIIKONLOPPUTARJOUS",
-        headline: "Nyt -30% kaikista tuotteista",
-        subtext: "Tarjous voimassa sunnuntaihin asti verkkokaupassa.",
-        cta: "Osta nyt",
-        bg1: "#241326",
-        bg2: "#0d0f17"
-      },
-      uutuus: {
-        accentColor: "#ffb703",
-        textColor: "#ffffff",
-        overlay: 0.42,
-        pos: "top",
-        align: "left",
-        badge: "UUTUUS",
-        headline: "Uusi mallisto on nyt täällä",
-        subtext: "Tutustu tuoreimpiin tuotteisiin ensimmäisten joukossa.",
-        cta: "Katso uutuudet",
-        bg1: "#2b2110",
-        bg2: "#0e1017"
-      },
-      tyylikas: {
-        accentColor: "#e5e7eb",
-        textColor: "#ffffff",
-        overlay: 0.52,
-        pos: "center",
-        align: "center",
-        badge: "VALIKOITU ERÄ",
-        headline: "Ajatonta tyyliä jokaiseen päivään",
-        subtext: "Huolella valitut suosikit rajatun ajan.",
-        cta: "Tutustu",
-        bg1: "#1b1e29",
-        bg2: "#0b0c10"
-      },
-      joulu_ale: {
-        accentColor: "#d92638",
-        textColor: "#fff8f5",
-        overlay: 0.48,
-        pos: "bottom",
-        align: "left",
-        badge: "JOULUKALENTERI & ALE",
-        headline: "Joulun parhaat lahjaideat nyt -25%",
-        subtext: "Tilaa ajoissa jouluksi – nopea toimitus perille.",
-        cta: "Shoppaile lahjat",
-        bg1: "#330d14",
-        bg2: "#10080b"
-      },
-      joulu_taika: {
-        accentColor: "#1b7a43",
-        textColor: "#ffffff",
-        overlay: 0.46,
-        pos: "bottom",
-        align: "center",
-        badge: "HYVÄÄ JOULUA",
-        headline: "Lämmin jouluhetki alkaa tästä",
-        subtext: "Joulun erikoistuotteet ja lahjakortit saatavilla nyt.",
-        cta: "Katso jouluvalikoima",
-        bg1: "#0e2b1b",
-        bg2: "#08120d"
-      },
-      joulu_kulta: {
-        accentColor: "#d49b27",
-        textColor: "#fffdf7",
-        overlay: 0.5,
-        pos: "center",
-        align: "center",
-        badge: "JOULUN LOISTOA",
-        headline: "Kultaiset hetket ja joulun herkut",
-        subtext: "Rajoitettu jouluerä – varmista omasi ennen joulua.",
-        cta: "Varaa nyt",
-        bg1: "#2e200b",
-        bg2: "#110d07"
-      },
-      kesa_ale: {
-        accentColor: "#ff6b2b",
-        textColor: "#ffffff",
-        overlay: 0.4,
-        pos: "bottom",
-        align: "left",
-        badge: "KESÄALE",
-        headline: "Kesän kuumimmat tarjoukset jopa -40%",
-        subtext: "Aurinkoiset edut voimassa koko kesän ajan.",
-        cta: "Nappaa kesäetu",
-        bg1: "#2e160c",
-        bg2: "#0d111a"
-      },
-      kesa_tropiikki: {
-        accentColor: "#00b4d8",
-        textColor: "#ffffff",
-        overlay: 0.38,
-        pos: "top",
-        align: "left",
-        badge: "KESÄ & LOMA",
-        headline: "Valmiina kesäpäiviin ja matkoille",
-        subtext: "Raikkaat uutuudet kesän parhaisiin hetkiin.",
-        cta: "Tutustu kesään",
-        bg1: "#092736",
-        bg2: "#09111c"
-      },
-      kesa_ilta: {
-        accentColor: "#f77f00",
-        textColor: "#fffaf0",
-        overlay: 0.44,
-        pos: "bottom",
-        align: "center",
-        badge: "KESÄILTA",
-        headline: "Kesäiltojen parhaat elämykset",
-        subtext: "Nauti pitkistä illoista ja kesän suosikeista.",
-        cta: "Lue lisää",
-        bg1: "#2e1714",
-        bg2: "#110c14"
-      },
-      talvi_kampanja: {
-        accentColor: "#38bdf8",
-        textColor: "#ffffff",
-        overlay: 0.46,
-        pos: "bottom",
-        align: "left",
-        badge: "TALVIKAMPANJA",
-        headline: "Varustaudu talveen ja pakkasiin",
-        subtext: "Laadukkaat talvituotteet suoraan varastosta.",
-        cta: "Katso talvivalikoima",
-        bg1: "#0c2236",
-        bg2: "#090d16"
-      },
-      talvi_jainen: {
-        accentColor: "#6366f1",
-        textColor: "#ffffff",
-        overlay: 0.48,
-        pos: "top",
-        align: "center",
-        badge: "TALVIETU",
-        headline: "Raikkaat talvitarjoukset nyt voimassa",
-        subtext: "Säästä valituista tuotteista rajoitetun ajan.",
-        cta: "Hyödynnä etu",
-        bg1: "#171938",
-        bg2: "#090b14"
-      },
-      talvi_hygge: {
-        accentColor: "#94a3b8",
-        textColor: "#f8fafc",
-        overlay: 0.5,
-        pos: "center",
-        align: "center",
-        badge: "PAKKANEN & HYGGE",
-        headline: "Lämpöä ja rauhaa talvipäiviin",
-        subtext: "Pehmeitä suosikkeja kotiin ja vapaa-aikaan.",
-        cta: "Tutustu",
-        bg1: "#1c222e",
-        bg2: "#0c0f14"
-      }
-    };
-
-    const state = {
-      width: 1080,
-      height: 1350,
-      ratio: "4x5",
-      formatLabel: "4:5 Syöte",
-      preset: "kampanja",
-      badge: PRESETS.kampanja.badge,
-      headline: PRESETS.kampanja.headline,
-      subtext: PRESETS.kampanja.subtext,
-      cta: PRESETS.kampanja.cta,
-      align: PRESETS.kampanja.align,
-      pos: PRESETS.kampanja.pos,
-      accentColor: PRESETS.kampanja.accentColor,
-      textColor: PRESETS.kampanja.textColor,
-      bg1: PRESETS.kampanja.bg1,
-      bg2: PRESETS.kampanja.bg2,
-      zoom: 1,
-      overlay: PRESETS.kampanja.overlay,
-      panX: 0,
-      panY: 0,
-      showSafe: true,
-      showGrid: false,
-      img: null
-    };
-
-    let activePointerId = null;
-    let lastPointer = { x: 0, y: 0 };
-
-    function updateFormatUI() {
-      const text = `${state.width} × ${state.height} px (${state.formatLabel})`;
-      document.getElementById("sizeInfo").textContent = text;
-      document.getElementById("exportSizeLabel").textContent = `${state.formatLabel} (${state.width} × ${state.height} px)`;
-
-      document.querySelectorAll(".format-btn").forEach((btn) => {
-        const match =
-          Number(btn.dataset.w) === state.width &&
-          Number(btn.dataset.h) === state.height;
-        btn.classList.toggle("active", match);
-      });
-    }
-
-    function setFormat(w, h, ratio, label) {
-      state.width = w;
-      state.height = h;
-      state.ratio = ratio;
-      state.formatLabel = label;
-      canvas.width = w;
-      canvas.height = h;
-      updateFormatUI();
-      render();
-    }
-
-    function applyPreset(name) {
-      const p = PRESETS[name];
-      if (!p) return;
-      state.preset = name;
-      state.accentColor = p.accentColor;
-      state.textColor = p.textColor;
-      state.overlay = p.overlay;
-      state.pos = p.pos;
-      state.align = p.align;
-      state.badge = p.badge;
-      state.headline = p.headline;
-      state.subtext = p.subtext;
-      state.cta = p.cta;
-      state.bg1 = p.bg1;
-      state.bg2 = p.bg2;
-      syncInputsFromState();
-      render();
-    }
-
-    function syncInputsFromState() {
-      document.getElementById("badgeText").value = state.badge;
-      document.getElementById("headlineText").value = state.headline;
-      document.getElementById("subText").value = state.subtext;
-      document.getElementById("ctaText").value = state.cta;
-      document.getElementById("textAlign").value = state.align;
-      document.getElementById("textPos").value = state.pos;
-      document.getElementById("accentColor").value = state.accentColor;
-      document.getElementById("textColor").value = state.textColor;
-      document.getElementById("zoomRange").value = Math.round(state.zoom * 100);
-      document.getElementById("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
-      document.getElementById("overlayRange").value = Math.round(state.overlay * 100);
-      document.getElementById("overlayVal").textContent = `${Math.round(state.overlay * 100)}%`;
-      document.getElementById("safeZoneToggle").checked = state.showSafe;
-      document.getElementById("gridToggle").checked = state.showGrid;
-      updateFormatUI();
-    }
-
-    function wrapLines(text, maxWidth, font) {
-      if (!text || !text.trim()) return [];
-      ctx.save();
-      ctx.font = font;
-      const paragraphs = text.split("\n");
-      const lines = [];
-      for (const para of paragraphs) {
-        const words = para.split(/\s+/).filter(Boolean);
-        if (!words.length) {
-          lines.push("");
-          continue;
+      const PRESETS = {
+        kampanja: {
+          accentColor: "#ff3b7f",
+          textColor: "#ffffff",
+          overlay: 0.48,
+          pos: "bottom",
+          align: "left",
+          badge: "VIIKONLOPPUTARJOUS",
+          headline: "Nyt -30% kaikista tuotteista",
+          subtext: "Tarjous voimassa sunnuntaihin asti verkkokaupassa.",
+          cta: "Osta nyt",
+          bg1: "#241326",
+          bg2: "#0d0f17"
+        },
+        uutuus: {
+          accentColor: "#ffb703",
+          textColor: "#ffffff",
+          overlay: 0.42,
+          pos: "top",
+          align: "left",
+          badge: "UUTUUS",
+          headline: "Uusi mallisto on nyt täällä",
+          subtext: "Tutustu tuoreimpiin tuotteisiin ensimmäisten joukossa.",
+          cta: "Katso uutuudet",
+          bg1: "#2b2110",
+          bg2: "#0e1017"
+        },
+        tyylikas: {
+          accentColor: "#e5e7eb",
+          textColor: "#ffffff",
+          overlay: 0.52,
+          pos: "center",
+          align: "center",
+          badge: "VALIKOITU ERÄ",
+          headline: "Ajatonta tyyliä jokaiseen päivään",
+          subtext: "Huolella valitut suosikit rajatun ajan.",
+          cta: "Tutustu",
+          bg1: "#1b1e29",
+          bg2: "#0b0c10"
+        },
+        joulu_ale: {
+          accentColor: "#d92638",
+          textColor: "#fff8f5",
+          overlay: 0.48,
+          pos: "bottom",
+          align: "left",
+          badge: "JOULUKALENTERI & ALE",
+          headline: "Joulun parhaat lahjaideat nyt -25%",
+          subtext: "Tilaa ajoissa jouluksi – nopea toimitus perille.",
+          cta: "Shoppaile lahjat",
+          bg1: "#330d14",
+          bg2: "#10080b"
+        },
+        joulu_taika: {
+          accentColor: "#1b7a43",
+          textColor: "#ffffff",
+          overlay: 0.46,
+          pos: "bottom",
+          align: "center",
+          badge: "HYVÄÄ JOULUA",
+          headline: "Lämmin jouluhetki alkaa tästä",
+          subtext: "Joulun erikoistuotteet ja lahjakortit saatavilla nyt.",
+          cta: "Katso jouluvalikoima",
+          bg1: "#0e2b1b",
+          bg2: "#08120d"
+        },
+        joulu_kulta: {
+          accentColor: "#d49b27",
+          textColor: "#fffdf7",
+          overlay: 0.5,
+          pos: "center",
+          align: "center",
+          badge: "JOULUN LOISTOA",
+          headline: "Kultaiset hetket ja joulun herkut",
+          subtext: "Rajoitettu jouluerä – varmista omasi ennen joulua.",
+          cta: "Varaa nyt",
+          bg1: "#2e200b",
+          bg2: "#110d07"
+        },
+        kesa_ale: {
+          accentColor: "#ff6b2b",
+          textColor: "#ffffff",
+          overlay: 0.4,
+          pos: "bottom",
+          align: "left",
+          badge: "KESÄALE",
+          headline: "Kesän kuumimmat tarjoukset jopa -40%",
+          subtext: "Aurinkoiset edut voimassa koko kesän ajan.",
+          cta: "Nappaa kesäetu",
+          bg1: "#2e160c",
+          bg2: "#0d111a"
+        },
+        kesa_tropiikki: {
+          accentColor: "#00b4d8",
+          textColor: "#ffffff",
+          overlay: 0.38,
+          pos: "top",
+          align: "left",
+          badge: "KESÄ & LOMA",
+          headline: "Valmiina kesäpäiviin ja matkoille",
+          subtext: "Raikkaat uutuudet kesän parhaisiin hetkiin.",
+          cta: "Tutustu kesään",
+          bg1: "#092736",
+          bg2: "#09111c"
+        },
+        kesa_ilta: {
+          accentColor: "#f77f00",
+          textColor: "#fffaf0",
+          overlay: 0.44,
+          pos: "bottom",
+          align: "center",
+          badge: "KESÄILTA",
+          headline: "Kesäiltojen parhaat elämykset",
+          subtext: "Nauti pitkistä illoista ja kesän suosikeista.",
+          cta: "Lue lisää",
+          bg1: "#2e1714",
+          bg2: "#110c14"
+        },
+        talvi_kampanja: {
+          accentColor: "#38bdf8",
+          textColor: "#ffffff",
+          overlay: 0.46,
+          pos: "bottom",
+          align: "left",
+          badge: "TALVIKAMPANJA",
+          headline: "Varustaudu talveen ja pakkasiin",
+          subtext: "Laadukkaat talvituotteet suoraan varastosta.",
+          cta: "Katso talvivalikoima",
+          bg1: "#0c2236",
+          bg2: "#090d16"
+        },
+        talvi_jainen: {
+          accentColor: "#6366f1",
+          textColor: "#ffffff",
+          overlay: 0.48,
+          pos: "top",
+          align: "center",
+          badge: "TALVIETU",
+          headline: "Raikkaat talvitarjoukset nyt voimassa",
+          subtext: "Säästä valituista tuotteista rajoitetun ajan.",
+          cta: "Hyödynnä etu",
+          bg1: "#171938",
+          bg2: "#090b14"
+        },
+        talvi_hygge: {
+          accentColor: "#94a3b8",
+          textColor: "#f8fafc",
+          overlay: 0.5,
+          pos: "center",
+          align: "center",
+          badge: "PAKKANEN & HYGGE",
+          headline: "Lämpöä ja rauhaa talvipäiviin",
+          subtext: "Pehmeitä suosikkeja kotiin ja vapaa-aikaan.",
+          cta: "Tutustu",
+          bg1: "#1c222e",
+          bg2: "#0c0f14"
         }
-        let line = words[0];
-        for (let i = 1; i < words.length; i++) {
-          const test = line + " " + words[i];
-          if (ctx.measureText(test).width <= maxWidth) {
-            line = test;
-          } else {
-            lines.push(line);
-            line = words[i];
-          }
-        }
-        lines.push(line);
-      }
-      ctx.restore();
-      return lines;
-    }
-
-    function roundRect(x, y, w, h, r) {
-      const radius = Math.min(r, w / 2, h / 2);
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.arcTo(x + w, y, x + w, y + h, radius);
-      ctx.arcTo(x + w, y + h, x, y + h, radius);
-      ctx.arcTo(x, y + h, x, y, radius);
-      ctx.arcTo(x, y, x + w, y, radius);
-      ctx.closePath();
-    }
-
-    function render(forExport = false) {
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-
-      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, state.bg1 || "#1d2233");
-      bgGrad.addColorStop(1, state.bg2 || "#0d0f17");
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, W, H);
-
-      if (state.img) {
-        const imgRatio = state.img.width / state.img.height;
-        const canvasRatio = W / H;
-        let baseW, baseH;
-        if (imgRatio > canvasRatio) {
-          baseH = H;
-          baseW = H * imgRatio;
-        } else {
-          baseW = W;
-          baseH = W / imgRatio;
-        }
-        const drawW = baseW * state.zoom;
-        const drawH = baseH * state.zoom;
-        const x = (W - drawW) / 2 + state.panX;
-        const y = (H - drawH) / 2 + state.panY;
-        ctx.drawImage(state.img, x, y, drawW, drawH);
-      } else {
-        ctx.save();
-        ctx.fillStyle = state.accentColor;
-        ctx.globalAlpha = 0.18;
-        ctx.beginPath();
-        ctx.arc(W * 0.82, H * 0.25, W * 0.44, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.globalAlpha = 0.1;
-        ctx.beginPath();
-        ctx.arc(W * 0.18, H * 0.78, W * 0.36, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-
-      if (state.overlay > 0) {
-        const grad = ctx.createLinearGradient(0, 0, 0, H);
-        grad.addColorStop(0, `rgba(0,0,0,${state.overlay * 0.65})`);
-        grad.addColorStop(0.5, `rgba(0,0,0,${state.overlay * 0.85})`);
-        grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.95, state.overlay * 1.15)})`);
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, W, H);
-      }
-
-      const padX = 84;
-      const contentW = W - padX * 2;
-
-      const badgeFont = "800 30px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-      const headFont = "900 76px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-      const subFont = "500 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-      const ctaFont = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-
-      const headLines = wrapLines(state.headline, contentW, headFont);
-      const subLines = wrapLines(state.subtext, contentW, subFont);
-
-      const hasBadge = Boolean(state.badge && state.badge.trim());
-      const hasCta = Boolean(state.cta && state.cta.trim());
-
-      const badgeH = hasBadge ? 54 : 0;
-      const badgeGap = hasBadge ? 24 : 0;
-      const headLineH = 88;
-      const headH = headLines.length * headLineH;
-      const subGap = subLines.length ? 22 : 0;
-      const subLineH = 48;
-      const subH = subLines.length * subLineH;
-      const ctaGap = hasCta ? 34 : 0;
-      const ctaH = hasCta ? 76 : 0;
-
-      const totalBlockH = badgeH + badgeGap + headH + subGap + subH + ctaGap + ctaH;
-
-      let topMargin = H - 140 - totalBlockH;
-      if (state.pos === "top") {
-        topMargin = H > 1500 ? 220 : 120;
-      } else if (state.pos === "center") {
-        topMargin = (H - totalBlockH) / 2;
-      }
-      topMargin = Math.max(90, Math.min(H - totalBlockH - 90, topMargin));
-
-      let cursorY = topMargin;
-
-      if (hasBadge) {
-        ctx.save();
-        ctx.font = badgeFont;
-        const badgeText = state.badge.trim().toUpperCase();
-        const textW = ctx.measureText(badgeText).width;
-        const boxW = textW + 44;
-        let boxX = padX;
-        if (state.align === "center") boxX = (W - boxW) / 2;
-
-        ctx.fillStyle = state.accentColor;
-        roundRect(boxX, cursorY, boxW, badgeH, 14);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(badgeText, boxX + boxW / 2, cursorY + badgeH / 2 + 1);
-        ctx.restore();
-
-        cursorY += badgeH + badgeGap;
-      }
-
-      if (headLines.length) {
-        ctx.save();
-        ctx.font = headFont;
-        ctx.fillStyle = state.textColor;
-        ctx.textAlign = state.align;
-        ctx.textBaseline = "top";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
-        ctx.shadowBlur = 18;
-        ctx.shadowOffsetY = 4;
-
-        const textX = state.align === "center" ? W / 2 : padX;
-        headLines.forEach((line, idx) => {
-          ctx.fillText(line, textX, cursorY + idx * headLineH);
-        });
-        ctx.restore();
-        cursorY += headH;
-      }
-
-      if (subLines.length) {
-        cursorY += subGap;
-        ctx.save();
-        ctx.font = subFont;
-        ctx.fillStyle = state.textColor;
-        ctx.globalAlpha = 0.92;
-        ctx.textAlign = state.align;
-        ctx.textBaseline = "top";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        ctx.shadowBlur = 12;
-        ctx.shadowOffsetY = 2;
-
-        const textX = state.align === "center" ? W / 2 : padX;
-        subLines.forEach((line, idx) => {
-          ctx.fillText(line, textX, cursorY + idx * subLineH);
-        });
-        ctx.restore();
-        cursorY += subH;
-      }
-
-      if (hasCta) {
-        cursorY += ctaGap;
-        ctx.save();
-        ctx.font = ctaFont;
-        const ctaLabel = state.cta.trim();
-        const btnW = Math.max(240, ctx.measureText(ctaLabel).width + 76);
-        let btnX = padX;
-        if (state.align === "center") btnX = (W - btnW) / 2;
-
-        ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-        ctx.shadowBlur = 16;
-        ctx.shadowOffsetY = 6;
-        ctx.fillStyle = state.accentColor;
-        roundRect(btnX, cursorY, btnW, ctaH, 20);
-        ctx.fill();
-
-        ctx.shadowColor = "transparent";
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(ctaLabel, btnX + btnW / 2, cursorY + ctaH / 2 + 1);
-        ctx.restore();
-      }
-
-      if (!forExport && state.showGrid) {
-        ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.28)";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([8, 8]);
-        for (let i = 1; i <= 2; i++) {
-          const gx = (W / 3) * i;
-          const gy = (H / 3) * i;
-          ctx.beginPath();
-          ctx.moveTo(gx, 0);
-          ctx.lineTo(gx, H);
-          ctx.stroke();
-
-          ctx.beginPath();
-          ctx.moveTo(0, gy);
-          ctx.lineTo(W, gy);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      if (!forExport && state.showSafe) {
-        ctx.save();
-        const topSafe = H > 1500 ? 180 : 72;
-        const botSafe = H > 1500 ? 250 : 72;
-        const sideSafe = 64;
-
-        ctx.fillStyle = "rgba(255, 59, 127, 0.14)";
-        ctx.fillRect(0, 0, W, topSafe);
-        ctx.fillRect(0, H - botSafe, W, botSafe);
-
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
-        ctx.lineWidth = 3;
-        ctx.setLineDash([12, 8]);
-        ctx.strokeRect(sideSafe, topSafe, W - sideSafe * 2, H - topSafe - botSafe);
-        ctx.restore();
-      }
-    }
-
-    document.getElementById("imageInput").addEventListener("change", (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      document.getElementById("fileNameLabel").textContent = file.name;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-          state.img = img;
-          state.panX = 0;
-          state.panY = 0;
-          state.zoom = 1;
-          document.getElementById("zoomRange").value = 100;
-          document.getElementById("zoomVal").textContent = "100%";
-          render();
-        };
-        img.src = ev.target.result;
       };
-      reader.readAsDataURL(file);
-    });
 
-    function getCanvasCoords(clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      if (!rect.width || !rect.height) return { x: 0, y: 0 };
-      return {
-        x: ((clientX - rect.left) / rect.width) * canvas.width,
-        y: ((clientY - rect.top) / rect.height) * canvas.height
+      const state = {
+        width: 1080,
+        height: 1350,
+        ratio: "4x5",
+        formatLabel: "4:5 Syöte",
+        preset: "kampanja",
+        badge: PRESETS.kampanja.badge,
+        headline: PRESETS.kampanja.headline,
+        subtext: PRESETS.kampanja.subtext,
+        cta: PRESETS.kampanja.cta,
+        align: PRESETS.kampanja.align,
+        pos: PRESETS.kampanja.pos,
+        accentColor: PRESETS.kampanja.accentColor,
+        textColor: PRESETS.kampanja.textColor,
+        bg1: PRESETS.kampanja.bg1,
+        bg2: PRESETS.kampanja.bg2,
+        zoom: 1,
+        overlay: PRESETS.kampanja.overlay,
+        panX: 0,
+        panY: 0,
+        showSafe: true,
+        showGrid: false,
+        img: null
       };
-    }
 
-    function releaseDrag(e) {
-      if (activePointerId !== null) {
-        try {
-          if (e && e.pointerId !== undefined && canvas.hasPointerCapture && canvas.hasPointerCapture(e.pointerId)) {
-            canvas.releasePointerCapture(e.pointerId);
+      let isDraggingPhoto = false;
+      let activePointerId = null;
+      let lastPointer = { x: 0, y: 0 };
+
+      function setStatus(msg) {
+        const el = document.getElementById("exportMsg");
+        if (el) el.textContent = msg;
+      }
+
+      function updateFormatUI() {
+        const sizeEl = document.getElementById("sizeInfo");
+        const expEl = document.getElementById("exportSizeLabel");
+        if (sizeEl) sizeEl.textContent = `${state.width} × ${state.height} px (${state.formatLabel})`;
+        if (expEl) expEl.textContent = `${state.formatLabel} (${state.width} × ${state.height} px)`;
+
+        document.querySelectorAll(".format-btn").forEach((btn) => {
+          const match =
+            Number(btn.dataset.w) === state.width &&
+            Number(btn.dataset.h) === state.height;
+          btn.classList.toggle("active", match);
+        });
+      }
+
+      function updatePresetUI() {
+        document.querySelectorAll(".preset-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.preset === state.preset);
+        });
+      }
+
+      function setFormat(w, h, ratio, label) {
+        state.width = w;
+        state.height = h;
+        state.ratio = ratio;
+        state.formatLabel = label;
+        canvas.width = w;
+        canvas.height = h;
+        updateFormatUI();
+        render();
+      }
+
+      function applyPreset(name) {
+        const p = PRESETS[name];
+        if (!p) return;
+        state.preset = name;
+        state.accentColor = p.accentColor;
+        state.textColor = p.textColor;
+        state.overlay = p.overlay;
+        state.pos = p.pos;
+        state.align = p.align;
+        state.badge = p.badge;
+        state.headline = p.headline;
+        state.subtext = p.subtext;
+        state.cta = p.cta;
+        state.bg1 = p.bg1;
+        state.bg2 = p.bg2;
+        syncInputsFromState();
+        updatePresetUI();
+        render();
+      }
+
+      function syncInputsFromState() {
+        document.getElementById("badgeText").value = state.badge;
+        document.getElementById("headlineText").value = state.headline;
+        document.getElementById("subText").value = state.subtext;
+        document.getElementById("ctaText").value = state.cta;
+        document.getElementById("textAlign").value = state.align;
+        document.getElementById("textPos").value = state.pos;
+        document.getElementById("accentColor").value = state.accentColor;
+        document.getElementById("textColor").value = state.textColor;
+        document.getElementById("zoomRange").value = Math.round(state.zoom * 100);
+        document.getElementById("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
+        document.getElementById("overlayRange").value = Math.round(state.overlay * 100);
+        document.getElementById("overlayVal").textContent = `${Math.round(state.overlay * 100)}%`;
+        document.getElementById("safeZoneToggle").checked = state.showSafe;
+        document.getElementById("gridToggle").checked = state.showGrid;
+        updateFormatUI();
+        updatePresetUI();
+      }
+
+      function wrapLines(text, maxWidth, font) {
+        if (!text || !text.trim()) return [];
+        ctx.save();
+        ctx.font = font;
+        const paragraphs = text.split("\n");
+        const lines = [];
+        for (const para of paragraphs) {
+          const words = para.split(/\s+/).filter(Boolean);
+          if (!words.length) {
+            lines.push("");
+            continue;
           }
-        } catch (_) {}
-      }
-      activePointerId = null;
-    }
-
-    canvas.addEventListener("pointerdown", (e) => {
-      if (!state.img) return;
-      activePointerId = e.pointerId;
-      lastPointer = getCanvasCoords(e.clientX, e.clientY);
-      try {
-        canvas.setPointerCapture(e.pointerId);
-      } catch (_) {}
-    });
-
-    canvas.addEventListener("pointermove", (e) => {
-      if (activePointerId === null || e.pointerId !== activePointerId || !state.img) return;
-      const pt = getCanvasCoords(e.clientX, e.clientY);
-      state.panX += pt.x - lastPointer.x;
-      state.panY += pt.y - lastPointer.y;
-      lastPointer = pt;
-      render();
-    });
-
-    canvas.addEventListener("pointerup", releaseDrag);
-    canvas.addEventListener("pointercancel", releaseDrag);
-    window.addEventListener("pointerup", releaseDrag);
-
-    document.querySelectorAll(".format-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        setFormat(
-          Number(btn.dataset.w),
-          Number(btn.dataset.h),
-          btn.dataset.ratio,
-          btn.dataset.label
-        );
-      });
-    });
-
-    document.querySelectorAll("#presetButtons .btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#presetButtons .btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        applyPreset(btn.dataset.preset);
-      });
-    });
-
-    document.getElementById("badgeText").addEventListener("input", (e) => {
-      state.badge = e.target.value;
-      render();
-    });
-    document.getElementById("headlineText").addEventListener("input", (e) => {
-      state.headline = e.target.value;
-      render();
-    });
-    document.getElementById("subText").addEventListener("input", (e) => {
-      state.subtext = e.target.value;
-      render();
-    });
-    document.getElementById("ctaText").addEventListener("input", (e) => {
-      state.cta = e.target.value;
-      render();
-    });
-    document.getElementById("textAlign").addEventListener("change", (e) => {
-      state.align = e.target.value;
-      render();
-    });
-    document.getElementById("textPos").addEventListener("change", (e) => {
-      state.pos = e.target.value;
-      render();
-    });
-    document.getElementById("accentColor").addEventListener("input", (e) => {
-      state.accentColor = e.target.value;
-      render();
-    });
-    document.getElementById("textColor").addEventListener("input", (e) => {
-      state.textColor = e.target.value;
-      render();
-    });
-    document.getElementById("zoomRange").addEventListener("input", (e) => {
-      state.zoom = Number(e.target.value) / 100;
-      document.getElementById("zoomVal").textContent = `${e.target.value}%`;
-      render();
-    });
-    document.getElementById("overlayRange").addEventListener("input", (e) => {
-      state.overlay = Number(e.target.value) / 100;
-      document.getElementById("overlayVal").textContent = `${e.target.value}%`;
-      render();
-    });
-    document.getElementById("resetPhotoBtn").addEventListener("click", () => {
-      state.panX = 0;
-      state.panY = 0;
-      state.zoom = 1;
-      document.getElementById("zoomRange").value = 100;
-      document.getElementById("zoomVal").textContent = "100%";
-      render();
-    });
-    document.getElementById("safeZoneToggle").addEventListener("change", (e) => {
-      state.showSafe = e.target.checked;
-      render();
-    });
-    document.getElementById("gridToggle").addEventListener("change", (e) => {
-      state.showGrid = e.target.checked;
-      render();
-    });
-
-    function getExportFilename(ext) {
-      return `ig-mainos-${state.ratio}-${state.width}x${state.height}.${ext}`;
-    }
-
-    function createExportBlob(type = "png", callback) {
-      render(true);
-      const mime = type === "jpg" ? "image/jpeg" : "image/png";
-      const ext = type === "jpg" ? "jpg" : "png";
-      const quality = type === "jpg" ? 0.92 : undefined;
-      try {
-        canvas.toBlob((blob) => {
-          render(false);
-          callback(blob, ext, mime);
-        }, mime, quality);
-      } catch (err) {
-        render(false);
-        callback(null, ext, mime);
-      }
-    }
-
-    function downloadAd(type) {
-      createExportBlob(type, (blob, ext) => {
-        if (!blob) {
-          openLongPressPreview(ext);
-          return;
-        }
-        const filename = getExportFilename(ext);
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 4000);
-        document.getElementById("exportMsg").textContent = `Ladattu: ${filename} (${state.formatLabel})`;
-      });
-    }
-
-    async function shareToPhotos() {
-      createExportBlob("png", async (blob, ext, mime) => {
-        if (!blob) {
-          openLongPressPreview(ext);
-          return;
-        }
-        const filename = getExportFilename(ext);
-        const file = new File([blob], filename, { type: mime });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              files: [file],
-              title: `IG Mainos (${state.formatLabel})`
-            });
-            document.getElementById("exportMsg").textContent = `Jakovalikko avattu (${state.formatLabel}) – valitse 'Tallenna kuva'.`;
-            return;
-          } catch (err) {
-            if (err && err.name === "AbortError") {
-              document.getElementById("exportMsg").textContent = "Tallennus peruutettiin.";
-              return;
+          let line = words[0];
+          for (let i = 1; i < words.length; i++) {
+            const test = line + " " + words[i];
+            if (ctx.measureText(test).width <= maxWidth) {
+              line = test;
+            } else {
+              lines.push(line);
+              line = words[i];
             }
           }
+          lines.push(line);
         }
-        openLongPressPreview(ext);
-        document.getElementById("exportMsg").textContent = `Tallennuskuva avattu koossa ${state.width}×${state.height} px – paina kuvaa pitkään tallentaaksesi.`;
+        ctx.restore();
+        return lines;
+      }
+
+      function roundRect(x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+      }
+
+      function render(forExport = false) {
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+        bgGrad.addColorStop(0, state.bg1 || "#1d2233");
+        bgGrad.addColorStop(1, state.bg2 || "#0d0f17");
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        if (state.img) {
+          const imgRatio = state.img.width / state.img.height;
+          const canvasRatio = W / H;
+          let baseW, baseH;
+          if (imgRatio > canvasRatio) {
+            baseH = H;
+            baseW = H * imgRatio;
+          } else {
+            baseW = W;
+            baseH = W / imgRatio;
+          }
+          const drawW = baseW * state.zoom;
+          const drawH = baseH * state.zoom;
+          const x = (W - drawW) / 2 + state.panX;
+          const y = (H - drawH) / 2 + state.panY;
+          ctx.drawImage(state.img, x, y, drawW, drawH);
+        } else {
+          ctx.save();
+          ctx.fillStyle = state.accentColor;
+          ctx.globalAlpha = 0.18;
+          ctx.beginPath();
+          ctx.arc(W * 0.82, H * 0.25, W * 0.44, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.globalAlpha = 0.1;
+          ctx.beginPath();
+          ctx.arc(W * 0.18, H * 0.78, W * 0.36, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        if (state.overlay > 0) {
+          const grad = ctx.createLinearGradient(0, 0, 0, H);
+          grad.addColorStop(0, `rgba(0,0,0,${state.overlay * 0.65})`);
+          grad.addColorStop(0.5, `rgba(0,0,0,${state.overlay * 0.85})`);
+          grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.95, state.overlay * 1.15)})`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+        }
+
+        const padX = 84;
+        const contentW = W - padX * 2;
+
+        const badgeFont = "800 30px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+        const headFont = "900 76px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+        const subFont = "500 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+        const ctaFont = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+        const headLines = wrapLines(state.headline, contentW, headFont);
+        const subLines = wrapLines(state.subtext, contentW, subFont);
+
+        const hasBadge = Boolean(state.badge && state.badge.trim());
+        const hasCta = Boolean(state.cta && state.cta.trim());
+
+        const badgeH = hasBadge ? 54 : 0;
+        const badgeGap = hasBadge ? 24 : 0;
+        const headLineH = 88;
+        const headH = headLines.length * headLineH;
+        const subGap = subLines.length ? 22 : 0;
+        const subLineH = 48;
+        const subH = subLines.length * subLineH;
+        const ctaGap = hasCta ? 34 : 0;
+        const ctaH = hasCta ? 76 : 0;
+
+        const totalBlockH = badgeH + badgeGap + headH + subGap + subH + ctaGap + ctaH;
+
+        let topMargin = H - 140 - totalBlockH;
+        if (state.pos === "top") {
+          topMargin = H > 1500 ? 220 : 120;
+        } else if (state.pos === "center") {
+          topMargin = (H - totalBlockH) / 2;
+        }
+        topMargin = Math.max(90, Math.min(H - totalBlockH - 90, topMargin));
+
+        let cursorY = topMargin;
+
+        if (hasBadge) {
+          ctx.save();
+          ctx.font = badgeFont;
+          const badgeText = state.badge.trim().toUpperCase();
+          const textW = ctx.measureText(badgeText).width;
+          const boxW = textW + 44;
+          let boxX = padX;
+          if (state.align === "center") boxX = (W - boxW) / 2;
+
+          ctx.fillStyle = state.accentColor;
+          roundRect(boxX, cursorY, boxW, badgeH, 14);
+          ctx.fill();
+
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(badgeText, boxX + boxW / 2, cursorY + badgeH / 2 + 1);
+          ctx.restore();
+
+          cursorY += badgeH + badgeGap;
+        }
+
+        if (headLines.length) {
+          ctx.save();
+          ctx.font = headFont;
+          ctx.fillStyle = state.textColor;
+          ctx.textAlign = state.align;
+          ctx.textBaseline = "top";
+          ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
+          ctx.shadowBlur = 18;
+          ctx.shadowOffsetY = 4;
+
+          const textX = state.align === "center" ? W / 2 : padX;
+          headLines.forEach((line, idx) => {
+            ctx.fillText(line, textX, cursorY + idx * headLineH);
+          });
+          ctx.restore();
+          cursorY += headH;
+        }
+
+        if (subLines.length) {
+          cursorY += subGap;
+          ctx.save();
+          ctx.font = subFont;
+          ctx.fillStyle = state.textColor;
+          ctx.globalAlpha = 0.92;
+          ctx.textAlign = state.align;
+          ctx.textBaseline = "top";
+          ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetY = 2;
+
+          const textX = state.align === "center" ? W / 2 : padX;
+          subLines.forEach((line, idx) => {
+            ctx.fillText(line, textX, cursorY + idx * subLineH);
+          });
+          ctx.restore();
+          cursorY += subH;
+        }
+
+        if (hasCta) {
+          cursorY += ctaGap;
+          ctx.save();
+          ctx.font = ctaFont;
+          const ctaLabel = state.cta.trim();
+          const btnW = Math.max(240, ctx.measureText(ctaLabel).width + 76);
+          let btnX = padX;
+          if (state.align === "center") btnX = (W - btnW) / 2;
+
+          ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+          ctx.shadowBlur = 16;
+          ctx.shadowOffsetY = 6;
+          ctx.fillStyle = state.accentColor;
+          roundRect(btnX, cursorY, btnW, ctaH, 20);
+          ctx.fill();
+
+          ctx.shadowColor = "transparent";
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(ctaLabel, btnX + btnW / 2, cursorY + ctaH / 2 + 1);
+          ctx.restore();
+        }
+
+        if (!forExport && state.showGrid) {
+          ctx.save();
+          ctx.strokeStyle = "rgba(255,255,255,0.28)";
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          for (let i = 1; i <= 2; i++) {
+            const gx = (W / 3) * i;
+            const gy = (H / 3) * i;
+            ctx.beginPath();
+            ctx.moveTo(gx, 0);
+            ctx.lineTo(gx, H);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(0, gy);
+            ctx.lineTo(W, gy);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        if (!forExport && state.showSafe) {
+          ctx.save();
+          const topSafe = H > 1500 ? 180 : 72;
+          const botSafe = H > 1500 ? 250 : 72;
+          const sideSafe = 64;
+
+          ctx.fillStyle = "rgba(255, 59, 127, 0.14)";
+          ctx.fillRect(0, 0, W, topSafe);
+          ctx.fillRect(0, H - botSafe, W, botSafe);
+
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+          ctx.lineWidth = 3;
+          ctx.setLineDash([12, 8]);
+          ctx.strokeRect(sideSafe, topSafe, W - sideSafe * 2, H - topSafe - botSafe);
+          ctx.restore();
+        }
+      }
+
+      document.getElementById("imageInput").addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        document.getElementById("fileNameLabel").textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            state.img = img;
+            state.panX = 0;
+            state.panY = 0;
+            state.zoom = 1;
+            document.getElementById("zoomRange").value = 100;
+            document.getElementById("zoomVal").textContent = "100%";
+            render();
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
       });
-    }
 
-    function openLongPressPreview(ext = "png") {
-      render(true);
-      const mime = ext === "jpg" ? "image/jpeg" : "image/png";
-      const dataUrl = canvas.toDataURL(mime, ext === "jpg" ? 0.92 : undefined);
-      render(false);
-      const imgEl = document.getElementById("exportedImg");
-      const sheet = document.getElementById("saveSheet");
-      const info = document.getElementById("saveSheetInfo");
-      info.innerHTML = `<strong>Tallennus (${state.formatLabel}, ${state.width} × ${state.height} px):</strong> Paina kuvaa pitkään ja valitse <em>Tallenna kuva</em>.`;
-      imgEl.src = dataUrl;
-      sheet.classList.add("open");
-      sheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
+      function getCanvasCoords(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return { x: 0, y: 0 };
+        return {
+          x: ((clientX - rect.left) / rect.width) * canvas.width,
+          y: ((clientY - rect.top) / rect.height) * canvas.height
+        };
+      }
 
-    document.getElementById("shareSaveBtn").addEventListener("click", shareToPhotos);
-    document.getElementById("downloadPngBtn").addEventListener("click", () => downloadAd("png"));
-    document.getElementById("downloadJpgBtn").addEventListener("click", () => downloadAd("jpg"));
-    document.getElementById("openPreviewSaveBtn").addEventListener("click", () => openLongPressPreview("png"));
+      function stopPhotoDrag() {
+        isDraggingPhoto = false;
+        activePointerId = null;
+      }
 
-    syncInputsFromState();
-    render();
-  </script>
-</body>
-</html>
+      canvas.addEventListener("pointerdown", (e) => {
+        if (!state.img) return;
+        isDraggingPhoto = true;
+        activePointerId = e.pointerId;
+        lastPointer = getCanvasCoords(e.clientX, e.clientY);
+      });
+
+      canvas.addEventListener("pointermove", (e) => {
+        if (!isDraggingPhoto || activePointerId !== e.pointerId || !state.img) return;
+        const pt = getCanvasCoords(e.clientX, e.clientY);
+        state.panX += pt.x - lastPointer.x;
+        state.panY += pt.y - lastPointer.y;
+        lastPointer = pt;
+        render();
+      });
+
+      canvas.addEventListener("pointerup", stopPhotoDrag);
+      canvas.addEventListener("pointercancel", stopPhotoDrag);
+      window.addEventListener("pointerup", stopPhotoDrag);
+
+      document.querySelectorAll(".format-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          setFormat(
+            Number(btn.dataset.w),
+            Number(btn.dataset.h),
+            btn.dataset.ratio,
+            btn.dataset.label
+          );
+        });
+      });
+
+      document.querySelectorAll(".preset-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          applyPreset(btn.dataset.preset);
+        });
+      });
+
+      document.getElementById("badgeText").addEventListener("input", (e) => {
