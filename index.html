@@ -16,15 +16,15 @@
       color: #f3f6fc;
     }
     .container {
-      max-width: 980px;
+      max-width: 1020px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 1fr;
       gap: 16px;
     }
-    @media (min-width: 860px) {
+    @media (min-width: 880px) {
       .container {
-        grid-template-columns: 390px 1fr;
+        grid-template-columns: 410px 1fr;
         align-items: start;
       }
     }
@@ -45,7 +45,7 @@
     .sub {
       margin: 0;
       color: #9fb0c7;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
     }
     label {
       display: block;
@@ -98,12 +98,12 @@
     .btn {
       width: 100%;
       min-height: 42px;
-      padding: 9px 8px;
+      padding: 9px 7px;
       border-radius: 8px;
       border: 1px solid #3f4b63;
       background: #232c3d;
       color: #ffffff;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -123,7 +123,7 @@
       text-align: center;
     }
     .canvas-wrap {
-      max-width: 420px;
+      max-width: 430px;
       margin: 0 auto;
       background: #090c10;
       border-radius: 10px;
@@ -144,7 +144,7 @@
     }
     #previewSaveBox {
       display: none;
-      max-width: 420px;
+      max-width: 430px;
       margin: 12px auto 0;
       background: #10151e;
       border: 1px solid #3c485e;
@@ -177,11 +177,11 @@
           <button type="button" class="btn size-btn" data-w="1080" data-h="1920" data-code="9x16" data-label="9:16 Story">9:16 Story</button>
         </div>
 
-        <label>3. Teemapohjat (12 kpl)</label>
+        <label>3. Ammattimaiset oletussetit (12 kpl)</label>
         <div class="grid-3">
           <button type="button" class="btn theme-btn active" data-theme="kampanja">Kampanja</button>
           <button type="button" class="btn theme-btn" data-theme="uutuus">Uutuus</button>
-          <button type="button" class="btn theme-btn" data-theme="tyyli">Tyylikäs</button>
+          <button type="button" class="btn theme-btn" data-theme="tyyli">Boutique</button>
 
           <button type="button" class="btn theme-btn" data-theme="joulu1">Joulu Ale</button>
           <button type="button" class="btn theme-btn" data-theme="joulu2">Joulu Kuusi</button>
@@ -198,17 +198,28 @@
       </div>
 
       <div class="card">
-        <label for="badgeInput">Yläteksti</label>
-        <input type="text" id="badgeInput" value="TARJOUS" />
+        <label for="badgeInput">Yläteksti / Tunniste</label>
+        <input type="text" id="badgeInput" value="VIIKONLOPPUTARJOUS" />
 
         <label for="titleInput">Pääotsikko</label>
         <textarea id="titleInput">Nyt -30% kaikesta</textarea>
 
         <label for="subInput">Alaotsikko</label>
-        <input type="text" id="subInput" value="Voimassa verkkokaupassa." />
+        <input type="text" id="subInput" value="Voimassa sunnuntaihin asti verkkokaupassa." />
 
         <label for="ctaInput">Nappiteksti</label>
         <input type="text" id="ctaInput" value="Osta nyt" />
+
+        <label for="fontSelect">Fonttityyli</label>
+        <select id="fontSelect">
+          <option value="sans" selected>Moderni Sans (selkeä ja napakka)</option>
+          <option value="display">Näyttävä Display (iso ja iskevä)</option>
+          <option value="serif">Klassinen Serif (tyylikäs ja editorial)</option>
+          <option value="geo">Geometrinen (moderni brändi)</option>
+        </select>
+
+        <label for="textScaleInput">Tekstikoko: <span id="textScaleVal">115%</span></label>
+        <input type="range" id="textScaleInput" min="65" max="165" value="115" />
 
         <div class="grid-2">
           <div>
@@ -235,7 +246,7 @@
           </div>
           <div>
             <label for="darkInput">Tummennus</label>
-            <input type="range" id="darkInput" min="0" max="85" value="45" />
+            <input type="range" id="darkInput" min="0" max="85" value="48" />
           </div>
         </div>
 
@@ -275,22 +286,105 @@
       const canvas = document.getElementById("adCanvas");
       const ctx = canvas.getContext("2d");
 
+      const FONTS = {
+        sans: {
+          stack: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+          titleWeight: "900",
+          subWeight: "600"
+        },
+        display: {
+          stack: "Impact, 'Arial Black', 'Segoe UI', sans-serif",
+          titleWeight: "900",
+          subWeight: "700"
+        },
+        serif: {
+          stack: "Georgia, 'Times New Roman', Times, serif",
+          titleWeight: "700",
+          subWeight: "400"
+        },
+        geo: {
+          stack: "'Trebuchet MS', 'Segoe UI', Roboto, sans-serif",
+          titleWeight: "800",
+          subWeight: "600"
+        }
+      };
+
       const THEMES = {
-        kampanja: { accent: "#e11d48", bg1: "#2a1220", bg2: "#0d1017", badge: "TARJOUS", title: "Nyt -30% kaikesta", sub: "Voimassa verkkokaupassa.", cta: "Osta nyt", pos: "bottom", align: "left" },
-        uutuus:   { accent: "#eab308", bg1: "#2b220d", bg2: "#0d1017", badge: "UUTUUS", title: "Uusi mallisto nyt täällä", sub: "Tutustu tuoreisiin tuotteisiin.", cta: "Katso uutuudet", pos: "top", align: "left" },
-        tyyli:    { accent: "#cbd5e1", bg1: "#1e2430", bg2: "#0b0d12", badge: "VALIKOITU", title: "Ajatonta tyyliä", sub: "Rajattu erä suosikkeja.", cta: "Tutustu", pos: "center", align: "center" },
+        kampanja: {
+          accent: "#e11d48", bg1: "#2a1220", bg2: "#0d1017", dark: 48,
+          font: "display", scale: 125,
+          badge: "MEGA-ALE", title: "Nyt -30% kaikesta", sub: "Kampanja voimassa sunnuntaihin.", cta: "Osta nyt",
+          pos: "bottom", align: "left"
+        },
+        uutuus: {
+          accent: "#eab308", bg1: "#2b220d", bg2: "#0d1017", dark: 42,
+          font: "geo", scale: 115,
+          badge: "UUTUUS", title: "Uusi mallisto nyt täällä", sub: "Tuoreet uutuudet ensimmäisenä.", cta: "Katso uutuudet",
+          pos: "top", align: "left"
+        },
+        tyyli: {
+          accent: "#e2e8f0", bg1: "#1d222e", bg2: "#0a0c12", dark: 52,
+          font: "serif", scale: 112,
+          badge: "BOUTIQUE", title: "Ajatonta tyyliä", sub: "Kuratoitu valikoima rajatun ajan.", cta: "Tutustu",
+          pos: "center", align: "center"
+        },
 
-        joulu1:   { accent: "#dc2626", bg1: "#330c12", bg2: "#10080a", badge: "JOULU & ALE", title: "Joulun parhaat lahjat -25%", sub: "Tilaa ajoissa pukinkonttiin.", cta: "Katso lahjat", pos: "bottom", align: "left" },
-        joulu2:   { accent: "#16a34a", bg1: "#0d2b1a", bg2: "#08120c", badge: "HYVÄÄ JOULUA", title: "Lämmin jouluhetki", sub: "Joulun suosikit ja lahjat.", cta: "Jouluvalikoima", pos: "bottom", align: "center" },
-        joulu3:   { accent: "#d97706", bg1: "#2e1e09", bg2: "#110c06", badge: "JOULUN LOISTOA", title: "Kultaiset joulutarjoukset", sub: "Rajoitettu jouluerä nyt.", cta: "Varaa nyt", pos: "center", align: "center" },
+        joulu1: {
+          accent: "#dc2626", bg1: "#330c12", bg2: "#10080a", dark: 50,
+          font: "display", scale: 122,
+          badge: "JOULUKAMPANJA", title: "Joulun parhaat lahjat", sub: "Jopa -25% valituista lahjoista.", cta: "Katso lahjat",
+          pos: "bottom", align: "left"
+        },
+        joulu2: {
+          accent: "#16a34a", bg1: "#0d2b1a", bg2: "#08120c", dark: 46,
+          font: "serif", scale: 116,
+          badge: "HYVÄÄ JOULUA", title: "Lämmin jouluhetki", sub: "Perinteiset lahjat ja herkut.", cta: "Jouluvalikoima",
+          pos: "bottom", align: "center"
+        },
+        joulu3: {
+          accent: "#eab308", bg1: "#2e1e09", bg2: "#110c06", dark: 52,
+          font: "serif", scale: 120,
+          badge: "JOULUN LOISTOA", title: "Kultaiset hetket", sub: "Rajoitettu jouluerä nyt myynnissä.", cta: "Varaa nyt",
+          pos: "center", align: "center"
+        },
 
-        kesa1:    { accent: "#ea580c", bg1: "#2e150a", bg2: "#0c121c", badge: "KESÄALE", title: "Kesän kuumimmat edut", sub: "Jopa -40% kesätuotteista.", cta: "Nappaa etu", pos: "bottom", align: "left" },
-        kesa2:    { accent: "#0284c7", bg1: "#092536", bg2: "#08111c", badge: "KESÄ & MERI", title: "Kesäpäiviin ja lomalle", sub: "Raikkaat uutuudet kesään.", cta: "Tutustu", pos: "top", align: "left" },
-        kesa3:    { accent: "#f59e0b", bg1: "#2e1712", bg2: "#110c14", badge: "KESÄILTA", title: "Kesäiltojen parhaat hetket", sub: "Nauti pitkistä illoista.", cta: "Lue lisää", pos: "bottom", align: "center" },
+        kesa1: {
+          accent: "#f97316", bg1: "#2e150a", bg2: "#0c121c", dark: 42,
+          font: "display", scale: 126,
+          badge: "KESÄALE", title: "Kesän kuumimmat edut", sub: "Jopa -40% kesän suosikeista.", cta: "Nappaa etu",
+          pos: "bottom", align: "left"
+        },
+        kesa2: {
+          accent: "#06b6d4", bg1: "#092536", bg2: "#08111c", dark: 38,
+          font: "geo", scale: 114,
+          badge: "KESÄ & LOMA", title: "Valmiina kesään", sub: "Raikkaat uutuudet aurinkopäiviin.", cta: "Tutustu",
+          pos: "top", align: "left"
+        },
+        kesa3: {
+          accent: "#f59e0b", bg1: "#2e1712", bg2: "#110c14", dark: 45,
+          font: "serif", scale: 115,
+          badge: "KESÄILTA", title: "Kesäiltojen parhaat hetket", sub: "Nauti pitkistä illoista tyylillä.", cta: "Lue lisää",
+          pos: "bottom", align: "center"
+        },
 
-        talvi1:   { accent: "#0ea5e9", bg1: "#0b2236", bg2: "#090d16", badge: "TALVIKAMPANJA", title: "Varustaudu talveen", sub: "Laadukkaat talvituotteet.", cta: "Katso lisää", pos: "bottom", align: "left" },
-        talvi2:   { accent: "#4f46e5", bg1: "#161838", bg2: "#090b14", badge: "TALVIETU", title: "Talven parhaat tarjoukset", sub: "Säästä valituista tuotteista.", cta: "Hyödynnä", pos: "top", align: "center" },
-        talvi3:   { accent: "#94a3b8", bg1: "#1b212c", bg2: "#0c0f14", badge: "PAKKANEN", title: "Lämpöä talvipäiviin", sub: "Pehmeät suosikit arkeen.", cta: "Tutustu", pos: "center", align: "center" }
+        talvi1: {
+          accent: "#38bdf8", bg1: "#0b2236", bg2: "#090d16", dark: 48,
+          font: "display", scale: 122,
+          badge: "TALVIKAMPANJA", title: "Varustaudu talveen", sub: "Lämpimät talvituotteet heti varastosta.", cta: "Katso lisää",
+          pos: "bottom", align: "left"
+        },
+        talvi2: {
+          accent: "#6366f1", bg1: "#161838", bg2: "#090b14", dark: 48,
+          font: "geo", scale: 116,
+          badge: "TALVIETU", title: "Raikkaat talvitarjoukset", sub: "Säästä valituista tuotteista nyt.", cta: "Hyödynnä",
+          pos: "top", align: "center"
+        },
+        talvi3: {
+          accent: "#cbd5e1", bg1: "#1b212c", bg2: "#0c0f14", dark: 50,
+          font: "serif", scale: 110,
+          badge: "PAKKANEN & HYGGE", title: "Lämpöä talvipäiviin", sub: "Pehmeät suosikit arkeen ja kotiin.", cta: "Tutustu",
+          pos: "center", align: "center"
+        }
       };
 
       let W = 1080;
@@ -311,32 +405,46 @@
         document.getElementById("statusText").textContent = msg;
       }
 
+      function updateScaleLabel() {
+        const val = document.getElementById("textScaleInput").value;
+        document.getElementById("textScaleVal").textContent = val + "%";
+      }
+
       function wrapText(text, maxW, font) {
         if (!text || !text.trim()) return [];
         ctx.font = font;
-        const words = text.trim().split(/\s+/);
+        const paragraphs = text.split("\n");
         const lines = [];
-        let line = words[0];
-        for (let i = 1; i < words.length; i++) {
-          const test = line + " " + words[i];
-          if (ctx.measureText(test).width <= maxW) {
-            line = test;
-          } else {
-            lines.push(line);
-            line = words[i];
+        for (const para of paragraphs) {
+          const words = para.trim().split(/\s+/).filter(Boolean);
+          if (!words.length) continue;
+          let line = words[0];
+          for (let i = 1; i < words.length; i++) {
+            const test = line + " " + words[i];
+            if (ctx.measureText(test).width <= maxW) {
+              line = test;
+            } else {
+              lines.push(line);
+              line = words[i];
+            }
           }
+          lines.push(line);
         }
-        lines.push(line);
         return lines;
       }
 
       function draw() {
+        updateScaleLabel();
+
         const accent = document.getElementById("accentInput").value;
         const dark = Number(document.getElementById("darkInput").value) / 100;
         const zoom = Number(document.getElementById("zoomInput").value) / 100;
         const pos = document.getElementById("posSelect").value;
         const align = document.getElementById("alignSelect").value;
+        const fontKey = document.getElementById("fontSelect").value;
+        const scale = Number(document.getElementById("textScaleInput").value) / 100;
 
+        const fontObj = FONTS[fontKey] || FONTS.sans;
         const badge = document.getElementById("badgeInput").value;
         const title = document.getElementById("titleInput").value;
         const sub = document.getElementById("subInput").value;
@@ -368,56 +476,107 @@
           ctx.fillRect(0, 0, W, H);
         }
 
-        const pad = 80;
+        const pad = 76;
         const maxW = W - pad * 2;
-        const titleFont = "900 74px sans-serif";
-        const subFont = "500 38px sans-serif";
+
+        const badgePx = Math.round(34 * scale);
+        const titlePx = Math.round(92 * scale);
+        const subPx = Math.round(42 * scale);
+        const ctaPx = Math.round(38 * scale);
+
+        const badgeFont = "800 " + badgePx + "px " + fontObj.stack;
+        const titleFont = fontObj.titleWeight + " " + titlePx + "px " + fontObj.stack;
+        const subFont = fontObj.subWeight + " " + subPx + "px " + fontObj.stack;
+        const ctaFont = "800 " + ctaPx + "px " + fontObj.stack;
+
         const tLines = wrapText(title, maxW, titleFont);
         const sLines = wrapText(sub, maxW, subFont);
 
-        let y = H - 520;
-        if (pos === "top") y = 130;
-        if (pos === "center") y = H * 0.36;
+        const hasBadge = Boolean(badge.trim());
+        const hasCta = Boolean(cta.trim());
 
-        ctx.textAlign = align;
+        const badgeH = hasBadge ? Math.round(badgePx * 1.75) : 0;
+        const badgeGap = hasBadge ? Math.round(24 * scale) : 0;
+        const titleStep = Math.round(titlePx * 1.12);
+        const titleBlockH = tLines.length * titleStep;
+        const subGap = sLines.length ? Math.round(22 * scale) : 0;
+        const subStep = Math.round(subPx * 1.25);
+        const subBlockH = sLines.length * subStep;
+        const ctaGap = hasCta ? Math.round(32 * scale) : 0;
+        const ctaH = hasCta ? Math.round(ctaPx * 2.05) : 0;
+
+        const totalH = badgeH + badgeGap + titleBlockH + subGap + subBlockH + ctaGap + ctaH;
+
+        let y = H - 140 - totalH;
+        if (pos === "top") y = H > 1500 ? 190 : 110;
+        if (pos === "center") y = (H - totalH) / 2;
+        y = Math.max(80, Math.min(H - totalH - 80, y));
+
         const tx = align === "center" ? W / 2 : pad;
 
-        if (badge.trim()) {
-          ctx.font = "800 30px sans-serif";
-          const bw = ctx.measureText(badge.toUpperCase()).width + 40;
+        if (hasBadge) {
+          ctx.save();
+          ctx.font = badgeFont;
+          const bTxt = badge.trim().toUpperCase();
+          const bw = ctx.measureText(bTxt).width + Math.round(46 * scale);
           const bx = align === "center" ? (W - bw) / 2 : pad;
           ctx.fillStyle = accent;
-          ctx.fillRect(bx, y, bw, 52);
+          ctx.fillRect(bx, y, bw, badgeH);
           ctx.fillStyle = "#ffffff";
           ctx.textAlign = "center";
-          ctx.fillText(badge.toUpperCase(), bx + bw / 2, y + 36);
+          ctx.textBaseline = "middle";
+          ctx.fillText(bTxt, bx + bw / 2, y + badgeH / 2 + 1);
+          ctx.restore();
+          y += badgeH + badgeGap;
+        }
+
+        if (tLines.length) {
+          ctx.save();
+          ctx.font = titleFont;
+          ctx.fillStyle = "#ffffff";
           ctx.textAlign = align;
-          y += 76;
+          ctx.textBaseline = "top";
+          ctx.shadowColor = "rgba(0,0,0,0.6)";
+          ctx.shadowBlur = 18;
+          ctx.shadowOffsetY = 4;
+          tLines.forEach(function (l, idx) {
+            ctx.fillText(l, tx, y + idx * titleStep);
+          });
+          ctx.restore();
+          y += titleBlockH;
         }
 
-        ctx.fillStyle = "#ffffff";
-        ctx.font = titleFont;
-        for (const l of tLines) {
-          ctx.fillText(l, tx, y + 66);
-          y += 86;
+        if (sLines.length) {
+          y += subGap;
+          ctx.save();
+          ctx.font = subFont;
+          ctx.fillStyle = "#f8fafc";
+          ctx.textAlign = align;
+          ctx.textBaseline = "top";
+          ctx.shadowColor = "rgba(0,0,0,0.55)";
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetY = 2;
+          sLines.forEach(function (l, idx) {
+            ctx.fillText(l, tx, y + idx * subStep);
+          });
+          ctx.restore();
+          y += subBlockH;
         }
 
-        ctx.font = subFont;
-        for (const l of sLines) {
-          ctx.fillText(l, tx, y + 36);
-          y += 48;
-        }
-
-        if (cta.trim()) {
-          y += 24;
-          ctx.font = "800 34px sans-serif";
-          const cw = Math.max(240, ctx.measureText(cta).width + 70);
+        if (hasCta) {
+          y += ctaGap;
+          ctx.save();
+          ctx.font = ctaFont;
+          const cTxt = cta.trim();
+          const cw = Math.max(Math.round(240 * scale), ctx.measureText(cTxt).width + Math.round(78 * scale));
           const cx = align === "center" ? (W - cw) / 2 : pad;
           ctx.fillStyle = accent;
-          ctx.fillRect(cx, y, cw, 72);
+          ctx.fillRect(cx, y, cw, ctaH);
           ctx.fillStyle = "#ffffff";
           ctx.textAlign = "center";
-          ctx.fillText(cta, cx + cw / 2, y + 48);
+          ctx.textBaseline = "middle";
+          ctx.fillText(cTxt, cx + cw / 2, y + ctaH / 2 + 1);
+          ctx.restore();
         }
       }
 
@@ -448,6 +607,9 @@
           bg1 = t.bg1;
           bg2 = t.bg2;
           document.getElementById("accentInput").value = t.accent;
+          document.getElementById("darkInput").value = t.dark;
+          document.getElementById("fontSelect").value = t.font;
+          document.getElementById("textScaleInput").value = t.scale;
           document.getElementById("badgeInput").value = t.badge;
           document.getElementById("titleInput").value = t.title;
           document.getElementById("subInput").value = t.sub;
@@ -462,7 +624,11 @@
         });
       });
 
-      ["badgeInput", "titleInput", "subInput", "ctaInput", "posSelect", "alignSelect", "accentInput", "darkInput", "zoomInput"].forEach(function (id) {
+      [
+        "badgeInput", "titleInput", "subInput", "ctaInput",
+        "fontSelect", "textScaleInput", "posSelect", "alignSelect",
+        "accentInput", "darkInput", "zoomInput"
+      ].forEach(function (id) {
         const el = document.getElementById(id);
         el.addEventListener("input", draw);
         el.addEventListener("change", draw);
