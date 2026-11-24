@@ -752,4 +752,316 @@
       ctx.moveTo(x + radius, y);
       ctx.arcTo(x + w, y, x + w, y + h, radius);
       ctx.arcTo(x + w, y + h, x, y + h, radius);
-      ctx.arcTo(x, y + h, x,
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function render(forExport = false) {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, state.bg1 || "#1d2233");
+      bgGrad.addColorStop(1, state.bg2 || "#0d0f17");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      if (state.img) {
+        const imgRatio = state.img.width / state.img.height;
+        const canvasRatio = W / H;
+        let baseW, baseH;
+        if (imgRatio > canvasRatio) {
+          baseH = H;
+          baseW = H * imgRatio;
+        } else {
+          baseW = W;
+          baseH = W / imgRatio;
+        }
+        const drawW = baseW * state.zoom;
+        const drawH = baseH * state.zoom;
+        const x = (W - drawW) / 2 + state.panX;
+        const y = (H - drawH) / 2 + state.panY;
+        ctx.drawImage(state.img, x, y, drawW, drawH);
+      } else {
+        ctx.save();
+        ctx.fillStyle = state.accentColor;
+        ctx.globalAlpha = 0.18;
+        ctx.beginPath();
+        ctx.arc(W * 0.82, H * 0.25, W * 0.44, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.1;
+        ctx.beginPath();
+        ctx.arc(W * 0.18, H * 0.78, W * 0.36, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      if (state.overlay > 0) {
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, `rgba(0,0,0,${state.overlay * 0.65})`);
+        grad.addColorStop(0.5, `rgba(0,0,0,${state.overlay * 0.85})`);
+        grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.95, state.overlay * 1.15)})`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      const padX = 84;
+      const contentW = W - padX * 2;
+
+      const badgeFont = "800 30px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      const headFont = "900 76px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      const subFont = "500 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      const ctaFont = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+      const headLines = wrapLines(state.headline, contentW, headFont);
+      const subLines = wrapLines(state.subtext, contentW, subFont);
+
+      const hasBadge = Boolean(state.badge && state.badge.trim());
+      const hasCta = Boolean(state.cta && state.cta.trim());
+
+      const badgeH = hasBadge ? 54 : 0;
+      const badgeGap = hasBadge ? 24 : 0;
+      const headLineH = 88;
+      const headH = headLines.length * headLineH;
+      const subGap = subLines.length ? 22 : 0;
+      const subLineH = 48;
+      const subH = subLines.length * subLineH;
+      const ctaGap = hasCta ? 34 : 0;
+      const ctaH = hasCta ? 76 : 0;
+
+      const totalBlockH = badgeH + badgeGap + headH + subGap + subH + ctaGap + ctaH;
+
+      let topMargin = H - 140 - totalBlockH;
+      if (state.pos === "top") {
+        topMargin = H > 1500 ? 220 : 120;
+      } else if (state.pos === "center") {
+        topMargin = (H - totalBlockH) / 2;
+      }
+      topMargin = Math.max(90, Math.min(H - totalBlockH - 90, topMargin));
+
+      let cursorY = topMargin;
+
+      if (hasBadge) {
+        ctx.save();
+        ctx.font = badgeFont;
+        const badgeText = state.badge.trim().toUpperCase();
+        const textW = ctx.measureText(badgeText).width;
+        const boxW = textW + 44;
+        let boxX = padX;
+        if (state.align === "center") boxX = (W - boxW) / 2;
+
+        ctx.fillStyle = state.accentColor;
+        roundRect(boxX, cursorY, boxW, badgeH, 14);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(badgeText, boxX + boxW / 2, cursorY + badgeH / 2 + 1);
+        ctx.restore();
+
+        cursorY += badgeH + badgeGap;
+      }
+
+      if (headLines.length) {
+        ctx.save();
+        ctx.font = headFont;
+        ctx.fillStyle = state.textColor;
+        ctx.textAlign = state.align;
+        ctx.textBaseline = "top";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetY = 4;
+
+        const textX = state.align === "center" ? W / 2 : padX;
+        headLines.forEach((line, idx) => {
+          ctx.fillText(line, textX, cursorY + idx * headLineH);
+        });
+        ctx.restore();
+        cursorY += headH;
+      }
+
+      if (subLines.length) {
+        cursorY += subGap;
+        ctx.save();
+        ctx.font = subFont;
+        ctx.fillStyle = state.textColor;
+        ctx.globalAlpha = 0.92;
+        ctx.textAlign = state.align;
+        ctx.textBaseline = "top";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 2;
+
+        const textX = state.align === "center" ? W / 2 : padX;
+        subLines.forEach((line, idx) => {
+          ctx.fillText(line, textX, cursorY + idx * subLineH);
+        });
+        ctx.restore();
+        cursorY += subH;
+      }
+
+      if (hasCta) {
+        cursorY += ctaGap;
+        ctx.save();
+        ctx.font = ctaFont;
+        const ctaLabel = state.cta.trim();
+        const btnW = Math.max(240, ctx.measureText(ctaLabel).width + 76);
+        let btnX = padX;
+        if (state.align === "center") btnX = (W - btnW) / 2;
+
+        ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = state.accentColor;
+        roundRect(btnX, cursorY, btnW, ctaH, 20);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(ctaLabel, btnX + btnW / 2, cursorY + ctaH / 2 + 1);
+        ctx.restore();
+      }
+
+      if (!forExport && state.showGrid) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.28)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 8]);
+        for (let i = 1; i <= 2; i++) {
+          const gx = (W / 3) * i;
+          const gy = (H / 3) * i;
+          ctx.beginPath();
+          ctx.moveTo(gx, 0);
+          ctx.lineTo(gx, H);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(0, gy);
+          ctx.lineTo(W, gy);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      if (!forExport && state.showSafe) {
+        ctx.save();
+        const topSafe = H > 1500 ? 180 : 72;
+        const botSafe = H > 1500 ? 250 : 72;
+        const sideSafe = 64;
+
+        ctx.fillStyle = "rgba(255, 59, 127, 0.14)";
+        ctx.fillRect(0, 0, W, topSafe);
+        ctx.fillRect(0, H - botSafe, W, botSafe);
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([12, 8]);
+        ctx.strokeRect(sideSafe, topSafe, W - sideSafe * 2, H - topSafe - botSafe);
+        ctx.restore();
+      }
+    }
+
+    document.getElementById("imageInput").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      document.getElementById("fileNameLabel").textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          state.img = img;
+          state.panX = 0;
+          state.panY = 0;
+          state.zoom = 1;
+          document.getElementById("zoomRange").value = 100;
+          document.getElementById("zoomVal").textContent = "100%";
+          render();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function getCanvasCoords(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: ((clientX - rect.left) / rect.width) * canvas.width,
+        y: ((clientY - rect.top) / rect.height) * canvas.height
+      };
+    }
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if (!state.img) return;
+      isDragging = true;
+      canvas.setPointerCapture(e.pointerId);
+      lastPointer = getCanvasCoords(e.clientX, e.clientY);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!isDragging || !state.img) return;
+      const pt = getCanvasCoords(e.clientX, e.clientY);
+      state.panX += pt.x - lastPointer.x;
+      state.panY += pt.y - lastPointer.y;
+      lastPointer = pt;
+      render();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      isDragging = false;
+    });
+
+    document.querySelectorAll("#formatButtons .btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#formatButtons .btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        setFormat(Number(btn.dataset.w), Number(btn.dataset.h), btn.dataset.label);
+      });
+    });
+
+    document.querySelectorAll("#presetButtons .btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#presetButtons .btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyPreset(btn.dataset.preset);
+      });
+    });
+
+    document.getElementById("badgeText").addEventListener("input", (e) => {
+      state.badge = e.target.value;
+      render();
+    });
+    document.getElementById("headlineText").addEventListener("input", (e) => {
+      state.headline = e.target.value;
+      render();
+    });
+    document.getElementById("subText").addEventListener("input", (e) => {
+      state.subtext = e.target.value;
+      render();
+    });
+    document.getElementById("ctaText").addEventListener("input", (e) => {
+      state.cta = e.target.value;
+      render();
+    });
+    document.getElementById("textAlign").addEventListener("change", (e) => {
+      state.align = e.target.value;
+      render();
+    });
+    document.getElementById("textPos").addEventListener("change", (e) => {
+      state.pos = e.target.value;
+      render();
+    });
+    document.getElementById("accentColor").addEventListener("input", (e) => {
+      state.accentColor = e.target.value;
+      render();
+    });
+    document.getElementById("textColor").addEventListener("input", (e) => {
+      state.textColor = e.target.value;
+      render();
+    });
+    document.getElementById("zoomRange").addEventListener
