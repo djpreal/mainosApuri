@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IG Mainosstudio</title>
   <style>
     :root {
@@ -70,6 +70,11 @@
       margin: 2px 0 0;
       font-size: 0.82rem;
       color: var(--muted);
+    }
+
+    .controls {
+      position: relative;
+      z-index: 2;
     }
 
     .card {
@@ -165,6 +170,8 @@
     }
 
     .btn {
+      position: relative;
+      z-index: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -179,7 +186,9 @@
       font-weight: 700;
       cursor: pointer;
       text-align: center;
-      min-height: 42px;
+      min-height: 44px;
+      touch-action: manipulation;
+      user-select: none;
     }
 
     .btn:active {
@@ -188,7 +197,7 @@
 
     .btn.active {
       border-color: var(--accent);
-      background: rgba(255, 59, 127, 0.2);
+      background: rgba(255, 59, 127, 0.22);
       color: #fff;
     }
 
@@ -220,6 +229,7 @@
       background: rgba(255, 255, 255, 0.02);
       text-align: center;
       cursor: pointer;
+      min-height: 76px;
     }
 
     .upload-box input[type="file"] {
@@ -233,6 +243,7 @@
 
     .upload-box strong {
       font-size: 0.92rem;
+      pointer-events: none;
     }
 
     .upload-box span {
@@ -240,6 +251,7 @@
       color: var(--muted);
       margin-top: 2px;
       word-break: break-all;
+      pointer-events: none;
     }
 
     .toggle-line {
@@ -256,9 +268,24 @@
     }
 
     .toggle-line input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .size-badge-box {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.82rem;
+      color: #dce3f5;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
 
     .preview-panel {
@@ -304,7 +331,7 @@
       margin-top: 8px;
       font-size: 0.82rem;
       color: #6ee7b7;
-      min-height: 18px;
+      min-height: 20px;
       text-align: center;
     }
 
@@ -344,7 +371,7 @@
         <h1>IG Mainosstudio</h1>
         <p>Valitse kuva puhelimesta, kokeile teemapohjia ja tallenna valmis mainos</p>
       </div>
-      <div style="font-size:0.8rem; color:var(--muted);" id="sizeInfo">1080 × 1350 px (Syöte 4:5)</div>
+      <div style="font-size:0.82rem; color:#dce3f5; font-weight:700;" id="sizeInfo">1080 × 1350 px (4:5 Syöte)</div>
     </header>
 
     <section class="controls">
@@ -356,11 +383,11 @@
           <span id="fileNameLabel">Ei kuvaa valittu (taustapohja käytössä)</span>
         </div>
 
-        <label class="field-label">Instagram-muoto</label>
-        <div class="row-3" id="formatButtons">
-          <button type="button" class="btn active" data-w="1080" data-h="1350" data-label="Syöte 4:5">4:5 Syöte</button>
-          <button type="button" class="btn" data-w="1080" data-h="1080" data-label="Neliö 1:1">1:1 Neliö</button>
-          <button type="button" class="btn" data-w="1080" data-h="1920" data-label="Story / Reels">Story 9:16</button>
+        <label class="field-label">Instagram-kuvakoko</label>
+        <div class="row-3 format-group">
+          <button type="button" class="btn format-btn active" data-w="1080" data-h="1350" data-ratio="4x5" data-label="4:5 Syöte">4:5 Syöte</button>
+          <button type="button" class="btn format-btn" data-w="1080" data-h="1080" data-ratio="1x1" data-label="1:1 Neliö">1:1 Neliö</button>
+          <button type="button" class="btn format-btn" data-w="1080" data-h="1920" data-ratio="9x16" data-label="9:16 Story">9:16 Story</button>
         </div>
 
         <label class="field-label">Valmiit väri- ja teemapohjat (12 kpl)</label>
@@ -452,9 +479,22 @@
       </div>
 
       <div class="card">
-        <div class="card-title">4. Tallenna puhelimeen tai koneelle</div>
+        <div class="card-title">4. Tallenna valitussa IG-koossa</div>
+
+        <div class="size-badge-box">
+          <span>Tallennuskoko:</span>
+          <strong id="exportSizeLabel">4:5 Syöte (1080 × 1350 px)</strong>
+        </div>
+
+        <label class="field-label">Vaihda IG-koko ennen tallennusta</label>
+        <div class="row-3 format-group" style="margin-bottom:10px;">
+          <button type="button" class="btn format-btn active" data-w="1080" data-h="1350" data-ratio="4x5" data-label="4:5 Syöte">4:5 Syöte</button>
+          <button type="button" class="btn format-btn" data-w="1080" data-h="1080" data-ratio="1x1" data-label="1:1 Neliö">1:1 Neliö</button>
+          <button type="button" class="btn format-btn" data-w="1080" data-h="1920" data-ratio="9x16" data-label="9:16 Story">9:16 Story</button>
+        </div>
+
         <button type="button" class="btn btn-primary" id="shareSaveBtn" style="margin-bottom:8px;">
-          Jaa / Tallenna suoraan Kuvat-kansioon
+          Jaa / Tallenna Kuvat-kansioon
         </button>
         <div class="row-2" style="margin-bottom:8px;">
           <button type="button" class="btn" id="downloadPngBtn">Lataa PNG</button>
@@ -476,7 +516,7 @@
       </div>
 
       <div class="save-sheet" id="saveSheet">
-        <p><strong>Tallennus puhelimen Kuvat-kansioon:</strong> Paina kuvaa pitkään (noin 1 sekunti) ja valitse <em>Tallenna kuva / Lisää Kuvat-sovellukseen</em>.</p>
+        <p id="saveSheetInfo"><strong>Tallennus:</strong> Paina kuvaa pitkään ja valitse <em>Tallenna kuva</em>.</p>
         <img id="exportedImg" alt="Valmis mainos" />
       </div>
     </section>
@@ -648,7 +688,8 @@
     const state = {
       width: 1080,
       height: 1350,
-      formatLabel: "Syöte 4:5",
+      ratio: "4x5",
+      formatLabel: "4:5 Syöte",
       preset: "kampanja",
       badge: PRESETS.kampanja.badge,
       headline: PRESETS.kampanja.headline,
@@ -669,16 +710,30 @@
       img: null
     };
 
-    let isDragging = false;
+    let activePointerId = null;
     let lastPointer = { x: 0, y: 0 };
 
-    function setFormat(w, h, label) {
+    function updateFormatUI() {
+      const text = `${state.width} × ${state.height} px (${state.formatLabel})`;
+      document.getElementById("sizeInfo").textContent = text;
+      document.getElementById("exportSizeLabel").textContent = `${state.formatLabel} (${state.width} × ${state.height} px)`;
+
+      document.querySelectorAll(".format-btn").forEach((btn) => {
+        const match =
+          Number(btn.dataset.w) === state.width &&
+          Number(btn.dataset.h) === state.height;
+        btn.classList.toggle("active", match);
+      });
+    }
+
+    function setFormat(w, h, ratio, label) {
       state.width = w;
       state.height = h;
+      state.ratio = ratio;
       state.formatLabel = label;
       canvas.width = w;
       canvas.height = h;
-      document.getElementById("sizeInfo").textContent = `${w} × ${h} px (${label})`;
+      updateFormatUI();
       render();
     }
 
@@ -716,6 +771,7 @@
       document.getElementById("overlayVal").textContent = `${Math.round(state.overlay * 100)}%`;
       document.getElementById("safeZoneToggle").checked = state.showSafe;
       document.getElementById("gridToggle").checked = state.showGrid;
+      updateFormatUI();
     }
 
     function wrapLines(text, maxWidth, font) {
@@ -990,21 +1046,35 @@
 
     function getCanvasCoords(clientX, clientY) {
       const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return { x: 0, y: 0 };
       return {
         x: ((clientX - rect.left) / rect.width) * canvas.width,
         y: ((clientY - rect.top) / rect.height) * canvas.height
       };
     }
 
+    function releaseDrag(e) {
+      if (activePointerId !== null) {
+        try {
+          if (e && e.pointerId !== undefined && canvas.hasPointerCapture && canvas.hasPointerCapture(e.pointerId)) {
+            canvas.releasePointerCapture(e.pointerId);
+          }
+        } catch (_) {}
+      }
+      activePointerId = null;
+    }
+
     canvas.addEventListener("pointerdown", (e) => {
       if (!state.img) return;
-      isDragging = true;
-      canvas.setPointerCapture(e.pointerId);
+      activePointerId = e.pointerId;
       lastPointer = getCanvasCoords(e.clientX, e.clientY);
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch (_) {}
     });
 
     canvas.addEventListener("pointermove", (e) => {
-      if (!isDragging || !state.img) return;
+      if (activePointerId === null || e.pointerId !== activePointerId || !state.img) return;
       const pt = getCanvasCoords(e.clientX, e.clientY);
       state.panX += pt.x - lastPointer.x;
       state.panY += pt.y - lastPointer.y;
@@ -1012,56 +1082,10 @@
       render();
     });
 
-    canvas.addEventListener("pointerup", () => {
-      isDragging = false;
-    });
+    canvas.addEventListener("pointerup", releaseDrag);
+    canvas.addEventListener("pointercancel", releaseDrag);
+    window.addEventListener("pointerup", releaseDrag);
 
-    document.querySelectorAll("#formatButtons .btn").forEach((btn) => {
+    document.querySelectorAll(".format-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll("#formatButtons .btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        setFormat(Number(btn.dataset.w), Number(btn.dataset.h), btn.dataset.label);
-      });
-    });
-
-    document.querySelectorAll("#presetButtons .btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#presetButtons .btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        applyPreset(btn.dataset.preset);
-      });
-    });
-
-    document.getElementById("badgeText").addEventListener("input", (e) => {
-      state.badge = e.target.value;
-      render();
-    });
-    document.getElementById("headlineText").addEventListener("input", (e) => {
-      state.headline = e.target.value;
-      render();
-    });
-    document.getElementById("subText").addEventListener("input", (e) => {
-      state.subtext = e.target.value;
-      render();
-    });
-    document.getElementById("ctaText").addEventListener("input", (e) => {
-      state.cta = e.target.value;
-      render();
-    });
-    document.getElementById("textAlign").addEventListener("change", (e) => {
-      state.align = e.target.value;
-      render();
-    });
-    document.getElementById("textPos").addEventListener("change", (e) => {
-      state.pos = e.target.value;
-      render();
-    });
-    document.getElementById("accentColor").addEventListener("input", (e) => {
-      state.accentColor = e.target.value;
-      render();
-    });
-    document.getElementById("textColor").addEventListener("input", (e) => {
-      state.textColor = e.target.value;
-      render();
-    });
-    document.getElementById("zoomRange").addEventListener
+        set
