@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>IG Mainosstudio</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --panel: #171a24;
+      --panel-2: #1f2432;
+      --text: #f3f5fa;
+      --muted: #9aa3b8;
+      --border: #2c3347;
+      --accent: #ff3b7f;
+      --accent-2: #ff8a3d;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .app {
+        grid-template-columns: 420px 1fr;
+        align-items: start;
+        padding: 20px;
+      }
+    }
+
+    header.top {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+    }
+
+    header.top h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    header.top p {
+      margin: 2px 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card:last-child {
+      margin-bottom: 0;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+
+    label.field-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #d7ddec;
+      margin: 10px 0 5px;
+    }
+
+    label.field-label:first-child {
+      margin-top: 0;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 68px;
+      resize: vertical;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+      margin: 4px 0 8px;
+    }
+
+    input[type="color"] {
+      width: 100%;
+      height: 40px;
+      padding: 2px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      cursor: pointer;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .row-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn.active {
+      border-color: var(--accent);
+      background: rgba(255, 59, 127, 0.18);
+      color: #fff;
+    }
+
+    .btn-primary {
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-size: 0.95rem;
+      padding: 13px 14px;
+    }
+
+    .upload-box {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      border: 2px dashed #3d4763;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .upload-box input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-box strong {
+      font-size: 0.92rem;
+    }
+
+    .upload-box span {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .toggle-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .toggle-line:last-child {
+      border-bottom: none;
+    }
+
+    .toggle-line input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+    }
+
+    .preview-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stage-wrap {
+      width: 100%;
+      max-width: 440px;
+      background: #090b10;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      touch-action: none;
+    }
+
+    canvas#adCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      cursor: grab;
+    }
+
+    canvas#adCanvas:active {
+      cursor: grabbing;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+      max-width: 440px;
+    }
+
+    .export-msg {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: #6ee7b7;
+      min-height: 18px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div>
+        <h1>IG Mainosstudio</h1>
+        <p>Valitse kuva puhelimesta, lisää näyttävät tekstit ja tallenna valmis mainos</p>
+      </div>
+      <div style="font-size:0.8rem; color:var(--muted);" id="sizeInfo">1080 × 1350 px</div>
+    </header>
+
+    <section class="controls">
+      <div class="card">
+        <div class="card-title">1. Kuva ja koko</div>
+        <div class="upload-box">
+          <input type="file" id="imageInput" accept="image/*" />
+          <strong>Valitse kuva puhelimesta tai koneelta</strong>
+          <span id="fileNameLabel">Ei kuvaa valittu (taustapohja käytössä)</span>
+        </div>
+
+        <label class="field-label">Instagram-muoto</label>
+        <div class="row-3" id="formatButtons">
+          <button type="button" class="btn active" data-w="1080" data-h="1350" data-label="Syöte 4:5">4:5 Syöte</button>
+          <button type="button" class="btn" data-w="1080" data-h="1080" data-label="Neliö 1:1">1:1 Neliö</button>
+          <button type="button" class="btn" data-w="1080" data-h="1920" data-label="Story / Reels">Story 9:16</button>
+        </div>
+
+        <label class="field-label">Valmis tyylipohja</label>
+        <div class="row-3" id="presetButtons">
+          <button type="button" class="btn active" data-preset="kampanja">Kampanja</button>
+          <button type="button" class="btn" data-preset="uutuus">Uutuus</button>
+          <button type="button" class="btn" data-preset="tyylikas">Tyylikäs</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2. Mainostekstit</div>
+        <label class="field-label" for="badgeText">Tunniste / Yläteksti</label>
+        <input type="text" id="badgeText" value="VIIKONLOPPUTARJOUS" />
+
+        <label class="field-label" for="headlineText">Pääotsikko</label>
+        <textarea id="headlineText">Nyt -30% kaikista tuotteista</textarea>
+
+        <label class="field-label" for="subText">Lisätieto / Alaotsikko</label>
+        <input type="text" id="subText" value="Tarjous voimassa sunnuntaihin asti verkkokaupassa." />
+
+        <label class="field-label" for="ctaText">Toimintakehote (CTA-nappi)</label>
+        <input type="text" id="ctaText" value="Osta nyt" />
+
+        <div class="row-2">
+          <div>
+            <label class="field-label" for="textAlign">Tasaus</label>
+            <select id="textAlign">
+              <option value="left">Vasemmalle</option>
+              <option value="center">Keskitetty</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="textPos">Sijainti</label>
+            <select id="textPos">
+              <option value="bottom">Alhaalla</option>
+              <option value="top">Ylhäällä</option>
+              <option value="center">Keskellä</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">3. Värit, kuva ja apuviivat</div>
+        <div class="row-2">
+          <div>
+            <label class="field-label" for="accentColor">Korostusväri</label>
+            <input type="color" id="accentColor" value="#ff3b7f" />
+          </div>
+          <div>
+            <label class="field-label" for="textColor">Tekstiväri</label>
+            <input type="color" id="textColor" value="#ffffff" />
+          </div>
+        </div>
+
+        <label class="field-label" for="zoomRange">Kuvan zoomaus (<span id="zoomVal">100%</span>)</label>
+        <input type="range" id="zoomRange" min="100" max="260" value="100" />
+
+        <label class="field-label" for="overlayRange">Kuvan tummennus (<span id="overlayVal">45%</span>)</label>
+        <input type="range" id="overlayRange" min="0" max="85" value="45" />
+
+        <div style="margin-top:6px;">
+          <button type="button" class="btn" id="resetPhotoBtn">Keskitä kuva</button>
+        </div>
+
+        <div style="margin-top:8px;">
+          <div class="toggle-line">
+            <span>Näytä IG-turvamarginaalit</span>
+            <input type="checkbox" id="safeZoneToggle" checked />
+          </div>
+          <div class="toggle-line">
+            <span>Näytä sommitteluruudukko</span>
+            <input type="checkbox" id="gridToggle" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">4. Lataa valmis mainos</div>
+        <div class="row-2" style="margin-bottom:8px;">
+          <button type="button" class="btn btn-primary" id="downloadPngBtn">Lataa PNG</button>
+          <button type="button" class="btn" id="downloadJpgBtn">Lataa JPG</button>
+        </div>
+        <div class="export-msg" id="exportMsg"></div>
+      </div>
+    </section>
+
+    <section class="preview-panel">
+      <div class="stage-wrap">
+        <canvas id="adCanvas" width="1080" height="1350"></canvas>
+      </div>
+      <div class="hint">
+        Vedä kuvaa sormella tai hiirellä siirtääksesi sitä. Apuviivat eivät tallennu ladattuun kuvaan.
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("adCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const state = {
+      width: 1080,
+      height: 1350,
+      formatLabel: "Syöte 4:5",
+      preset: "kampanja",
+      badge: "VIIKONLOPPUTARJOUS",
+      headline: "Nyt -30% kaikista tuotteista",
+      subtext: "Tarjous voimassa sunnuntaihin asti verkkokaupassa.",
+      cta: "Osta nyt",
+      align: "left",
+      pos: "bottom",
+      accentColor: "#ff3b7f",
+      textColor: "#ffffff",
+      zoom: 1,
+      overlay: 0.45,
+      panX: 0,
+      panY: 0,
+      showSafe: true,
+      showGrid: false,
+      img: null
+    };
+
+    let isDragging = false;
+    let lastPointer = { x: 0, y: 0 };
+
+    function setFormat(w, h, label) {
+      state.width = w;
+      state.height = h;
+      state.formatLabel = label;
+      canvas.width = w;
+      canvas.height = h;
+      document.getElementById("sizeInfo").textContent = `${w} × ${h} px (${label})`;
+      render();
+    }
+
+    function applyPreset(name) {
+      state.preset = name;
+      if (name === "kampanja") {
+        state.accentColor = "#ff3b7f";
+        state.textColor = "#ffffff";
+        state.overlay = 0.48;
+        state.pos = "bottom";
+        state.align = "left";
+      } else if (name === "uutuus") {
+        state.accentColor = "#ffb703";
+        state.textColor = "#ffffff";
+        state.overlay = 0.42;
+        state.pos = "top";
+        state.align = "left";
+      } else if (name === "tyylikas") {
+        state.accentColor = "#e5e7eb";
+        state.textColor = "#ffffff";
+        state.overlay = 0.52;
+        state.pos = "center";
+        state.align = "center";
+      }
+      syncInputsFromState();
+      render();
+    }
+
+    function syncInputsFromState() {
+      document.getElementById("badgeText").value = state.badge;
+      document.getElementById("headlineText").value = state.headline;
+      document.getElementById("subText").value = state.subtext;
+      document.getElementById("ctaText").value = state.cta;
+      document.getElementById("textAlign").value = state.align;
+      document.getElementById("textPos").value = state.pos;
+      document.getElementById("accentColor").value = state.accentColor;
+      document.getElementById("textColor").value = state.textColor;
+      document.getElementById("zoomRange").value = Math.round(state.zoom * 100);
+      document.getElementById("zoomVal").textContent = `${Math.round(state.zoom * 100)}%`;
+      document.getElementById("overlayRange").value = Math.round(state.overlay * 100);
+      document.getElementById("overlayVal").textContent = `${Math.round(state.overlay * 100)}%`;
+      document.getElementById("safeZoneToggle").checked = state.showSafe;
+      document.getElementById("gridToggle").checked = state.showGrid;
+    }
+
+    function wrapLines(text, maxWidth, font) {
+      if (!text || !text.trim()) return [];
+      ctx.save();
+      ctx.font = font;
+      const paragraphs = text.split("\n");
+      const lines = [];
+      for (const para of paragraphs) {
+        const words = para.split(/\s+/).filter(Boolean);
+        if (!words.length) {
+          lines.push("");
+          continue;
+        }
+        let line = words[0];
+        for (let i = 1; i < words.length; i++) {
+          const test = line + " " + words[i];
+          if (ctx.measureText(test).width <= maxWidth) {
+            line = test;
+          } else {
+            lines.push(line);
+            line = words[i];
+          }
+        }
+        lines.push(line);
+      }
+      ctx.restore();
+      return lines;
+    }
+
+    function roundRect(x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function render(forExport = false) {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      // Tausta
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, "#1d2233");
+      bgGrad.addColorStop(1, "#0d0f17");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Kuva
+      if (state.img) {
+        const imgRatio = state.img.width / state.img.height;
+        const canvasRatio = W / H;
+        let baseW, baseH;
+        if (imgRatio > canvasRatio) {
+          baseH = H;
+          baseW = H * imgRatio;
+        } else {
+          baseW = W;
+          baseH = W / imgRatio;
+        }
+        const drawW = baseW * state.zoom;
+        const drawH = baseH * state.zoom;
+        const x = (W - drawW) / 2 + state.panX;
+        const y = (H - drawH) / 2 + state.panY;
+        ctx.drawImage(state.img, x, y, drawW, drawH);
+      } else {
+        // Dekoratiivinen muoto oletustaustalle
+        ctx.save();
+        ctx.fillStyle = state.accentColor;
+        ctx.globalAlpha = 0.16;
+        ctx.beginPath();
+        ctx.arc(W * 0.8, H * 0.28, W * 0.42, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Tummennus / liukuväri luettavuuden parantamiseksi
+      if (state.overlay > 0) {
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, `rgba(0,0,0,${state.overlay * 0.65})`);
+        grad.addColorStop(0.5, `rgba(0,0,0,${state.overlay * 0.85})`);
+        grad.addColorStop(1, `rgba(0,0,0,${Math.min(0.95, state.overlay * 1.15)})`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // Tekstielementtien laskenta
+      const padX = 84;
+      const contentW = W - padX * 2;
+
+      const badgeFont = "800 30px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      const headFont = "900 76px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      const subFont = "500 38px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+      const ctaFont = "800 34px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+      const headLines = wrapLines(state.headline, contentW, headFont);
+      const subLines = wrapLines(state.subtext, contentW, subFont);
+
+      const hasBadge = Boolean(state.badge && state.badge.trim());
+      const hasCta = Boolean(state.cta && state.cta.trim());
+
+      const badgeH = hasBadge ? 54 : 0;
+      const badgeGap = hasBadge ? 24 : 0;
+      const headLineH = 88;
+      const headH = headLines.length * headLineH;
+      const subGap = subLines.length ? 22 : 0;
+      const subLineH = 48;
+      const subH = subLines.length * subLineH;
+      const ctaGap = hasCta ? 34 : 0;
+      const ctaH = hasCta ? 76 : 0;
+
+      const totalBlockH = badgeH + badgeGap + headH + subGap + subH + ctaGap + ctaH;
+
+      let topMargin = H - 140 - totalBlockH;
+      if (state.pos === "top") {
+        topMargin = H > 1500 ? 220 : 120;
+      } else if (state.pos === "center") {
+        topMargin = (H - totalBlockH) / 2;
+      }
+      topMargin = Math.max(90, Math.min(H - totalBlockH - 90, topMargin));
+
+      let cursorY = topMargin;
+
+      // Badge / Tunniste
+      if (hasBadge) {
+        ctx.save();
+        ctx.font = badgeFont;
+        const badgeText = state.badge.trim().toUpperCase();
+        const textW = ctx.measureText(badgeText).width;
+        const boxW = textW + 44;
+        let boxX = padX;
+        if (state.align === "center") boxX = (W - boxW) / 2;
+
+        ctx.fillStyle = state.accentColor;
+        roundRect(boxX, cursorY, boxW, badgeH, 14);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(badgeText, boxX + boxW / 2, cursorY + badgeH / 2 + 1);
+        ctx.restore();
+
+        cursorY += badgeH + badgeGap;
+      }
+
+      // Pääotsikko
+      if (headLines.length) {
+        ctx.save();
+        ctx.font = headFont;
+        ctx.fillStyle = state.textColor;
+        ctx.textAlign = state.align;
+        ctx.textBaseline = "top";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetY = 4;
+
+        const textX = state.align === "center" ? W / 2 : padX;
+        headLines.forEach((line, idx) => {
+          ctx.fillText(line, textX, cursorY + idx * headLineH);
+        });
+        ctx.restore();
+        cursorY += headH;
+      }
+
+      // Alaotsikko
+      if (subLines.length) {
+        cursorY += subGap;
+        ctx.save();
+        ctx.font = subFont;
+        ctx.fillStyle = state.textColor;
+        ctx.globalAlpha = 0.92;
+        ctx.textAlign = state.align;
+        ctx.textBaseline = "top";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 2;
+
+        const textX = state.align === "center" ? W / 2 : padX;
+        subLines.forEach((line, idx) => {
+          ctx.fillText(line, textX, cursorY + idx * subLineH);
+        });
+        ctx.restore();
+        cursorY += subH;
+      }
+
+      // CTA-painike
+      if (hasCta) {
+        cursorY += ctaGap;
+        ctx.save();
+        ctx.font = ctaFont;
+        const ctaLabel = state.cta.trim();
+        const btnW = Math.max(240, ctx.measureText(ctaLabel).width + 76);
+        let btnX = padX;
+        if (state.align === "center") btnX = (W - btnW) / 2;
+
+        ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 6;
+        ctx.fillStyle = state.accentColor;
+        roundRect(btnX, cursorY, btnW, ctaH, 20);
+        ctx.fill();
+
+        ctx.shadowColor = "transparent";
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(ctaLabel, btnX + btnW / 2, cursorY + ctaH / 2 + 1);
+        ctx.restore();
+      }
+
+      // Apuviivat (vain esikatselussa)
+      if (!forExport && state.showGrid) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,255,255,0.28)";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 8]);
+        for (let i = 1; i <= 2; i++) {
+          const gx = (W / 3) * i;
+          const gy = (H / 3) * i;
+          ctx.beginPath();
+          ctx.moveTo(gx, 0);
+          ctx.lineTo(gx, H);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(0, gy);
+          ctx.lineTo(W, gy);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      if (!forExport && state.showSafe) {
+        ctx.save();
+        const topSafe = H > 1500 ? 180 : 72;
+        const botSafe = H > 1500 ? 250 : 72;
+        const sideSafe = 64;
+
+        ctx.fillStyle = "rgba(255, 59, 127, 0.14)";
+        ctx.fillRect(0, 0, W, topSafe);
+        ctx.fillRect(0, H - botSafe, W, botSafe);
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([12, 8]);
+        ctx.strokeRect(sideSafe, topSafe, W - sideSafe * 2, H - topSafe - botSafe);
+        ctx.restore();
+      }
+    }
+
+    // Kuvan lataus puhelimesta / koneelta
+    document.getElementById("imageInput").addEventListener("change", (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      document.getElementById("fileNameLabel").textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          state.img = img;
+          state.panX = 0;
+          state.panY = 0;
+          state.zoom = 1;
+          document.getElementById("zoomRange").value = 100;
+          document.getElementById("zoomVal").textContent = "100%";
+          render();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Kuvan raahaus sormella tai hiirellä
+    function getCanvasCoords(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: ((clientX - rect.left) / rect.width) * canvas.width,
+        y: ((clientY - rect.top) / rect.height) * canvas.height
+      };
+    }
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if (!state.img) return;
+      isDragging = true;
+      canvas.setPointerCapture(e.pointerId);
+      lastPointer = getCanvasCoords(e.clientX, e.clientY);
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!isDragging || !state.img) return;
+      const pt = getCanvasCoords(e.clientX, e.clientY);
+      state.panX += pt.x - lastPointer.x;
+      state.panY += pt.y - lastPointer.y;
+      lastPointer = pt;
+      render();
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      isDragging = false;
+    });
+
+    // Muoto- ja tyylipohjapainikkeet
+    document.querySelectorAll("#formatButtons .btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#formatButtons .btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        setFormat(Number(btn.dataset.w), Number(btn.dataset.h), btn.dataset.label);
+      });
+    });
+
+    document.querySelectorAll("#presetButtons .btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#presetButtons .btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyPreset(btn.dataset.preset);
+      });
+    });
+
+    // Tekstit ja asetukset
+    document.getElementById("badgeText").addEventListener("input", (e) => {
+      state.badge = e.target.value;
+      render();
+    });
+    document.getElementById("headlineText").addEventListener("input", (e) => {
+      state.headline = e.target.value;
+      render();
+    });
+    document.getElementById("subText").addEventListener("input", (e) => {
+      state.subtext = e.target.value;
+      render();
+    });
+    document.getElementById("ctaText").addEventListener("input", (e) => {
+      state.cta = e.target.value;
+      render();
+    });
+    document.getElementById("textAlign").addEventListener("change", (e) => {
+      state.align = e.target.value;
+      render();
+    });
+    document.getElementById("textPos").addEventListener("change", (e) => {
+      state.pos = e.target.value;
+      render();
+    });
+    document.getElementById("accentColor").addEventListener("input", (e) => {
+      state.accentColor = e.target.value;
+      render();
+    });
+    document.getElementById("textColor").addEventListener("input", (e) => {
+      state.textColor = e.target.value;
+      render();
+    });
+    document.getElementById("zoomRange").addEventListener("input", (e) => {
+      state.zoom = Number(e.target.value) / 100;
+      document.getElementById("zoomVal").textContent = `${e.target.value}%`;
+      render();
+    });
+    document.getElementById("overlayRange").addEventListener("input", (e) => {
+      state.overlay = Number(e.target.value) / 100;
+      document.getElementById("overlayVal").textContent = `${e.target.value}%`;
+      render();
+    });
+    document.getElementById("resetPhotoBtn").addEventListener("click", () => {
+      state.panX = 0;
+      state.panY = 0;
+      state.zoom = 1;
+      document.getElementById("zoomRange").value = 100;
+      document.getElementById("zoomVal").textContent = "100%";
+      render();
+    });
+    document.getElementById("safeZoneToggle").addEventListener("change", (e) => {
+      state.showSafe = e.target.checked;
+      render();
+    });
+    document.getElementById("gridToggle").addEventListener("change", (e) => {
+      state.showGrid = e.target.checked;
+      render();
+    });
+
+    // Tallennus PNG tai JPG
+    function exportAd(type) {
+      render(true);
+      const mime = type === "jpg" ? "image/jpeg" : "image/png";
+      const ext = type === "jpg" ? "jpg" : "png";
+      const quality = type === "jpg" ? 0.92 : undefined;
+
+      canvas.toBlob((blob) => {
+        render(false);
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `ig-mainos-${state.width}x${state.height}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        document.getElementById("exportMsg").textContent = `Tallennettu: ig-mainos-${state.width}x${state.height}.${ext}`;
+      }, mime, quality);
+    }
+
+    document.getElementById("downloadPngBtn").addEventListener("click", () => exportAd("png"));
+    document.getElementById("downloadJpgBtn").addEventListener("click", () => exportAd("jpg"));
+
+    syncInputsFromState();
+    render();
+  </script>
+</body>
+</html>
