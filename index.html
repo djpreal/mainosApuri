@@ -1088,4 +1088,171 @@
 
     document.querySelectorAll(".format-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        set
+        setFormat(
+          Number(btn.dataset.w),
+          Number(btn.dataset.h),
+          btn.dataset.ratio,
+          btn.dataset.label
+        );
+      });
+    });
+
+    document.querySelectorAll("#presetButtons .btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#presetButtons .btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        applyPreset(btn.dataset.preset);
+      });
+    });
+
+    document.getElementById("badgeText").addEventListener("input", (e) => {
+      state.badge = e.target.value;
+      render();
+    });
+    document.getElementById("headlineText").addEventListener("input", (e) => {
+      state.headline = e.target.value;
+      render();
+    });
+    document.getElementById("subText").addEventListener("input", (e) => {
+      state.subtext = e.target.value;
+      render();
+    });
+    document.getElementById("ctaText").addEventListener("input", (e) => {
+      state.cta = e.target.value;
+      render();
+    });
+    document.getElementById("textAlign").addEventListener("change", (e) => {
+      state.align = e.target.value;
+      render();
+    });
+    document.getElementById("textPos").addEventListener("change", (e) => {
+      state.pos = e.target.value;
+      render();
+    });
+    document.getElementById("accentColor").addEventListener("input", (e) => {
+      state.accentColor = e.target.value;
+      render();
+    });
+    document.getElementById("textColor").addEventListener("input", (e) => {
+      state.textColor = e.target.value;
+      render();
+    });
+    document.getElementById("zoomRange").addEventListener("input", (e) => {
+      state.zoom = Number(e.target.value) / 100;
+      document.getElementById("zoomVal").textContent = `${e.target.value}%`;
+      render();
+    });
+    document.getElementById("overlayRange").addEventListener("input", (e) => {
+      state.overlay = Number(e.target.value) / 100;
+      document.getElementById("overlayVal").textContent = `${e.target.value}%`;
+      render();
+    });
+    document.getElementById("resetPhotoBtn").addEventListener("click", () => {
+      state.panX = 0;
+      state.panY = 0;
+      state.zoom = 1;
+      document.getElementById("zoomRange").value = 100;
+      document.getElementById("zoomVal").textContent = "100%";
+      render();
+    });
+    document.getElementById("safeZoneToggle").addEventListener("change", (e) => {
+      state.showSafe = e.target.checked;
+      render();
+    });
+    document.getElementById("gridToggle").addEventListener("change", (e) => {
+      state.showGrid = e.target.checked;
+      render();
+    });
+
+    function getExportFilename(ext) {
+      return `ig-mainos-${state.ratio}-${state.width}x${state.height}.${ext}`;
+    }
+
+    function createExportBlob(type = "png", callback) {
+      render(true);
+      const mime = type === "jpg" ? "image/jpeg" : "image/png";
+      const ext = type === "jpg" ? "jpg" : "png";
+      const quality = type === "jpg" ? 0.92 : undefined;
+      try {
+        canvas.toBlob((blob) => {
+          render(false);
+          callback(blob, ext, mime);
+        }, mime, quality);
+      } catch (err) {
+        render(false);
+        callback(null, ext, mime);
+      }
+    }
+
+    function downloadAd(type) {
+      createExportBlob(type, (blob, ext) => {
+        if (!blob) {
+          openLongPressPreview(ext);
+          return;
+        }
+        const filename = getExportFilename(ext);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        document.getElementById("exportMsg").textContent = `Ladattu: ${filename} (${state.formatLabel})`;
+      });
+    }
+
+    async function shareToPhotos() {
+      createExportBlob("png", async (blob, ext, mime) => {
+        if (!blob) {
+          openLongPressPreview(ext);
+          return;
+        }
+        const filename = getExportFilename(ext);
+        const file = new File([blob], filename, { type: mime });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: `IG Mainos (${state.formatLabel})`
+            });
+            document.getElementById("exportMsg").textContent = `Jakovalikko avattu (${state.formatLabel}) – valitse 'Tallenna kuva'.`;
+            return;
+          } catch (err) {
+            if (err && err.name === "AbortError") {
+              document.getElementById("exportMsg").textContent = "Tallennus peruutettiin.";
+              return;
+            }
+          }
+        }
+        openLongPressPreview(ext);
+        document.getElementById("exportMsg").textContent = `Tallennuskuva avattu koossa ${state.width}×${state.height} px – paina kuvaa pitkään tallentaaksesi.`;
+      });
+    }
+
+    function openLongPressPreview(ext = "png") {
+      render(true);
+      const mime = ext === "jpg" ? "image/jpeg" : "image/png";
+      const dataUrl = canvas.toDataURL(mime, ext === "jpg" ? 0.92 : undefined);
+      render(false);
+      const imgEl = document.getElementById("exportedImg");
+      const sheet = document.getElementById("saveSheet");
+      const info = document.getElementById("saveSheetInfo");
+      info.innerHTML = `<strong>Tallennus (${state.formatLabel}, ${state.width} × ${state.height} px):</strong> Paina kuvaa pitkään ja valitse <em>Tallenna kuva</em>.`;
+      imgEl.src = dataUrl;
+      sheet.classList.add("open");
+      sheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    document.getElementById("shareSaveBtn").addEventListener("click", shareToPhotos);
+    document.getElementById("downloadPngBtn").addEventListener("click", () => downloadAd("png"));
+    document.getElementById("downloadJpgBtn").addEventListener("click", () => downloadAd("jpg"));
+    document.getElementById("openPreviewSaveBtn").addEventListener("click", () => openLongPressPreview("png"));
+
+    syncInputsFromState();
+    render();
+  </script>
+</body>
+</html>
