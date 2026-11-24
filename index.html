@@ -5,55 +5,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IG Mainosstudio</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
-      padding: 12px;
+      padding: 14px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #10131a;
-      color: #f4f6fb;
+      background: #0f131a;
+      color: #f3f6fc;
     }
-    .wrap {
-      max-width: 520px;
+    .container {
+      max-width: 980px;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
-    .box {
-      background: #191e29;
-      border: 1px solid #2c3548;
+    @media (min-width: 860px) {
+      .container {
+        grid-template-columns: 390px 1fr;
+        align-items: start;
+      }
+    }
+    .card {
+      background: #181e29;
+      border: 1px solid #2d3748;
       border-radius: 12px;
-      padding: 12px;
+      padding: 14px;
       margin-bottom: 12px;
+    }
+    .card:last-child {
+      margin-bottom: 0;
     }
     h1 {
       margin: 0 0 4px;
       font-size: 1.2rem;
     }
-    .muted {
-      color: #a3aec2;
-      font-size: 0.85rem;
+    .sub {
       margin: 0;
+      color: #9fb0c7;
+      font-size: 0.85rem;
     }
     label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
       margin: 10px 0 4px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #dce6f5;
     }
-    input[type="text"], textarea, select {
+    label:first-child {
+      margin-top: 0;
+    }
+    input[type="text"],
+    textarea,
+    select {
       width: 100%;
-      box-sizing: border-box;
       padding: 10px;
       border-radius: 8px;
-      border: 1px solid #39445c;
-      background: #10141d;
-      color: #fff;
-      font-size: 1rem;
+      border: 1px solid #3c485e;
+      background: #10151e;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-family: inherit;
     }
     textarea {
       min-height: 64px;
+      resize: vertical;
     }
-    input[type="range"], input[type="color"] {
+    input[type="color"],
+    input[type="range"] {
       width: 100%;
       margin: 6px 0;
+    }
+    input[type="color"] {
+      height: 40px;
+      padding: 2px;
+      border-radius: 8px;
+      border: 1px solid #3c485e;
+      background: #10151e;
     }
     .grid-3 {
       display: grid;
@@ -65,31 +95,40 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 6px;
     }
-    button {
+    .btn {
       width: 100%;
-      min-height: 44px;
-      padding: 10px 8px;
+      min-height: 42px;
+      padding: 9px 8px;
       border-radius: 8px;
-      border: 1px solid #3d4861;
-      background: #242c3d;
-      color: #fff;
-      font-size: 0.85rem;
+      border: 1px solid #3f4b63;
+      background: #232c3d;
+      color: #ffffff;
+      font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
     }
-    button.active {
+    .btn.active {
       background: #e11d48;
       border-color: #fb7185;
     }
-    button.main {
-      background: #16a34a;
+    .btn.save-main {
+      background: #15803d;
       border-color: #4ade80;
     }
-    .canvas-box {
-      background: #090b10;
+    .preview-box {
+      background: #181e29;
+      border: 1px solid #2d3748;
       border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .canvas-wrap {
+      max-width: 420px;
+      margin: 0 auto;
+      background: #090c10;
+      border-radius: 10px;
       overflow: hidden;
-      border: 1px solid #2c3548;
+      border: 1px solid #2d3748;
     }
     canvas {
       display: block;
@@ -97,17 +136,22 @@
       height: auto;
       touch-action: none;
     }
-    #msg {
+    #statusText {
       margin-top: 8px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: #86efac;
       min-height: 20px;
     }
-    #saveArea {
+    #previewSaveBox {
       display: none;
-      margin-top: 10px;
+      max-width: 420px;
+      margin: 12px auto 0;
+      background: #10151e;
+      border: 1px solid #3c485e;
+      border-radius: 10px;
+      padding: 10px;
     }
-    #saveArea img {
+    #previewSaveBox img {
       width: 100%;
       border-radius: 8px;
       margin-top: 6px;
@@ -115,380 +159,417 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="box">
-      <h1>IG Mainosstudio</h1>
-      <p class="muted" id="sizeText">Koko: 4:5 Syöte (1080 × 1350 px)</p>
-    </div>
-
-    <div class="box canvas-box">
-      <canvas id="c" width="1080" height="1350"></canvas>
-    </div>
-
-    <div class="box">
-      <label for="imgFile">1. Valitse kuva</label>
-      <input type="file" id="imgFile" accept="image/*" />
-
-      <label>2. IG-kuvakoko</label>
-      <div class="grid-3">
-        <button type="button" id="f45" class="active" onclick="setSize(1080,1350,'4x5','4:5 Syöte')">4:5 Syöte</button>
-        <button type="button" id="f11" onclick="setSize(1080,1080,'1x1','1:1 Neliö')">1:1 Neliö</button>
-        <button type="button" id="f916" onclick="setSize(1080,1920,'9x16','9:16 Story')">9:16 Story</button>
+  <div class="container">
+    <div>
+      <div class="card">
+        <h1>IG Mainosstudio</h1>
+        <p class="sub" id="topSizeLabel">Koko: 4:5 Syöte (1080 × 1350 px)</p>
       </div>
 
-      <label>3. Valmiit teemapohjat (12 kpl)</label>
-      <div class="grid-3">
-        <button type="button" id="p_kampanja" class="active" onclick="setTheme('kampanja')">Kampanja</button>
-        <button type="button" id="p_uutuus" onclick="setTheme('uutuus')">Uutuus</button>
-        <button type="button" id="p_tyyli" onclick="setTheme('tyyli')">Tyylikäs</button>
+      <div class="card">
+        <label for="photoInput">1. Kuva</label>
+        <input type="file" id="photoInput" accept="image/*" />
 
-        <button type="button" id="p_joulu1" onclick="setTheme('joulu1')">Joulu Ale</button>
-        <button type="button" id="p_joulu2" onclick="setTheme('joulu2')">Joulu Kuusi</button>
-        <button type="button" id="p_joulu3" onclick="setTheme('joulu3')">Joulu Kulta</button>
-
-        <button type="button" id="p_kesa1" onclick="setTheme('kesa1')">Kesäale</button>
-        <button type="button" id="p_kesa2" onclick="setTheme('kesa2')">Kesä Meri</button>
-        <button type="button" id="p_kesa3" onclick="setTheme('kesa3')">Kesäilta</button>
-
-        <button type="button" id="p_talvi1" onclick="setTheme('talvi1')">Talvi Ale</button>
-        <button type="button" id="p_talvi2" onclick="setTheme('talvi2')">Jäinen</button>
-        <button type="button" id="p_talvi3" onclick="setTheme('talvi3')">Pakkanen</button>
-      </div>
-    </div>
-
-    <div class="box">
-      <label for="badge">Yläteksti / Tunniste</label>
-      <input type="text" id="badge" value="TARJOUS" oninput="draw()" />
-
-      <label for="title">Pääotsikko</label>
-      <textarea id="title" oninput="draw()">Nyt -30% kaikesta</textarea>
-
-      <label for="sub">Alaotsikko</label>
-      <input type="text" id="sub" value="Voimassa verkkokaupassa." oninput="draw()" />
-
-      <label for="cta">Nappiteksti</label>
-      <input type="text" id="cta" value="Osta nyt" oninput="draw()" />
-
-      <div class="grid-2">
-        <div>
-          <label for="pos">Sijainti</label>
-          <select id="pos" onchange="draw()">
-            <option value="bottom" selected>Alhaalla</option>
-            <option value="top">Ylhäällä</option>
-            <option value="center">Keskellä</option>
-          </select>
+        <label>2. IG-kuvakoko</label>
+        <div class="grid-3">
+          <button type="button" class="btn size-btn active" data-w="1080" data-h="1350" data-code="4x5" data-label="4:5 Syöte">4:5 Syöte</button>
+          <button type="button" class="btn size-btn" data-w="1080" data-h="1080" data-code="1x1" data-label="1:1 Neliö">1:1 Neliö</button>
+          <button type="button" class="btn size-btn" data-w="1080" data-h="1920" data-code="9x16" data-label="9:16 Story">9:16 Story</button>
         </div>
-        <div>
-          <label for="align">Tasaus</label>
-          <select id="align" onchange="draw()">
-            <option value="left" selected>Vasemmalle</option>
-            <option value="center">Keskitetty</option>
-          </select>
+
+        <label>3. Teemapohjat (12 kpl)</label>
+        <div class="grid-3">
+          <button type="button" class="btn theme-btn active" data-theme="kampanja">Kampanja</button>
+          <button type="button" class="btn theme-btn" data-theme="uutuus">Uutuus</button>
+          <button type="button" class="btn theme-btn" data-theme="tyyli">Tyylikäs</button>
+
+          <button type="button" class="btn theme-btn" data-theme="joulu1">Joulu Ale</button>
+          <button type="button" class="btn theme-btn" data-theme="joulu2">Joulu Kuusi</button>
+          <button type="button" class="btn theme-btn" data-theme="joulu3">Joulu Kulta</button>
+
+          <button type="button" class="btn theme-btn" data-theme="kesa1">Kesäale</button>
+          <button type="button" class="btn theme-btn" data-theme="kesa2">Kesä Meri</button>
+          <button type="button" class="btn theme-btn" data-theme="kesa3">Kesäilta</button>
+
+          <button type="button" class="btn theme-btn" data-theme="talvi1">Talvi Ale</button>
+          <button type="button" class="btn theme-btn" data-theme="talvi2">Jäinen</button>
+          <button type="button" class="btn theme-btn" data-theme="talvi3">Pakkanen</button>
         </div>
       </div>
 
-      <div class="grid-2">
-        <div>
-          <label for="accent">Väri</label>
-          <input type="color" id="accent" value="#e11d48" oninput="draw()" />
+      <div class="card">
+        <label for="badgeInput">Yläteksti</label>
+        <input type="text" id="badgeInput" value="TARJOUS" />
+
+        <label for="titleInput">Pääotsikko</label>
+        <textarea id="titleInput">Nyt -30% kaikesta</textarea>
+
+        <label for="subInput">Alaotsikko</label>
+        <input type="text" id="subInput" value="Voimassa verkkokaupassa." />
+
+        <label for="ctaInput">Nappiteksti</label>
+        <input type="text" id="ctaInput" value="Osta nyt" />
+
+        <div class="grid-2">
+          <div>
+            <label for="posSelect">Sijainti</label>
+            <select id="posSelect">
+              <option value="bottom" selected>Alhaalla</option>
+              <option value="top">Ylhäällä</option>
+              <option value="center">Keskellä</option>
+            </select>
+          </div>
+          <div>
+            <label for="alignSelect">Tasaus</label>
+            <select id="alignSelect">
+              <option value="left" selected>Vasemmalle</option>
+              <option value="center">Keskitetty</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label for="dark">Tummennus</label>
-          <input type="range" id="dark" min="0" max="85" value="45" oninput="draw()" />
+
+        <div class="grid-2">
+          <div>
+            <label for="accentInput">Väri</label>
+            <input type="color" id="accentInput" value="#e11d48" />
+          </div>
+          <div>
+            <label for="darkInput">Tummennus</label>
+            <input type="range" id="darkInput" min="0" max="85" value="45" />
+          </div>
         </div>
+
+        <label for="zoomInput">Kuvan zoomaus</label>
+        <input type="range" id="zoomInput" min="100" max="250" value="100" />
+        <button type="button" class="btn" id="centerPhotoBtn">Keskitä kuva</button>
       </div>
 
-      <label for="zoom">Kuvan zoomaus</label>
-      <input type="range" id="zoom" min="100" max="250" value="100" oninput="draw()" />
-      <button type="button" onclick="resetImg()">Keskitä kuva</button>
+      <div class="card">
+        <p class="sub" id="exportSizeText">Tallennettava koko: 4:5 Syöte (1080 × 1350 px)</p>
+        <div style="margin-top:8px;">
+          <button type="button" class="btn save-main" id="makePreviewBtn">Tee tallennuskuva (pitkä painallus)</button>
+        </div>
+        <div class="grid-2" style="margin-top:6px;">
+          <button type="button" class="btn" id="dlPngBtn">Lataa PNG</button>
+          <button type="button" class="btn" id="dlJpgBtn">Lataa JPG</button>
+        </div>
+        <div id="statusText"></div>
+      </div>
     </div>
 
-    <div class="box">
-      <p class="muted" id="saveInfo">Tallennettava koko: 4:5 Syöte (1080 × 1350 px)</p>
-      <div style="margin-top:8px;">
-        <button type="button" class="main" onclick="makeSaveImage('png')">Tee tallennuskuva (PNG - paina pitkään)</button>
+    <div class="preview-box">
+      <div class="canvas-wrap">
+        <canvas id="adCanvas" width="1080" height="1350"></canvas>
       </div>
-      <div class="grid-2" style="margin-top:6px;">
-        <button type="button" onclick="downloadFile('png')">Lataa PNG</button>
-        <button type="button" onclick="downloadFile('jpg')">Lataa JPG</button>
-      </div>
-      <div id="msg"></div>
-      <div id="saveArea">
-        <p class="muted">Paina kuvaa alla pitkään ja valitse <strong>Tallenna kuva</strong>:</p>
-        <img id="outImg" alt="Valmis mainos" />
+      <p class="sub" style="margin-top:8px;">Vedä kuvaa sormella tai hiirellä siirtääksesi sitä.</p>
+
+      <div id="previewSaveBox">
+        <p class="sub" id="previewSaveCaption">Paina kuvaa alla pitkään ja valitse <strong>Tallenna kuva</strong>.</p>
+        <img id="previewSaveImg" alt="Valmis mainos" />
       </div>
     </div>
   </div>
 
   <script>
-    const c = document.getElementById("c");
-    const ctx = c.getContext("2d");
+    window.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById("adCanvas");
+      const ctx = canvas.getContext("2d");
 
-    let W = 1080;
-    let H = 1350;
-    let ratioCode = "4x5";
-    let sizeLabel = "4:5 Syöte";
-    let bg1 = "#2a1220";
-    let bg2 = "#0d1017";
-    let photo = null;
-    let panX = 0;
-    let panY = 0;
-    let dragging = false;
-    let lastX = 0;
-    let lastY = 0;
+      const THEMES = {
+        kampanja: { accent: "#e11d48", bg1: "#2a1220", bg2: "#0d1017", badge: "TARJOUS", title: "Nyt -30% kaikesta", sub: "Voimassa verkkokaupassa.", cta: "Osta nyt", pos: "bottom", align: "left" },
+        uutuus:   { accent: "#eab308", bg1: "#2b220d", bg2: "#0d1017", badge: "UUTUUS", title: "Uusi mallisto nyt täällä", sub: "Tutustu tuoreisiin tuotteisiin.", cta: "Katso uutuudet", pos: "top", align: "left" },
+        tyyli:    { accent: "#cbd5e1", bg1: "#1e2430", bg2: "#0b0d12", badge: "VALIKOITU", title: "Ajatonta tyyliä", sub: "Rajattu erä suosikkeja.", cta: "Tutustu", pos: "center", align: "center" },
 
-    const THEMES = {
-      kampanja: { accent: "#e11d48", bg1: "#2a1220", bg2: "#0d1017", badge: "TARJOUS", title: "Nyt -30% kaikesta", sub: "Voimassa verkkokaupassa.", cta: "Osta nyt", pos: "bottom", align: "left" },
-      uutuus:   { accent: "#eab308", bg1: "#2b220d", bg2: "#0d1017", badge: "UUTUUS", title: "Uusi mallisto nyt täällä", sub: "Tutustu tuoreisiin tuotteisiin.", cta: "Katso uutuudet", pos: "top", align: "left" },
-      tyyli:    { accent: "#cbd5e1", bg1: "#1e2430", bg2: "#0b0d12", badge: "VALIKOITU", title: "Ajatonta tyyliä", sub: "Rajattu erä suosikkeja.", cta: "Tutustu", pos: "center", align: "center" },
+        joulu1:   { accent: "#dc2626", bg1: "#330c12", bg2: "#10080a", badge: "JOULU & ALE", title: "Joulun parhaat lahjat -25%", sub: "Tilaa ajoissa pukinkonttiin.", cta: "Katso lahjat", pos: "bottom", align: "left" },
+        joulu2:   { accent: "#16a34a", bg1: "#0d2b1a", bg2: "#08120c", badge: "HYVÄÄ JOULUA", title: "Lämmin jouluhetki", sub: "Joulun suosikit ja lahjat.", cta: "Jouluvalikoima", pos: "bottom", align: "center" },
+        joulu3:   { accent: "#d97706", bg1: "#2e1e09", bg2: "#110c06", badge: "JOULUN LOISTOA", title: "Kultaiset joulutarjoukset", sub: "Rajoitettu jouluerä nyt.", cta: "Varaa nyt", pos: "center", align: "center" },
 
-      joulu1:   { accent: "#dc2626", bg1: "#330c12", bg2: "#10080a", badge: "JOULU & ALE", title: "Joulun parhaat lahjat -25%", sub: "Tilaa ajoissa pukinkonttiin.", cta: "Katso lahjat", pos: "bottom", align: "left" },
-      joulu2:   { accent: "#16a34a", bg1: "#0d2b1a", bg2: "#08120c", badge: "HYVÄÄ JOULUA", title: "Lämmin jouluhetki", sub: "Joulun suosikit ja lahjat.", cta: "Jouluvalikoima", pos: "bottom", align: "center" },
-      joulu3:   { accent: "#d97706", bg1: "#2e1e09", bg2: "#110c06", badge: "JOULUN LOISTOA", title: "Kultaiset joulutarjoukset", sub: "Rajoitettu jouluerä nyt.", cta: "Varaa nyt", pos: "center", align: "center" },
+        kesa1:    { accent: "#ea580c", bg1: "#2e150a", bg2: "#0c121c", badge: "KESÄALE", title: "Kesän kuumimmat edut", sub: "Jopa -40% kesätuotteista.", cta: "Nappaa etu", pos: "bottom", align: "left" },
+        kesa2:    { accent: "#0284c7", bg1: "#092536", bg2: "#08111c", badge: "KESÄ & MERI", title: "Kesäpäiviin ja lomalle", sub: "Raikkaat uutuudet kesään.", cta: "Tutustu", pos: "top", align: "left" },
+        kesa3:    { accent: "#f59e0b", bg1: "#2e1712", bg2: "#110c14", badge: "KESÄILTA", title: "Kesäiltojen parhaat hetket", sub: "Nauti pitkistä illoista.", cta: "Lue lisää", pos: "bottom", align: "center" },
 
-      kesa1:    { accent: "#ea580c", bg1: "#2e150a", bg2: "#0c121c", badge: "KESÄALE", title: "Kesän kuumimmat edut", sub: "Jopa -40% kesätuotteista.", cta: "Nappaa etu", pos: "bottom", align: "left" },
-      kesa2:    { accent: "#0284c7", bg1: "#092536", bg2: "#08111c", badge: "KESÄ & MERI", title: "Kesäpäiviin ja lomalle", sub: "Raikkaat uutuudet kesään.", cta: "Tutustu", pos: "top", align: "left" },
-      kesa3:    { accent: "#f59e0b", bg1: "#2e1712", bg2: "#110c14", badge: "KESÄILTA", title: "Kesäiltojen parhaat hetket", sub: "Nauti pitkistä illoista.", cta: "Lue lisää", pos: "bottom", align: "center" },
-
-      talvi1:   { accent: "#0ea5e9", bg1: "#0b2236", bg2: "#090d16", badge: "TALVIKAMPANJA", title: "Varustaudu talveen", sub: "Laadukkaat talvituotteet.", cta: "Katso lisää", pos: "bottom", align: "left" },
-      talvi2:   { accent: "#4f46e5", bg1: "#161838", bg2: "#090b14", badge: "TALVIETU", title: "Talven parhaat tarjoukset", sub: "Säästä valituista tuotteista.", cta: "Hyödynnä", pos: "top", align: "center" },
-      talvi3:   { accent: "#94a3b8", bg1: "#1b212c", bg2: "#0c0f14", badge: "PAKKANEN", title: "Lämpöä talvipäiviin", sub: "Pehmeät suosikit arkeen.", cta: "Tutustu", pos: "center", align: "center" }
-    };
-
-    function setSize(w, h, code, label) {
-      W = w;
-      H = h;
-      ratioCode = code;
-      sizeLabel = label;
-      c.width = W;
-      c.height = H;
-
-      document.getElementById("f45").classList.toggle("active", code === "4x5");
-      document.getElementById("f11").classList.toggle("active", code === "1x1");
-      document.getElementById("f916").classList.toggle("active", code === "9x16");
-
-      document.getElementById("sizeText").textContent = `Koko: ${label} (${W} × ${H} px)`;
-      document.getElementById("saveInfo").textContent = `Tallennettava koko: ${label} (${W} × ${H} px)`;
-      draw();
-    }
-
-    function setTheme(key) {
-      const t = THEMES[key];
-      if (!t) return;
-      bg1 = t.bg1;
-      bg2 = t.bg2;
-      document.getElementById("accent").value = t.accent;
-      document.getElementById("badge").value = t.badge;
-      document.getElementById("title").value = t.title;
-      document.getElementById("sub").value = t.sub;
-      document.getElementById("cta").value = t.cta;
-      document.getElementById("pos").value = t.pos;
-      document.getElementById("align").value = t.align;
-
-      Object.keys(THEMES).forEach((k) => {
-        const el = document.getElementById("p_" + k);
-        if (el) el.classList.toggle("active", k === key);
-      });
-      draw();
-    }
-
-    function resetImg() {
-      panX = 0;
-      panY = 0;
-      document.getElementById("zoom").value = 100;
-      draw();
-    }
-
-    document.getElementById("imgFile").addEventListener("change", function (e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (ev) {
-        const img = new Image();
-        img.onload = function () {
-          photo = img;
-          resetImg();
-        };
-        img.src = ev.target.result;
+        talvi1:   { accent: "#0ea5e9", bg1: "#0b2236", bg2: "#090d16", badge: "TALVIKAMPANJA", title: "Varustaudu talveen", sub: "Laadukkaat talvituotteet.", cta: "Katso lisää", pos: "bottom", align: "left" },
+        talvi2:   { accent: "#4f46e5", bg1: "#161838", bg2: "#090b14", badge: "TALVIETU", title: "Talven parhaat tarjoukset", sub: "Säästä valituista tuotteista.", cta: "Hyödynnä", pos: "top", align: "center" },
+        talvi3:   { accent: "#94a3b8", bg1: "#1b212c", bg2: "#0c0f14", badge: "PAKKANEN", title: "Lämpöä talvipäiviin", sub: "Pehmeät suosikit arkeen.", cta: "Tutustu", pos: "center", align: "center" }
       };
-      reader.readAsDataURL(file);
-    });
 
-    function getPt(e) {
-      const r = c.getBoundingClientRect();
-      const touch = e.touches && e.touches[0];
-      const cx = touch ? touch.clientX : e.clientX;
-      const cy = touch ? touch.clientY : e.clientY;
-      return {
-        x: ((cx - r.left) / r.width) * W,
-        y: ((cy - r.top) / r.height) * H
-      };
-    }
+      let W = 1080;
+      let H = 1350;
+      let ratioCode = "4x5";
+      let sizeLabel = "4:5 Syöte";
+      let currentTheme = "kampanja";
+      let bg1 = THEMES.kampanja.bg1;
+      let bg2 = THEMES.kampanja.bg2;
+      let photo = null;
+      let panX = 0;
+      let panY = 0;
+      let dragging = false;
+      let lastX = 0;
+      let lastY = 0;
 
-    function startDrag(e) {
-      if (!photo) return;
-      dragging = true;
-      const p = getPt(e);
-      lastX = p.x;
-      lastY = p.y;
-    }
-
-    function moveDrag(e) {
-      if (!dragging || !photo) return;
-      if (e.cancelable) e.preventDefault();
-      const p = getPt(e);
-      panX += p.x - lastX;
-      panY += p.y - lastY;
-      lastX = p.x;
-      lastY = p.y;
-      draw();
-    }
-
-    function endDrag() {
-      dragging = false;
-    }
-
-    c.addEventListener("mousedown", startDrag);
-    window.addEventListener("mousemove", moveDrag);
-    window.addEventListener("mouseup", endDrag);
-
-    c.addEventListener("touchstart", startDrag, { passive: true });
-    c.addEventListener("touchmove", moveDrag, { passive: false });
-    window.addEventListener("touchend", endDrag);
-
-    function wrapText(text, maxW, font) {
-      if (!text.trim()) return [];
-      ctx.font = font;
-      const words = text.trim().split(/\s+/);
-      const lines = [];
-      let line = words[0];
-      for (let i = 1; i < words.length; i++) {
-        const test = line + " " + words[i];
-        if (ctx.measureText(test).width <= maxW) {
-          line = test;
-        } else {
-          lines.push(line);
-          line = words[i];
-        }
-      }
-      lines.push(line);
-      return lines;
-    }
-
-    function draw() {
-      const accent = document.getElementById("accent").value;
-      const dark = Number(document.getElementById("dark").value) / 100;
-      const zoom = Number(document.getElementById("zoom").value) / 100;
-      const pos = document.getElementById("pos").value;
-      const align = document.getElementById("align").value;
-
-      const badge = document.getElementById("badge").value;
-      const title = document.getElementById("title").value;
-      const sub = document.getElementById("sub").value;
-      const cta = document.getElementById("cta").value;
-
-      const grad = ctx.createLinearGradient(0, 0, W, H);
-      grad.addColorStop(0, bg1);
-      grad.addColorStop(1, bg2);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-
-      if (photo) {
-        const ir = photo.width / photo.height;
-        const cr = W / H;
-        let bw = W, bh = H;
-        if (ir > cr) {
-          bw = H * ir;
-        } else {
-          bh = W / ir;
-        }
-        const dw = bw * zoom;
-        const dh = bh * zoom;
-        ctx.drawImage(photo, (W - dw) / 2 + panX, (H - dh) / 2 + panY, dw, dh);
+      function setStatus(msg) {
+        document.getElementById("statusText").textContent = msg;
       }
 
-      if (dark > 0) {
-        ctx.fillStyle = `rgba(0,0,0,${dark})`;
+      function wrapText(text, maxW, font) {
+        if (!text || !text.trim()) return [];
+        ctx.font = font;
+        const words = text.trim().split(/\s+/);
+        const lines = [];
+        let line = words[0];
+        for (let i = 1; i < words.length; i++) {
+          const test = line + " " + words[i];
+          if (ctx.measureText(test).width <= maxW) {
+            line = test;
+          } else {
+            lines.push(line);
+            line = words[i];
+          }
+        }
+        lines.push(line);
+        return lines;
+      }
+
+      function draw() {
+        const accent = document.getElementById("accentInput").value;
+        const dark = Number(document.getElementById("darkInput").value) / 100;
+        const zoom = Number(document.getElementById("zoomInput").value) / 100;
+        const pos = document.getElementById("posSelect").value;
+        const align = document.getElementById("alignSelect").value;
+
+        const badge = document.getElementById("badgeInput").value;
+        const title = document.getElementById("titleInput").value;
+        const sub = document.getElementById("subInput").value;
+        const cta = document.getElementById("ctaInput").value;
+
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, bg1);
+        grad.addColorStop(1, bg2);
+        ctx.fillStyle = grad;
         ctx.fillRect(0, 0, W, H);
-      }
 
-      const pad = 80;
-      const maxW = W - pad * 2;
-      const titleFont = "900 74px sans-serif";
-      const subFont = "500 38px sans-serif";
-      const tLines = wrapText(title, maxW, titleFont);
-      const sLines = wrapText(sub, maxW, subFont);
+        if (photo) {
+          const ir = photo.width / photo.height;
+          const cr = W / H;
+          let bw = W;
+          let bh = H;
+          if (ir > cr) {
+            bw = H * ir;
+          } else {
+            bh = W / ir;
+          }
+          const dw = bw * zoom;
+          const dh = bh * zoom;
+          ctx.drawImage(photo, (W - dw) / 2 + panX, (H - dh) / 2 + panY, dw, dh);
+        }
 
-      let y = H - 520;
-      if (pos === "top") y = 130;
-      if (pos === "center") y = H * 0.36;
+        if (dark > 0) {
+          ctx.fillStyle = "rgba(0,0,0," + dark + ")";
+          ctx.fillRect(0, 0, W, H);
+        }
 
-      ctx.textAlign = align;
-      const tx = align === "center" ? W / 2 : pad;
+        const pad = 80;
+        const maxW = W - pad * 2;
+        const titleFont = "900 74px sans-serif";
+        const subFont = "500 38px sans-serif";
+        const tLines = wrapText(title, maxW, titleFont);
+        const sLines = wrapText(sub, maxW, subFont);
 
-      if (badge.trim()) {
-        ctx.font = "800 30px sans-serif";
-        const bw = ctx.measureText(badge.toUpperCase()).width + 40;
-        const bx = align === "center" ? (W - bw) / 2 : pad;
-        ctx.fillStyle = accent;
-        ctx.fillRect(bx, y, bw, 52);
-        ctx.fillStyle = "#fff";
-        ctx.textAlign = "center";
-        ctx.fillText(badge.toUpperCase(), bx + bw / 2, y + 36);
+        let y = H - 520;
+        if (pos === "top") y = 130;
+        if (pos === "center") y = H * 0.36;
+
         ctx.textAlign = align;
-        y += 76;
+        const tx = align === "center" ? W / 2 : pad;
+
+        if (badge.trim()) {
+          ctx.font = "800 30px sans-serif";
+          const bw = ctx.measureText(badge.toUpperCase()).width + 40;
+          const bx = align === "center" ? (W - bw) / 2 : pad;
+          ctx.fillStyle = accent;
+          ctx.fillRect(bx, y, bw, 52);
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "center";
+          ctx.fillText(badge.toUpperCase(), bx + bw / 2, y + 36);
+          ctx.textAlign = align;
+          y += 76;
+        }
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = titleFont;
+        for (const l of tLines) {
+          ctx.fillText(l, tx, y + 66);
+          y += 86;
+        }
+
+        ctx.font = subFont;
+        for (const l of sLines) {
+          ctx.fillText(l, tx, y + 36);
+          y += 48;
+        }
+
+        if (cta.trim()) {
+          y += 24;
+          ctx.font = "800 34px sans-serif";
+          const cw = Math.max(240, ctx.measureText(cta).width + 70);
+          const cx = align === "center" ? (W - cw) / 2 : pad;
+          ctx.fillStyle = accent;
+          ctx.fillRect(cx, y, cw, 72);
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "center";
+          ctx.fillText(cta, cx + cw / 2, y + 48);
+        }
       }
 
-      ctx.fillStyle = "#fff";
-      ctx.font = titleFont;
-      for (const l of tLines) {
-        ctx.fillText(l, tx, y + 66);
-        y += 86;
+      document.querySelectorAll(".size-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          W = Number(btn.dataset.w);
+          H = Number(btn.dataset.h);
+          ratioCode = btn.dataset.code;
+          sizeLabel = btn.dataset.label;
+          canvas.width = W;
+          canvas.height = H;
+
+          document.querySelectorAll(".size-btn").forEach(function (b) {
+            b.classList.toggle("active", b === btn);
+          });
+          document.getElementById("topSizeLabel").textContent = "Koko: " + sizeLabel + " (" + W + " × " + H + " px)";
+          document.getElementById("exportSizeText").textContent = "Tallennettava koko: " + sizeLabel + " (" + W + " × " + H + " px)";
+          draw();
+        });
+      });
+
+      document.querySelectorAll(".theme-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          const key = btn.dataset.theme;
+          const t = THEMES[key];
+          if (!t) return;
+          currentTheme = key;
+          bg1 = t.bg1;
+          bg2 = t.bg2;
+          document.getElementById("accentInput").value = t.accent;
+          document.getElementById("badgeInput").value = t.badge;
+          document.getElementById("titleInput").value = t.title;
+          document.getElementById("subInput").value = t.sub;
+          document.getElementById("ctaInput").value = t.cta;
+          document.getElementById("posSelect").value = t.pos;
+          document.getElementById("alignSelect").value = t.align;
+
+          document.querySelectorAll(".theme-btn").forEach(function (b) {
+            b.classList.toggle("active", b.dataset.theme === currentTheme);
+          });
+          draw();
+        });
+      });
+
+      ["badgeInput", "titleInput", "subInput", "ctaInput", "posSelect", "alignSelect", "accentInput", "darkInput", "zoomInput"].forEach(function (id) {
+        const el = document.getElementById(id);
+        el.addEventListener("input", draw);
+        el.addEventListener("change", draw);
+      });
+
+      document.getElementById("centerPhotoBtn").addEventListener("click", function () {
+        panX = 0;
+        panY = 0;
+        document.getElementById("zoomInput").value = 100;
+        draw();
+      });
+
+      document.getElementById("photoInput").addEventListener("change", function (e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const img = new Image();
+          img.onload = function () {
+            photo = img;
+            panX = 0;
+            panY = 0;
+            document.getElementById("zoomInput").value = 100;
+            draw();
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function getCanvasPoint(e) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches && e.touches[0];
+        const cx = touch ? touch.clientX : e.clientX;
+        const cy = touch ? touch.clientY : e.clientY;
+        return {
+          x: ((cx - rect.left) / rect.width) * W,
+          y: ((cy - rect.top) / rect.height) * H
+        };
       }
 
-      ctx.font = subFont;
-      for (const l of sLines) {
-        ctx.fillText(l, tx, y + 36);
-        y += 48;
+      function startMove(e) {
+        if (!photo) return;
+        dragging = true;
+        const pt = getCanvasPoint(e);
+        lastX = pt.x;
+        lastY = pt.y;
       }
 
-      if (cta.trim()) {
-        y += 24;
-        ctx.font = "800 34px sans-serif";
-        const cw = Math.max(240, ctx.measureText(cta).width + 70);
-        const cx = align === "center" ? (W - cw) / 2 : pad;
-        ctx.fillStyle = accent;
-        ctx.fillRect(cx, y, cw, 72);
-        ctx.fillStyle = "#fff";
-        ctx.textAlign = "center";
-        ctx.fillText(cta, cx + cw / 2, y + 48);
+      function doMove(e) {
+        if (!dragging || !photo) return;
+        if (e.cancelable) e.preventDefault();
+        const pt = getCanvasPoint(e);
+        panX += pt.x - lastX;
+        panY += pt.y - lastY;
+        lastX = pt.x;
+        lastY = pt.y;
+        draw();
       }
-    }
 
-    function makeSaveImage(ext) {
-      const mime = ext === "jpg" ? "image/jpeg" : "image/png";
-      const url = c.toDataURL(mime, 0.92);
-      const area = document.getElementById("saveArea");
-      const out = document.getElementById("outImg");
-      out.src = url;
-      area.style.display = "block";
-      document.getElementById("msg").textContent = `Valmis ${sizeLabel} (${W}×${H} px) – paina kuvaa pitkään tallentaaksesi.`;
-      area.scrollIntoView({ behavior: "smooth" });
-    }
+      function stopMove() {
+        dragging = false;
+      }
 
-    function downloadFile(ext) {
-      const mime = ext === "jpg" ? "image/jpeg" : "image/png";
-      const url = c.toDataURL(mime, 0.92);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `ig-${ratioCode}-${W}x${H}.${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      document.getElementById("msg").textContent = `Ladattu: ig-${ratioCode}-${W}x${H}.${ext}`;
-    }
+      canvas.addEventListener("mousedown", startMove);
+      window.addEventListener("mousemove", doMove);
+      window.addEventListener("mouseup", stopMove);
 
-    draw();
+      canvas.addEventListener("touchstart", startMove, { passive: true });
+      canvas.addEventListener("touchmove", doMove, { passive: false });
+      window.addEventListener("touchend", stopMove);
+
+      document.getElementById("makePreviewBtn").addEventListener("click", function () {
+        const url = canvas.toDataURL("image/png");
+        const box = document.getElementById("previewSaveBox");
+        const img = document.getElementById("previewSaveImg");
+        const cap = document.getElementById("previewSaveCaption");
+        img.src = url;
+        cap.innerHTML = "<strong>" + sizeLabel + " (" + W + " × " + H + " px):</strong> Paina kuvaa alla pitkään ja valitse <em>Tallenna kuva</em>.";
+        box.style.display = "block";
+        setStatus("Tallennuskuva luotu koossa " + sizeLabel + " (" + W + "×" + H + " px).");
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+
+      function saveFile(ext) {
+        const mime = ext === "jpg" ? "image/jpeg" : "image/png";
+        const url = canvas.toDataURL(mime, 0.92);
+        const filename = "ig-" + ratioCode + "-" + W + "x" + H + "." + ext;
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setStatus("Ladattu: " + filename + " (" + sizeLabel + ")");
+      }
+
+      document.getElementById("dlPngBtn").addEventListener("click", function () {
+        saveFile("png");
+      });
+
+      document.getElementById("dlJpgBtn").addEventListener("click", function () {
+        saveFile("jpg");
+      });
+
+      draw();
+    });
   </script>
 </body>
 </html>
