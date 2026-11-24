@@ -40,7 +40,7 @@
 
     @media (min-width: 900px) {
       .app {
-        grid-template-columns: 420px 1fr;
+        grid-template-columns: 440px 1fr;
         align-items: start;
         padding: 20px;
       }
@@ -151,21 +151,35 @@
       gap: 8px;
     }
 
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin-top: 6px;
+    }
+
+    @media (min-width: 520px) {
+      .preset-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
       width: 100%;
-      padding: 11px 12px;
+      padding: 10px 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--panel-2);
       color: var(--text);
-      font-size: 0.88rem;
+      font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
+      min-height: 42px;
     }
 
     .btn:active {
@@ -174,16 +188,24 @@
 
     .btn.active {
       border-color: var(--accent);
-      background: rgba(255, 59, 127, 0.18);
+      background: rgba(255, 59, 127, 0.2);
       color: #fff;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.45);
     }
 
     .btn-primary {
       border: none;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       color: #fff;
-      font-size: 0.95rem;
-      padding: 13px 14px;
+      font-size: 0.92rem;
+      padding: 12px 14px;
     }
 
     .upload-box {
@@ -217,6 +239,7 @@
       font-size: 0.78rem;
       color: var(--muted);
       margin-top: 2px;
+      word-break: break-all;
     }
 
     .toggle-line {
@@ -284,6 +307,34 @@
       min-height: 18px;
       text-align: center;
     }
+
+    .save-sheet {
+      margin-top: 12px;
+      width: 100%;
+      max-width: 440px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: none;
+    }
+
+    .save-sheet.open {
+      display: block;
+    }
+
+    .save-sheet p {
+      margin: 0 0 8px;
+      font-size: 0.82rem;
+      color: #e5e9f5;
+    }
+
+    .save-sheet img {
+      display: block;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -291,9 +342,9 @@
     <header class="top">
       <div>
         <h1>IG Mainosstudio</h1>
-        <p>Valitse kuva puhelimesta, lisää näyttävät tekstit ja tallenna valmis mainos</p>
+        <p>Valitse kuva puhelimesta, kokeile teemapohjia ja tallenna valmis mainos</p>
       </div>
-      <div style="font-size:0.8rem; color:var(--muted);" id="sizeInfo">1080 × 1350 px</div>
+      <div style="font-size:0.8rem; color:var(--muted);" id="sizeInfo">1080 × 1350 px (Syöte 4:5)</div>
     </header>
 
     <section class="controls">
@@ -312,11 +363,23 @@
           <button type="button" class="btn" data-w="1080" data-h="1920" data-label="Story / Reels">Story 9:16</button>
         </div>
 
-        <label class="field-label">Valmis tyylipohja</label>
-        <div class="row-3" id="presetButtons">
-          <button type="button" class="btn active" data-preset="kampanja">Kampanja</button>
-          <button type="button" class="btn" data-preset="uutuus">Uutuus</button>
-          <button type="button" class="btn" data-preset="tyylikas">Tyylikäs</button>
+        <label class="field-label">Valmiit väri- ja teemapohjat (12 kpl)</label>
+        <div class="preset-grid" id="presetButtons">
+          <button type="button" class="btn active" data-preset="kampanja"><span class="swatch" style="background:#ff3b7f"></span>Kampanja</button>
+          <button type="button" class="btn" data-preset="uutuus"><span class="swatch" style="background:#ffb703"></span>Uutuus</button>
+          <button type="button" class="btn" data-preset="tyylikas"><span class="swatch" style="background:#e5e7eb"></span>Tyylikäs</button>
+
+          <button type="button" class="btn" data-preset="joulu_ale"><span class="swatch" style="background:#d92638"></span>Joulu &amp; Ale</button>
+          <button type="button" class="btn" data-preset="joulu_taika"><span class="swatch" style="background:#1b7a43"></span>Joulun Taika</button>
+          <button type="button" class="btn" data-preset="joulu_kulta"><span class="swatch" style="background:#d49b27"></span>Pipari &amp; Kulta</button>
+
+          <button type="button" class="btn" data-preset="kesa_ale"><span class="swatch" style="background:#ff6b2b"></span>Kesäale</button>
+          <button type="button" class="btn" data-preset="kesa_tropiikki"><span class="swatch" style="background:#00b4d8"></span>Kesä &amp; Meri</button>
+          <button type="button" class="btn" data-preset="kesa_ilta"><span class="swatch" style="background:#f77f00"></span>Kesäilta</button>
+
+          <button type="button" class="btn" data-preset="talvi_kampanja"><span class="swatch" style="background:#38bdf8"></span>Talvikampanja</button>
+          <button type="button" class="btn" data-preset="talvi_jainen"><span class="swatch" style="background:#6366f1"></span>Jäinen Sininen</button>
+          <button type="button" class="btn" data-preset="talvi_hygge"><span class="swatch" style="background:#94a3b8"></span>Pakkanen &amp; Hygge</button>
         </div>
       </div>
 
@@ -369,8 +432,8 @@
         <label class="field-label" for="zoomRange">Kuvan zoomaus (<span id="zoomVal">100%</span>)</label>
         <input type="range" id="zoomRange" min="100" max="260" value="100" />
 
-        <label class="field-label" for="overlayRange">Kuvan tummennus (<span id="overlayVal">45%</span>)</label>
-        <input type="range" id="overlayRange" min="0" max="85" value="45" />
+        <label class="field-label" for="overlayRange">Kuvan tummennus (<span id="overlayVal">48%</span>)</label>
+        <input type="range" id="overlayRange" min="0" max="85" value="48" />
 
         <div style="margin-top:6px;">
           <button type="button" class="btn" id="resetPhotoBtn">Keskitä kuva</button>
@@ -389,11 +452,17 @@
       </div>
 
       <div class="card">
-        <div class="card-title">4. Lataa valmis mainos</div>
+        <div class="card-title">4. Tallenna puhelimeen tai koneelle</div>
+        <button type="button" class="btn btn-primary" id="shareSaveBtn" style="margin-bottom:8px;">
+          Jaa / Tallenna suoraan Kuvat-kansioon
+        </button>
         <div class="row-2" style="margin-bottom:8px;">
-          <button type="button" class="btn btn-primary" id="downloadPngBtn">Lataa PNG</button>
+          <button type="button" class="btn" id="downloadPngBtn">Lataa PNG</button>
           <button type="button" class="btn" id="downloadJpgBtn">Lataa JPG</button>
         </div>
+        <button type="button" class="btn" id="openPreviewSaveBtn">
+          Avaa tallennuskuva (pitkä painallus)
+        </button>
         <div class="export-msg" id="exportMsg"></div>
       </div>
     </section>
@@ -405,6 +474,11 @@
       <div class="hint">
         Vedä kuvaa sormella tai hiirellä siirtääksesi sitä. Apuviivat eivät tallennu ladattuun kuvaan.
       </div>
+
+      <div class="save-sheet" id="saveSheet">
+        <p><strong>Tallennus puhelimen Kuvat-kansioon:</strong> Paina kuvaa pitkään (noin 1 sekunti) ja valitse <em>Tallenna kuva / Lisää Kuvat-sovellukseen</em>.</p>
+        <img id="exportedImg" alt="Valmis mainos" />
+      </div>
     </section>
   </div>
 
@@ -412,21 +486,182 @@
     const canvas = document.getElementById("adCanvas");
     const ctx = canvas.getContext("2d");
 
+    const PRESETS = {
+      kampanja: {
+        accentColor: "#ff3b7f",
+        textColor: "#ffffff",
+        overlay: 0.48,
+        pos: "bottom",
+        align: "left",
+        badge: "VIIKONLOPPUTARJOUS",
+        headline: "Nyt -30% kaikista tuotteista",
+        subtext: "Tarjous voimassa sunnuntaihin asti verkkokaupassa.",
+        cta: "Osta nyt",
+        bg1: "#241326",
+        bg2: "#0d0f17"
+      },
+      uutuus: {
+        accentColor: "#ffb703",
+        textColor: "#ffffff",
+        overlay: 0.42,
+        pos: "top",
+        align: "left",
+        badge: "UUTUUS",
+        headline: "Uusi mallisto on nyt täällä",
+        subtext: "Tutustu tuoreimpiin tuotteisiin ensimmäisten joukossa.",
+        cta: "Katso uutuudet",
+        bg1: "#2b2110",
+        bg2: "#0e1017"
+      },
+      tyylikas: {
+        accentColor: "#e5e7eb",
+        textColor: "#ffffff",
+        overlay: 0.52,
+        pos: "center",
+        align: "center",
+        badge: "VALIKOITU ERÄ",
+        headline: "Ajatonta tyyliä jokaiseen päivään",
+        subtext: "Huolella valitut suosikit rajatun ajan.",
+        cta: "Tutustu",
+        bg1: "#1b1e29",
+        bg2: "#0b0c10"
+      },
+      joulu_ale: {
+        accentColor: "#d92638",
+        textColor: "#fff8f5",
+        overlay: 0.48,
+        pos: "bottom",
+        align: "left",
+        badge: "JOULUKALENTERI & ALE",
+        headline: "Joulun parhaat lahjaideat nyt -25%",
+        subtext: "Tilaa ajoissa jouluksi – nopea toimitus perille.",
+        cta: "Shoppaile lahjat",
+        bg1: "#330d14",
+        bg2: "#10080b"
+      },
+      joulu_taika: {
+        accentColor: "#1b7a43",
+        textColor: "#ffffff",
+        overlay: 0.46,
+        pos: "bottom",
+        align: "center",
+        badge: "HYVÄÄ JOULUA",
+        headline: "Lämmin jouluhetki alkaa tästä",
+        subtext: "Joulun erikoistuotteet ja lahjakortit saatavilla nyt.",
+        cta: "Katso jouluvalikoima",
+        bg1: "#0e2b1b",
+        bg2: "#08120d"
+      },
+      joulu_kulta: {
+        accentColor: "#d49b27",
+        textColor: "#fffdf7",
+        overlay: 0.5,
+        pos: "center",
+        align: "center",
+        badge: "JOULUN LOISTOA",
+        headline: "Kultaiset hetket ja joulun herkut",
+        subtext: "Rajoitettu jouluerä – varmista omasi ennen joulua.",
+        cta: "Varaa nyt",
+        bg1: "#2e200b",
+        bg2: "#110d07"
+      },
+      kesa_ale: {
+        accentColor: "#ff6b2b",
+        textColor: "#ffffff",
+        overlay: 0.4,
+        pos: "bottom",
+        align: "left",
+        badge: "KESÄALE",
+        headline: "Kesän kuumimmat tarjoukset jopa -40%",
+        subtext: "Aurinkoiset edut voimassa koko kesän ajan.",
+        cta: "Nappaa kesäetu",
+        bg1: "#2e160c",
+        bg2: "#0d111a"
+      },
+      kesa_tropiikki: {
+        accentColor: "#00b4d8",
+        textColor: "#ffffff",
+        overlay: 0.38,
+        pos: "top",
+        align: "left",
+        badge: "KESÄ & LOMA",
+        headline: "Valmiina kesäpäiviin ja matkoille",
+        subtext: "Raikkaat uutuudet kesän parhaisiin hetkiin.",
+        cta: "Tutustu kesään",
+        bg1: "#092736",
+        bg2: "#09111c"
+      },
+      kesa_ilta: {
+        accentColor: "#f77f00",
+        textColor: "#fffaf0",
+        overlay: 0.44,
+        pos: "bottom",
+        align: "center",
+        badge: "KESÄILTA",
+        headline: "Kesäiltojen parhaat elämykset",
+        subtext: "Nauti pitkistä illoista ja kesän suosikeista.",
+        cta: "Lue lisää",
+        bg1: "#2e1714",
+        bg2: "#110c14"
+      },
+      talvi_kampanja: {
+        accentColor: "#38bdf8",
+        textColor: "#ffffff",
+        overlay: 0.46,
+        pos: "bottom",
+        align: "left",
+        badge: "TALVIKAMPANJA",
+        headline: "Varustaudu talveen ja pakkasiin",
+        subtext: "Laadukkaat talvituotteet suoraan varastosta.",
+        cta: "Katso talvivalikoima",
+        bg1: "#0c2236",
+        bg2: "#090d16"
+      },
+      talvi_jainen: {
+        accentColor: "#6366f1",
+        textColor: "#ffffff",
+        overlay: 0.48,
+        pos: "top",
+        align: "center",
+        badge: "TALVIETU",
+        headline: "Raikkaat talvitarjoukset nyt voimassa",
+        subtext: "Säästä valituista tuotteista rajoitetun ajan.",
+        cta: "Hyödynnä etu",
+        bg1: "#171938",
+        bg2: "#090b14"
+      },
+      talvi_hygge: {
+        accentColor: "#94a3b8",
+        textColor: "#f8fafc",
+        overlay: 0.5,
+        pos: "center",
+        align: "center",
+        badge: "PAKKANEN & HYGGE",
+        headline: "Lämpöä ja rauhaa talvipäiviin",
+        subtext: "Pehmeitä suosikkeja kotiin ja vapaa-aikaan.",
+        cta: "Tutustu",
+        bg1: "#1c222e",
+        bg2: "#0c0f14"
+      }
+    };
+
     const state = {
       width: 1080,
       height: 1350,
       formatLabel: "Syöte 4:5",
       preset: "kampanja",
-      badge: "VIIKONLOPPUTARJOUS",
-      headline: "Nyt -30% kaikista tuotteista",
-      subtext: "Tarjous voimassa sunnuntaihin asti verkkokaupassa.",
-      cta: "Osta nyt",
-      align: "left",
-      pos: "bottom",
-      accentColor: "#ff3b7f",
-      textColor: "#ffffff",
+      badge: PRESETS.kampanja.badge,
+      headline: PRESETS.kampanja.headline,
+      subtext: PRESETS.kampanja.subtext,
+      cta: PRESETS.kampanja.cta,
+      align: PRESETS.kampanja.align,
+      pos: PRESETS.kampanja.pos,
+      accentColor: PRESETS.kampanja.accentColor,
+      textColor: PRESETS.kampanja.textColor,
+      bg1: PRESETS.kampanja.bg1,
+      bg2: PRESETS.kampanja.bg2,
       zoom: 1,
-      overlay: 0.45,
+      overlay: PRESETS.kampanja.overlay,
       panX: 0,
       panY: 0,
       showSafe: true,
@@ -448,26 +683,20 @@
     }
 
     function applyPreset(name) {
+      const p = PRESETS[name];
+      if (!p) return;
       state.preset = name;
-      if (name === "kampanja") {
-        state.accentColor = "#ff3b7f";
-        state.textColor = "#ffffff";
-        state.overlay = 0.48;
-        state.pos = "bottom";
-        state.align = "left";
-      } else if (name === "uutuus") {
-        state.accentColor = "#ffb703";
-        state.textColor = "#ffffff";
-        state.overlay = 0.42;
-        state.pos = "top";
-        state.align = "left";
-      } else if (name === "tyylikas") {
-        state.accentColor = "#e5e7eb";
-        state.textColor = "#ffffff";
-        state.overlay = 0.52;
-        state.pos = "center";
-        state.align = "center";
-      }
+      state.accentColor = p.accentColor;
+      state.textColor = p.textColor;
+      state.overlay = p.overlay;
+      state.pos = p.pos;
+      state.align = p.align;
+      state.badge = p.badge;
+      state.headline = p.headline;
+      state.subtext = p.subtext;
+      state.cta = p.cta;
+      state.bg1 = p.bg1;
+      state.bg2 = p.bg2;
       syncInputsFromState();
       render();
     }
@@ -535,8 +764,8 @@
 
       // Tausta
       const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, "#1d2233");
-      bgGrad.addColorStop(1, "#0d0f17");
+      bgGrad.addColorStop(0, state.bg1 || "#1d2233");
+      bgGrad.addColorStop(1, state.bg2 || "#0d0f17");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
 
@@ -558,17 +787,21 @@
         const y = (H - drawH) / 2 + state.panY;
         ctx.drawImage(state.img, x, y, drawW, drawH);
       } else {
-        // Dekoratiivinen muoto oletustaustalle
         ctx.save();
         ctx.fillStyle = state.accentColor;
-        ctx.globalAlpha = 0.16;
+        ctx.globalAlpha = 0.18;
         ctx.beginPath();
-        ctx.arc(W * 0.8, H * 0.28, W * 0.42, 0, Math.PI * 2);
+        ctx.arc(W * 0.82, H * 0.25, W * 0.44, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.1;
+        ctx.beginPath();
+        ctx.arc(W * 0.18, H * 0.78, W * 0.36, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
       }
 
-      // Tummennus / liukuväri luettavuuden parantamiseksi
+      // Tummennus / liukuväri
       if (state.overlay > 0) {
         const grad = ctx.createLinearGradient(0, 0, 0, H);
         grad.addColorStop(0, `rgba(0,0,0,${state.overlay * 0.65})`);
@@ -578,7 +811,7 @@
         ctx.fillRect(0, 0, W, H);
       }
 
-      // Tekstielementtien laskenta
+      // Tekstielementit
       const padX = 84;
       const contentW = W - padX * 2;
 
@@ -595,309 +828,3 @@
 
       const badgeH = hasBadge ? 54 : 0;
       const badgeGap = hasBadge ? 24 : 0;
-      const headLineH = 88;
-      const headH = headLines.length * headLineH;
-      const subGap = subLines.length ? 22 : 0;
-      const subLineH = 48;
-      const subH = subLines.length * subLineH;
-      const ctaGap = hasCta ? 34 : 0;
-      const ctaH = hasCta ? 76 : 0;
-
-      const totalBlockH = badgeH + badgeGap + headH + subGap + subH + ctaGap + ctaH;
-
-      let topMargin = H - 140 - totalBlockH;
-      if (state.pos === "top") {
-        topMargin = H > 1500 ? 220 : 120;
-      } else if (state.pos === "center") {
-        topMargin = (H - totalBlockH) / 2;
-      }
-      topMargin = Math.max(90, Math.min(H - totalBlockH - 90, topMargin));
-
-      let cursorY = topMargin;
-
-      // Badge / Tunniste
-      if (hasBadge) {
-        ctx.save();
-        ctx.font = badgeFont;
-        const badgeText = state.badge.trim().toUpperCase();
-        const textW = ctx.measureText(badgeText).width;
-        const boxW = textW + 44;
-        let boxX = padX;
-        if (state.align === "center") boxX = (W - boxW) / 2;
-
-        ctx.fillStyle = state.accentColor;
-        roundRect(boxX, cursorY, boxW, badgeH, 14);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(badgeText, boxX + boxW / 2, cursorY + badgeH / 2 + 1);
-        ctx.restore();
-
-        cursorY += badgeH + badgeGap;
-      }
-
-      // Pääotsikko
-      if (headLines.length) {
-        ctx.save();
-        ctx.font = headFont;
-        ctx.fillStyle = state.textColor;
-        ctx.textAlign = state.align;
-        ctx.textBaseline = "top";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
-        ctx.shadowBlur = 18;
-        ctx.shadowOffsetY = 4;
-
-        const textX = state.align === "center" ? W / 2 : padX;
-        headLines.forEach((line, idx) => {
-          ctx.fillText(line, textX, cursorY + idx * headLineH);
-        });
-        ctx.restore();
-        cursorY += headH;
-      }
-
-      // Alaotsikko
-      if (subLines.length) {
-        cursorY += subGap;
-        ctx.save();
-        ctx.font = subFont;
-        ctx.fillStyle = state.textColor;
-        ctx.globalAlpha = 0.92;
-        ctx.textAlign = state.align;
-        ctx.textBaseline = "top";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-        ctx.shadowBlur = 12;
-        ctx.shadowOffsetY = 2;
-
-        const textX = state.align === "center" ? W / 2 : padX;
-        subLines.forEach((line, idx) => {
-          ctx.fillText(line, textX, cursorY + idx * subLineH);
-        });
-        ctx.restore();
-        cursorY += subH;
-      }
-
-      // CTA-painike
-      if (hasCta) {
-        cursorY += ctaGap;
-        ctx.save();
-        ctx.font = ctaFont;
-        const ctaLabel = state.cta.trim();
-        const btnW = Math.max(240, ctx.measureText(ctaLabel).width + 76);
-        let btnX = padX;
-        if (state.align === "center") btnX = (W - btnW) / 2;
-
-        ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-        ctx.shadowBlur = 16;
-        ctx.shadowOffsetY = 6;
-        ctx.fillStyle = state.accentColor;
-        roundRect(btnX, cursorY, btnW, ctaH, 20);
-        ctx.fill();
-
-        ctx.shadowColor = "transparent";
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(ctaLabel, btnX + btnW / 2, cursorY + ctaH / 2 + 1);
-        ctx.restore();
-      }
-
-      // Apuviivat (vain esikatselussa)
-      if (!forExport && state.showGrid) {
-        ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.28)";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([8, 8]);
-        for (let i = 1; i <= 2; i++) {
-          const gx = (W / 3) * i;
-          const gy = (H / 3) * i;
-          ctx.beginPath();
-          ctx.moveTo(gx, 0);
-          ctx.lineTo(gx, H);
-          ctx.stroke();
-
-          ctx.beginPath();
-          ctx.moveTo(0, gy);
-          ctx.lineTo(W, gy);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      if (!forExport && state.showSafe) {
-        ctx.save();
-        const topSafe = H > 1500 ? 180 : 72;
-        const botSafe = H > 1500 ? 250 : 72;
-        const sideSafe = 64;
-
-        ctx.fillStyle = "rgba(255, 59, 127, 0.14)";
-        ctx.fillRect(0, 0, W, topSafe);
-        ctx.fillRect(0, H - botSafe, W, botSafe);
-
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
-        ctx.lineWidth = 3;
-        ctx.setLineDash([12, 8]);
-        ctx.strokeRect(sideSafe, topSafe, W - sideSafe * 2, H - topSafe - botSafe);
-        ctx.restore();
-      }
-    }
-
-    // Kuvan lataus puhelimesta / koneelta
-    document.getElementById("imageInput").addEventListener("change", (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      document.getElementById("fileNameLabel").textContent = file.name;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-          state.img = img;
-          state.panX = 0;
-          state.panY = 0;
-          state.zoom = 1;
-          document.getElementById("zoomRange").value = 100;
-          document.getElementById("zoomVal").textContent = "100%";
-          render();
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // Kuvan raahaus sormella tai hiirellä
-    function getCanvasCoords(clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      return {
-        x: ((clientX - rect.left) / rect.width) * canvas.width,
-        y: ((clientY - rect.top) / rect.height) * canvas.height
-      };
-    }
-
-    canvas.addEventListener("pointerdown", (e) => {
-      if (!state.img) return;
-      isDragging = true;
-      canvas.setPointerCapture(e.pointerId);
-      lastPointer = getCanvasCoords(e.clientX, e.clientY);
-    });
-
-    canvas.addEventListener("pointermove", (e) => {
-      if (!isDragging || !state.img) return;
-      const pt = getCanvasCoords(e.clientX, e.clientY);
-      state.panX += pt.x - lastPointer.x;
-      state.panY += pt.y - lastPointer.y;
-      lastPointer = pt;
-      render();
-    });
-
-    canvas.addEventListener("pointerup", () => {
-      isDragging = false;
-    });
-
-    // Muoto- ja tyylipohjapainikkeet
-    document.querySelectorAll("#formatButtons .btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#formatButtons .btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        setFormat(Number(btn.dataset.w), Number(btn.dataset.h), btn.dataset.label);
-      });
-    });
-
-    document.querySelectorAll("#presetButtons .btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#presetButtons .btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        applyPreset(btn.dataset.preset);
-      });
-    });
-
-    // Tekstit ja asetukset
-    document.getElementById("badgeText").addEventListener("input", (e) => {
-      state.badge = e.target.value;
-      render();
-    });
-    document.getElementById("headlineText").addEventListener("input", (e) => {
-      state.headline = e.target.value;
-      render();
-    });
-    document.getElementById("subText").addEventListener("input", (e) => {
-      state.subtext = e.target.value;
-      render();
-    });
-    document.getElementById("ctaText").addEventListener("input", (e) => {
-      state.cta = e.target.value;
-      render();
-    });
-    document.getElementById("textAlign").addEventListener("change", (e) => {
-      state.align = e.target.value;
-      render();
-    });
-    document.getElementById("textPos").addEventListener("change", (e) => {
-      state.pos = e.target.value;
-      render();
-    });
-    document.getElementById("accentColor").addEventListener("input", (e) => {
-      state.accentColor = e.target.value;
-      render();
-    });
-    document.getElementById("textColor").addEventListener("input", (e) => {
-      state.textColor = e.target.value;
-      render();
-    });
-    document.getElementById("zoomRange").addEventListener("input", (e) => {
-      state.zoom = Number(e.target.value) / 100;
-      document.getElementById("zoomVal").textContent = `${e.target.value}%`;
-      render();
-    });
-    document.getElementById("overlayRange").addEventListener("input", (e) => {
-      state.overlay = Number(e.target.value) / 100;
-      document.getElementById("overlayVal").textContent = `${e.target.value}%`;
-      render();
-    });
-    document.getElementById("resetPhotoBtn").addEventListener("click", () => {
-      state.panX = 0;
-      state.panY = 0;
-      state.zoom = 1;
-      document.getElementById("zoomRange").value = 100;
-      document.getElementById("zoomVal").textContent = "100%";
-      render();
-    });
-    document.getElementById("safeZoneToggle").addEventListener("change", (e) => {
-      state.showSafe = e.target.checked;
-      render();
-    });
-    document.getElementById("gridToggle").addEventListener("change", (e) => {
-      state.showGrid = e.target.checked;
-      render();
-    });
-
-    // Tallennus PNG tai JPG
-    function exportAd(type) {
-      render(true);
-      const mime = type === "jpg" ? "image/jpeg" : "image/png";
-      const ext = type === "jpg" ? "jpg" : "png";
-      const quality = type === "jpg" ? 0.92 : undefined;
-
-      canvas.toBlob((blob) => {
-        render(false);
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `ig-mainos-${state.width}x${state.height}.${ext}`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 3000);
-        document.getElementById("exportMsg").textContent = `Tallennettu: ig-mainos-${state.width}x${state.height}.${ext}`;
-      }, mime, quality);
-    }
-
-    document.getElementById("downloadPngBtn").addEventListener("click", () => exportAd("png"));
-    document.getElementById("downloadJpgBtn").addEventListener("click", () => exportAd("jpg"));
-
-    syncInputsFromState();
-    render();
-  </script>
-</body>
-</html>
