@@ -2,740 +2,1198 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IG Mainosstudio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>LIVE VISUALS — FUTURISTIC PIXEL BOARD &amp; MATRIX CODE</title>
   <style>
+    :root {
+      --bg: #040b0a;
+      --panel: rgba(6, 18, 17, 0.92);
+      --panel-border: rgba(0, 255, 159, 0.36);
+      --text: #e6fff6;
+      --muted: rgba(230, 255, 246, 0.66);
+      --accent: #00ff9f;
+      --accent-2: #00d8ff;
+      --accent-3: #b8ff2c;
+      --accent-4: #ff3b8d;
+    }
+
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
-    body {
+
+    html, body {
       margin: 0;
-      padding: 14px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0f131a;
-      color: #f3f6fc;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Courier New", Courier, monospace;
     }
-    .container {
-      max-width: 1020px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    @media (min-width: 880px) {
-      .container {
-        grid-template-columns: 410px 1fr;
-        align-items: start;
-      }
-    }
-    .card {
-      background: #181e29;
-      border: 1px solid #2d3748;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
-    .card:last-child {
-      margin-bottom: 0;
-    }
-    h1 {
-      margin: 0 0 4px;
-      font-size: 1.2rem;
-    }
-    .sub {
-      margin: 0;
-      color: #9fb0c7;
-      font-size: 0.84rem;
-    }
-    label {
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
       display: block;
-      margin: 10px 0 4px;
-      font-size: 0.84rem;
-      font-weight: 600;
-      color: #dce6f5;
+      background: #040b0a;
+      touch-action: none;
+      image-rendering: pixelated;
     }
-    label:first-child {
-      margin-top: 0;
-    }
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #3c485e;
-      background: #10151e;
-      color: #ffffff;
-      font-size: 0.95rem;
-      font-family: inherit;
-    }
-    textarea {
-      min-height: 64px;
-      resize: vertical;
-    }
-    input[type="color"],
-    input[type="range"] {
-      width: 100%;
-      margin: 6px 0;
-    }
-    input[type="color"] {
-      height: 40px;
-      padding: 2px;
-      border-radius: 8px;
-      border: 1px solid #3c485e;
-      background: #10151e;
-    }
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+
+    #hud-toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 30;
+      display: flex;
       gap: 6px;
+      opacity: 0.9;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
+
+    #hud-toggle:hover,
+    #hud-toggle.active {
+      opacity: 1;
     }
-    .btn {
-      width: 100%;
-      min-height: 42px;
-      padding: 9px 7px;
-      border-radius: 8px;
-      border: 1px solid #3f4b63;
-      background: #232c3d;
-      color: #ffffff;
-      font-size: 0.8rem;
+
+    .hud-hidden #hud-toggle,
+    .hud-hidden #control-drawer,
+    .hud-hidden #mobile-pad {
+      display: none !important;
+    }
+
+    button, .btn-file {
+      appearance: none;
+      border: 2px solid var(--panel-border);
+      background: rgba(7, 22, 21, 0.88);
+      color: var(--text);
+      border-radius: 4px;
+      padding: 7px 11px;
+      font-size: 12px;
       font-weight: 700;
+      font-family: "Courier New", Courier, monospace;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: transform 0.06s ease, border-color 0.12s ease, background 0.12s ease;
+    }
+
+    button:hover, .btn-file:hover {
+      border-color: var(--accent);
+      background: rgba(12, 38, 36, 0.96);
+    }
+
+    button:active, .btn-file:active {
+      transform: scale(0.95);
+    }
+
+    button.active {
+      border-color: var(--accent-3);
+      box-shadow: 0 0 0 2px rgba(184, 255, 44, 0.3);
+      color: var(--accent-3);
+      background: rgba(16, 48, 42, 0.96);
+    }
+
+    #control-drawer {
+      position: fixed;
+      top: 52px;
+      right: 12px;
+      width: min(440px, calc(100vw - 24px));
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      z-index: 25;
+      background: var(--panel);
+      border: 2px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 14px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.88);
+    }
+
+    #control-drawer.open {
+      display: flex;
+    }
+
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .stat-pill {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      padding: 5px 9px;
+      border-radius: 4px;
+      background: rgba(0, 255, 159, 0.06);
+      border: 1px solid rgba(0, 255, 159, 0.16);
+    }
+
+    .band-meter {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .band-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 5px 7px;
+      font-size: 11px;
+    }
+
+    .band-bar-wrap {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-top: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .band-bar {
+      height: 100%;
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+
+    .beat-led {
+      width: 11px;
+      height: 11px;
+      border-radius: 2px;
+      background: #14332d;
+      display: inline-block;
+      transition: transform 0.05s ease, background 0.05s ease;
+    }
+
+    .beat-led.hit {
+      background: var(--accent);
+      transform: scale(1.4);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
       cursor: pointer;
     }
-    .btn.active {
-      background: #e11d48;
-      border-color: #fb7185;
-    }
-    .btn.save-main {
-      background: #15803d;
-      border-color: #4ade80;
-    }
-    .preview-box {
-      background: #181e29;
-      border: 1px solid #2d3748;
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-    }
-    .canvas-wrap {
-      max-width: 430px;
-      margin: 0 auto;
-      background: #090c10;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid #2d3748;
-    }
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      touch-action: none;
-    }
-    #statusText {
-      margin-top: 8px;
-      font-size: 0.84rem;
-      color: #86efac;
-      min-height: 20px;
-    }
-    #previewSaveBox {
+
+    input[type="file"] {
       display: none;
-      max-width: 430px;
-      margin: 12px auto 0;
-      background: #10151e;
-      border: 1px solid #3c485e;
-      border-radius: 10px;
-      padding: 10px;
     }
-    #previewSaveBox img {
-      width: 100%;
-      border-radius: 8px;
-      margin-top: 6px;
+
+    #mobile-pad {
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    #mobile-pad .pad-group {
+      display: flex;
+      gap: 6px;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+
+    #mobile-pad button {
+      padding: 9px 11px;
+      font-size: 12px;
+      background: rgba(7, 20, 19, 0.86);
+    }
+
+    #shortcut-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(2, 8, 7, 0.88);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    #shortcut-modal.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(860px, 100%);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: #071615;
+      border: 2px solid var(--accent);
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.95);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 2px solid rgba(0, 255, 159, 0.16);
+      padding-bottom: 10px;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    .key-box {
+      background: rgba(0, 255, 159, 0.03);
+      border: 1px solid rgba(0, 255, 159, 0.14);
+      border-radius: 4px;
+      padding: 12px;
+    }
+
+    .key-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      color: var(--accent-2);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .key-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      padding: 4px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+      gap: 10px;
+    }
+
+    .key-item:last-child {
+      border-bottom: none;
+    }
+
+    kbd {
+      background: rgba(0, 255, 159, 0.14);
+      border: 1px solid rgba(0, 255, 159, 0.32);
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-family: "Courier New", Courier, monospace;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    #hidden-type-sink {
+      position: fixed;
+      left: -9999px;
+      top: -9999px;
+      opacity: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <canvas id="stage"></canvas>
+  <input id="hidden-type-sink" type="text" autocomplete="off" spellcheck="false" />
+
+  <div id="hud-toggle">
+    <button id="btn-tap-top" title="TAP BPM (Space / N)">TAP</button>
+    <button id="btn-reset-single" title="Nollaa ja jätä vain yksi tauluefekti päälle">RESET 1 FX</button>
+    <button id="btn-panel" title="Ohjauspaneeli">PANEL</button>
+    <button id="btn-shortcuts" title="Pikanäppäimet (? / H)">KEYS</button>
+    <button id="btn-fullscreen" title="Koko näyttö (F11)">FULL</button>
+  </div>
+
+  <aside id="control-drawer">
     <div>
-      <div class="card">
-        <h1>IG Mainosstudio</h1>
-        <p class="sub" id="topSizeLabel">Koko: 4:5 Syöte (1080 × 1350 px)</p>
+      <div class="section-title">
+        <span>Tempo &amp; Taajuuskaistat (MATRIX/BOARD)</span>
+        <span><span id="beat-led" class="beat-led"></span> <strong id="bpm-readout">120 BPM</strong></span>
       </div>
-
-      <div class="card">
-        <label for="photoInput">1. Kuva</label>
-        <input type="file" id="photoInput" accept="image/*" />
-
-        <label>2. IG-kuvakoko</label>
-        <div class="grid-3">
-          <button type="button" class="btn size-btn active" data-w="1080" data-h="1350" data-code="4x5" data-label="4:5 Syöte">4:5 Syöte</button>
-          <button type="button" class="btn size-btn" data-w="1080" data-h="1080" data-code="1x1" data-label="1:1 Neliö">1:1 Neliö</button>
-          <button type="button" class="btn size-btn" data-w="1080" data-h="1920" data-code="9x16" data-label="9:16 Story">9:16 Story</button>
+      <div class="row">
+        <button id="btn-tap-drawer">TAP BPM</button>
+        <input id="bpm-slider" type="range" min="50" max="220" value="120" />
+        <button id="btn-audio-mic" title="Mikrofoni / Musiikki (M)">MIC</button>
+        <label class="btn-file" title="Lataa äänitiedosto">
+          AUDIO <input id="file-audio" type="file" accept="audio/*" />
+        </label>
+      </div>
+      <div class="band-meter">
+        <div class="band-box">
+          <span>BASSO</span> <strong id="val-bass">0%</strong>
+          <div class="band-bar-wrap"><div id="bar-bass" class="band-bar" style="background:#00ff9f;"></div></div>
         </div>
-
-        <label>3. Ammattimaiset oletussetit (12 kpl)</label>
-        <div class="grid-3">
-          <button type="button" class="btn theme-btn active" data-theme="kampanja">Kampanja</button>
-          <button type="button" class="btn theme-btn" data-theme="uutuus">Uutuus</button>
-          <button type="button" class="btn theme-btn" data-theme="tyyli">Boutique</button>
-
-          <button type="button" class="btn theme-btn" data-theme="joulu1">Joulu Ale</button>
-          <button type="button" class="btn theme-btn" data-theme="joulu2">Joulu Kuusi</button>
-          <button type="button" class="btn theme-btn" data-theme="joulu3">Joulu Kulta</button>
-
-          <button type="button" class="btn theme-btn" data-theme="kesa1">Kesäale</button>
-          <button type="button" class="btn theme-btn" data-theme="kesa2">Kesä Meri</button>
-          <button type="button" class="btn theme-btn" data-theme="kesa3">Kesäilta</button>
-
-          <button type="button" class="btn theme-btn" data-theme="talvi1">Talvi Ale</button>
-          <button type="button" class="btn theme-btn" data-theme="talvi2">Jäinen</button>
-          <button type="button" class="btn theme-btn" data-theme="talvi3">Pakkanen</button>
+        <div class="band-box">
+          <span>MID/CODE</span> <strong id="val-mid">0%</strong>
+          <div class="band-bar-wrap"><div id="bar-mid" class="band-bar" style="background:#00d8ff;"></div></div>
+        </div>
+        <div class="band-box">
+          <span>DISKANTTI</span> <strong id="val-treble">0%</strong>
+          <div class="band-bar-wrap"><div id="bar-treble" class="band-bar" style="background:#b8ff2c;"></div></div>
+        </div>
+        <div class="band-box">
+          <span>TRANSIENT</span> <strong id="val-trans">0%</strong>
+          <div class="band-bar-wrap"><div id="bar-trans" class="band-bar" style="background:#ff3b8d;"></div></div>
         </div>
       </div>
-
-      <div class="card">
-        <label for="badgeInput">Yläteksti / Tunniste</label>
-        <input type="text" id="badgeInput" value="VIIKONLOPPUTARJOUS" />
-
-        <label for="titleInput">Pääotsikko</label>
-        <textarea id="titleInput">Nyt -30% kaikesta</textarea>
-
-        <label for="subInput">Alaotsikko</label>
-        <input type="text" id="subInput" value="Voimassa sunnuntaihin asti verkkokaupassa." />
-
-        <label for="ctaInput">Nappiteksti</label>
-        <input type="text" id="ctaInput" value="Osta nyt" />
-
-        <label for="fontSelect">Fonttityyli</label>
-        <select id="fontSelect">
-          <option value="sans" selected>Moderni Sans (selkeä ja napakka)</option>
-          <option value="display">Näyttävä Display (iso ja iskevä)</option>
-          <option value="serif">Klassinen Serif (tyylikäs ja editorial)</option>
-          <option value="geo">Geometrinen (moderni brändi)</option>
-        </select>
-
-        <label for="textScaleInput">Tekstikoko: <span id="textScaleVal">115%</span></label>
-        <input type="range" id="textScaleInput" min="65" max="165" value="115" />
-
-        <div class="grid-2">
-          <div>
-            <label for="posSelect">Sijainti</label>
-            <select id="posSelect">
-              <option value="bottom" selected>Alhaalla</option>
-              <option value="top">Ylhäällä</option>
-              <option value="center">Keskellä</option>
-            </select>
-          </div>
-          <div>
-            <label for="alignSelect">Tasaus</label>
-            <select id="alignSelect">
-              <option value="left" selected>Vasemmalle</option>
-              <option value="center">Keskitetty</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div>
-            <label for="accentInput">Väri</label>
-            <input type="color" id="accentInput" value="#e11d48" />
-          </div>
-          <div>
-            <label for="darkInput">Tummennus</label>
-            <input type="range" id="darkInput" min="0" max="85" value="48" />
-          </div>
-        </div>
-
-        <label for="zoomInput">Kuvan zoomaus</label>
-        <input type="range" id="zoomInput" min="100" max="250" value="100" />
-        <button type="button" class="btn" id="centerPhotoBtn">Keskitä kuva</button>
-      </div>
-
-      <div class="card">
-        <p class="sub" id="exportSizeText">Tallennettava koko: 4:5 Syöte (1080 × 1350 px)</p>
-        <div style="margin-top:8px;">
-          <button type="button" class="btn save-main" id="makePreviewBtn">Tee tallennuskuva (pitkä painallus)</button>
-        </div>
-        <div class="grid-2" style="margin-top:6px;">
-          <button type="button" class="btn" id="dlPngBtn">Lataa PNG</button>
-          <button type="button" class="btn" id="dlJpgBtn">Lataa JPG</button>
-        </div>
-        <div id="statusText"></div>
+      <div class="row" style="margin-top:6px;">
+        <span class="stat-pill">Ääni: <strong id="audio-level">0%</strong></span>
+        <span class="stat-pill">Nopeus: <strong id="speed-readout">1.00x</strong></span>
+        <span class="stat-pill">Logo: <strong id="logo-scale-readout">1.00x</strong></span>
+        <span class="stat-pill">Teksti: <strong id="text-scale-readout">1.35x</strong></span>
       </div>
     </div>
 
-    <div class="preview-box">
-      <div class="canvas-wrap">
-        <canvas id="adCanvas" width="1080" height="1350"></canvas>
+    <div>
+      <div class="section-title">
+        <span>Morph Mix (G), Visage (V) &amp; Reset</span>
+        <span id="morph-mix-status">MIX: OFF</span>
       </div>
-      <p class="sub" style="margin-top:8px;">Vedä kuvaa sormella tai hiirellä siirtääksesi sitä.</p>
+      <div class="row">
+        <button id="btn-morph-mix">MORPH MIX (G)</button>
+        <button id="btn-visage-toggle">VISAGE (V)</button>
+        <button id="btn-visage-open">OPEN HEAD (K)</button>
+        <button id="btn-visage-save">SAVE LOOK (S)</button>
+        <button id="btn-reset-drawer">RESET 1 FX</button>
+      </div>
+    </div>
 
-      <div id="previewSaveBox">
-        <p class="sub" id="previewSaveCaption">Paina kuvaa alla pitkään ja valitse <strong>Tallenna kuva</strong>.</p>
-        <img id="previewSaveImg" alt="Valmis mainos" />
+    <div>
+      <div class="section-title">
+        <span>Logo, Koko, Taululiike &amp; Blend (B)</span>
+        <span id="logo-status">Ei ladattua logoa</span>
+      </div>
+      <div class="row">
+        <label class="btn-file">
+          LATAA LOGO <input id="file-logo" type="file" accept="image/*" />
+        </label>
+        <button id="btn-logo-dn" title="Pienennä logo (←)">LOGO -</button>
+        <button id="btn-logo-up" title="Kasvata logo (→)">LOGO +</button>
+        <button id="btn-logo-toggle">LOGO ON/OFF</button>
+        <button id="btn-blend-cycle">BLEND: <span id="blend-readout">SCREEN</span></button>
+      </div>
+      <div class="row" style="margin-top:6px;" id="logo-fx-buttons"></div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Pikselitaulu &amp; Koodikohtaukset (1–9, 0)</span>
+        <span id="bg-fx-name">1. MATRIX RAIN</span>
+      </div>
+      <div class="row" id="bg-fx-buttons"></div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Shift + 1–9, 0 · Shift + Q–P (Taulu Post-FX)</span>
+        <span id="shift-fx-name">SHIFT FX: OFF</span>
+      </div>
+      <div class="row" id="shift-fx-buttons"></div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Koodi- &amp; Taulutekstit (Q, W, E, R, Y, U, I, O, P) &amp; Fontti (F)</span>
+        <span id="txt-fx-name">Q. MATRIX STREAM</span>
+      </div>
+      <div class="row" id="txt-fx-buttons"></div>
+      <div class="row" style="margin-top:6px;">
+        <button id="btn-txt-toggle">TEKSTI ON/OFF (T)</button>
+        <button id="btn-txt-write">KIRJOITA (C)</button>
+        <button id="btn-font-cycle">FONT: <span id="font-readout">MONO</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <div id="mobile-pad">
+    <div class="pad-group">
+      <button id="mob-tap">TAP</button>
+      <button id="mob-reset">RESET 1</button>
+      <button id="mob-mix">G MIX</button>
+      <button id="mob-visage">V VISAGE</button>
+      <button id="mob-bg-next">BG+</button>
+    </div>
+    <div class="pad-group">
+      <button id="mob-logo-dn">L-</button>
+      <button id="mob-logo-up">L+</button>
+      <button id="mob-logo-fx">L FX</button>
+      <button id="mob-write">C TXT</button>
+      <button id="mob-logo">LOGO</button>
+    </div>
+  </div>
+
+  <div id="shortcut-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title" style="margin:0; font-size:17px;">Pikanäppäimet — Futuristic Pixel Board &amp; Matrix Code</h2>
+        <button id="btn-close-modal">SULJE (?)</button>
+      </div>
+      <div class="modal-grid">
+        <div class="key-box">
+          <h3>Pikselitaulu &amp; Koodikohtaukset (1–9, 0)</h3>
+          <div class="key-item"><span>1: Matrix Rain · 2: Hex Dump Wall · 3: Code Compiler</span><span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></span></div>
+          <div class="key-item"><span>4: Quantum Mesh · 5: Bitstream Bars · 6: Data Tunnel</span><span><kbd>4</kbd> <kbd>5</kbd> <kbd>6</kbd></span></div>
+          <div class="key-item"><span>7: Cipher Ring · 8: Signal Grid · 9: Core Beams</span><span><kbd>7</kbd> <kbd>8</kbd> <kbd>9</kbd></span></div>
+          <div class="key-item"><span>0: Node Ten · Reset 1 FX</span><span><kbd>0</kbd> · RESET 1 FX</span></div>
+        </div>
+
+        <div class="key-box">
+          <h3>Shift + Numerot &amp; Kirjaimet: Taulu Post-FX</h3>
+          <div class="key-item"><span>⇧1: Mirror Board · ⇧2: LED Matrix · ⇧3: Cipher Twist</span><span><kbd>⇧1</kbd> <kbd>⇧2</kbd> <kbd>⇧3</kbd></span></div>
+          <div class="key-item"><span>⇧4: Row Scan · ⇧5: Gyro Core · ⇧6: Phase Shift</span><span><kbd>⇧4</kbd> <kbd>⇧5</kbd> <kbd>⇧6</kbd></span></div>
+          <div class="key-item"><span>⇧7: Bezel Frame · ⇧8: Overclock · ⇧9: LED Ribs</span><span><kbd>⇧7</kbd> <kbd>⇧8</kbd> <kbd>⇧9</kbd></span></div>
+          <div class="key-item"><span>⇧0: Wide HUD · ⇧Q: Code Drip · ⇧W: Bit Glitch</span><span><kbd>⇧0</kbd> · <kbd>⇧Q</kbd> · <kbd>⇧W</kbd></span></div>
+          <div class="key-item"><span>⇧E: Mega Pixels · ⇧R: Multi-Panel · ⇧Y: Logic Wave</span><span><kbd>⇧E</kbd> · <kbd>⇧R</kbd> · <kbd>⇧Y</kbd></span></div>
+          <div class="key-item"><span>⇧U: Packet Ring · ⇧I: Laser Flare · ⇧P: Clear</span><span><kbd>⇧U</kbd> · <kbd>⇧I</kbd> · <kbd>⇧P</kbd></span></div>
+        </div>
+
+        <div class="key-box">
+          <h3>Koodi- &amp; Taulutekstit (Q, W, E, R, Y, U, I, O, P)</h3>
+          <div class="key-item"><span>Q: Matrix Stream · W: Hex Shadow · E: Terminal Glow</span><span><kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd></span></div>
+          <div class="key-item"><span>R: Syntax Curve · Y: Parity Glitch · U: Stack Jump</span><span><kbd>R</kbd> <kbd>Y</kbd> <kbd>U</kbd></span></div>
+          <div class="key-item"><span>I: Bus Wave · O: Dual Buffer · P: Console Box</span><span><kbd>I</kbd> <kbd>O</kbd> <kbd>P</kbd></span></div>
+        </div>
+
+        <div class="key-box">
+          <h3>Ohjausnäppäimet</h3>
+          <div class="key-item"><span>G: Morph Mix · V: Visage · K: Open Head · S: Save</span><span><kbd>G</kbd> · <kbd>V</kbd> · <kbd>K</kbd> · <kbd>S</kbd></span></div>
+          <div class="key-item"><span>C→Enter: Kirjoita · T: Teksti on/off · F: Fontti · A/D: Koko</span><span><kbd>C</kbd> · <kbd>T</kbd> · <kbd>F</kbd> · <kbd>A</kbd>/<kbd>D</kbd></span></div>
+          <div class="key-item"><span>Space/N: TAP BPM · M: Ääni · B: Blend · F11: Full</span><span><kbd>Space</kbd> · <kbd>M</kbd> · <kbd>B</kbd> · <kbd>F11</kbd></span></div>
+          <div class="key-item"><span>↑/↓: Nopeus · ←/→: Logo koko · L / ⇧L: Logo</span><span><kbd>↑</kbd><kbd>↓</kbd> · <kbd>←</kbd><kbd>→</kbd> · <kbd>L</kbd></span></div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    window.addEventListener("DOMContentLoaded", function () {
-      const canvas = document.getElementById("adCanvas");
-      const ctx = canvas.getContext("2d");
+    (() => {
+      const canvas = document.getElementById("stage");
+      const ctx = canvas.getContext("2d", { alpha: false });
 
-      const FONTS = {
-        sans: {
-          stack: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-          titleWeight: "900",
-          subWeight: "600"
+      const workCanvas = document.createElement("canvas");
+      const workCtx = workCanvas.getContext("2d");
+
+      const mosaicCanvas = document.createElement("canvas");
+      const mosaicCtx = mosaicCanvas.getContext("2d");
+
+      const logoFxCanvas = document.createElement("canvas");
+      const logoFxCtx = logoFxCanvas.getContext("2d");
+
+      const hiddenSink = document.getElementById("hidden-type-sink");
+
+      const MATRIX_CHARS = "01アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEF<>/{}[]*+=#";
+      const HEX_CHARS = "0123456789ABCDEF";
+      const CODE_SNIPPETS = [
+        "INIT_KERNEL(0xFF00);",
+        "ALLOC_MEM(2048) -> OK",
+        "SYNC_CLOCK(BPM_LOCK);",
+        "STREAM_MATRIX::PULSE();",
+        "PIPE_DATA[0..64] -> BUS",
+        "EXEC_VECTOR(0x7A9C);",
+        "RENDER_BOARD(GRID_16);",
+        "CHECK_PARITY() == TRUE;"
+      ];
+      const BOARD_PALETTE = ["#00ff9f", "#00d8ff", "#b8ff2c", "#18f2b2", "#ff3b8d", "#e6fff6"];
+
+      const BG_EFFECTS = [
+        { id: 1, key: "1", name: "MATRIX RAIN" },
+        { id: 2, key: "2", name: "HEX DUMP WALL" },
+        { id: 3, key: "3", name: "CODE COMPILER" },
+        { id: 4, key: "4", name: "QUANTUM MESH" },
+        { id: 5, key: "5", name: "BITSTREAM BARS" },
+        { id: 6, key: "6", name: "DATA TUNNEL" },
+        { id: 7, key: "7", name: "CIPHER RING" },
+        { id: 8, key: "8", name: "SIGNAL GRID" },
+        { id: 9, key: "9", name: "CORE BEAMS" },
+        { id: 0, key: "0", name: "NODE TEN" }
+      ];
+
+      const LOGO_FX_MODES = [
+        { id: "morph", label: "MORPH" },
+        { id: "glitch-rgb", label: "GLITCH RGB" },
+        { id: "twist", label: "TWIST" },
+        { id: "wave", label: "WAVE" },
+        { id: "spin", label: "SPIN" },
+        { id: "pulse", label: "PULSE" }
+      ];
+
+      const SHIFT_MODES = [
+        { code: "⇧1", name: "MIRROR BOARD" },
+        { code: "⇧2", name: "LED MATRIX" },
+        { code: "⇧3", name: "CIPHER TWIST" },
+        { code: "⇧4", name: "ROW SCAN" },
+        { code: "⇧5", name: "GYRO CORE" },
+        { code: "⇧6", name: "PHASE SHIFT" },
+        { code: "⇧7", name: "BEZEL FRAME" },
+        { code: "⇧8", name: "OVERCLOCK" },
+        { code: "⇧9", name: "LED RIBS" },
+        { code: "⇧0", name: "WIDE HUD" },
+        { code: "⇧Q", name: "CODE DRIP" },
+        { code: "⇧W", name: "BIT GLITCH" },
+        { code: "⇧E", name: "MEGA PIXELS" },
+        { code: "⇧R", name: "MULTI-PANEL" },
+        { code: "⇧Y", name: "LOGIC WAVE" },
+        { code: "⇧U", name: "PACKET RING" },
+        { code: "⇧I", name: "LASER FLARE" }
+      ];
+
+      const TXT_EFFECTS = [
+        { key: "Q", name: "MATRIX STREAM" },
+        { key: "W", name: "HEX SHADOW" },
+        { key: "E", name: "TERMINAL GLOW" },
+        { key: "R", name: "SYNTAX CURVE" },
+        { key: "Y", name: "PARITY GLITCH" },
+        { key: "U", name: "STACK JUMP" },
+        { key: "I", name: "BUS WAVE" },
+        { key: "O", name: "DUAL BUFFER" },
+        { key: "P", name: "CONSOLE BOX" }
+      ];
+
+      const FONTS = [
+        { label: "MONO", family: '"Courier New", Courier, monospace' },
+        { label: "IMPACT", family: '"Impact", "Arial Black", sans-serif' },
+        { label: "COMIC", family: '"Bangers", "Impact", sans-serif' },
+        { label: "FUTURA", family: '"Futura", "Trebuchet MS", sans-serif' },
+        { label: "SERIF", family: '"Georgia", serif' },
+        { label: "ROUND", family: '"Arial Rounded MT Bold", sans-serif' }
+      ];
+
+      const BLEND_MODES = ["screen", "lighter", "overlay", "difference", "hard-light", "multiply"];
+
+      const state = {
+        width: 1,
+        height: 1,
+        dpr: Math.min(window.devicePixelRatio || 1, 2),
+        time: 0,
+        lastFrame: performance.now(),
+        bpm: 120,
+        beatPhase: 0,
+        bassPulse: 0,
+        beatCount: 0,
+        tapTimes: [],
+        speed: 1.0,
+        bgEffect: 1,
+        blendIndex: 0,
+        morphMixEnabled: false,
+
+        rhythm: {
+          bass: 0,
+          mid: 0,
+          treble: 0,
+          transient: 0,
+          prevEnergy: 0,
+          eighths: 0,
+          offbeat: 0
         },
-        display: {
-          stack: "Impact, 'Arial Black', 'Segoe UI', sans-serif",
-          titleWeight: "900",
-          subWeight: "700"
+
+        shiftFlags: {
+          symmetry: false,
+          tiles: false,
+          twist: false,
+          slice: false,
+          spin: false,
+          hueDrift: false,
+          vignette: false,
+          chaosHeat: false,
+          glassRibs: false,
+          anamorphic: false,
+          melt: false,
+          glitch: false,
+          pixels: false,
+          flyEye: false,
+          oscillators: false,
+          pulses: false,
+          flares: false
         },
-        serif: {
-          stack: "Georgia, 'Times New Roman', Times, serif",
-          titleWeight: "700",
-          subWeight: "400"
+
+        visage: {
+          enabled: false,
+          headOpenAmount: 0,
+          headOpenTarget: 0,
+          exprIndex: 0,
+          silhouetteSeed: 1,
+          pointerX: 0,
+          pointerY: 0,
+          eyeLookX: 0,
+          eyeLookY: 0,
+          blinkTimer: 2.3,
+          blinkProgress: 0,
+          dragSculpting: false,
+          jawMorph: 0,
+          cheekMorph: 0,
+          savedLook: {
+            angleYaw: 0,
+            anglePitch: 0,
+            gazeX: 0,
+            gazeY: 0,
+            hasSaved: false
+          }
         },
-        geo: {
-          stack: "'Trebuchet MS', 'Segoe UI', Roboto, sans-serif",
-          titleWeight: "800",
-          subWeight: "600"
-        }
+
+        logoVisible: true,
+        logoMorphMode: true,
+        logoFxIndex: 0,
+        logoScale: 1.0,
+        logoImg: null,
+        textVisible: false,
+        liveText: "",
+        typingActive: false,
+        typeDraft: "",
+        txtEffectIndex: 0,
+        fontIndex: 0,
+        textScale: 1.35,
+        hudHidden: false,
+        audioEnabled: false,
+        audioLevel: 0,
+        bassLevel: 0,
+        midLevel: 0,
+        trebleLevel: 0,
+        audioCtx: null,
+        analyser: null,
+        freqData: null,
+        audioSource: null
       };
 
-      const THEMES = {
-        kampanja: {
-          accent: "#e11d48", bg1: "#2a1220", bg2: "#0d1017", dark: 48,
-          font: "display", scale: 125,
-          badge: "MEGA-ALE", title: "Nyt -30% kaikesta", sub: "Kampanja voimassa sunnuntaihin.", cta: "Osta nyt",
-          pos: "bottom", align: "left"
-        },
-        uutuus: {
-          accent: "#eab308", bg1: "#2b220d", bg2: "#0d1017", dark: 42,
-          font: "geo", scale: 115,
-          badge: "UUTUUS", title: "Uusi mallisto nyt täällä", sub: "Tuoreet uutuudet ensimmäisenä.", cta: "Katso uutuudet",
-          pos: "top", align: "left"
-        },
-        tyyli: {
-          accent: "#e2e8f0", bg1: "#1d222e", bg2: "#0a0c12", dark: 52,
-          font: "serif", scale: 112,
-          badge: "BOUTIQUE", title: "Ajatonta tyyliä", sub: "Kuratoitu valikoima rajatun ajan.", cta: "Tutustu",
-          pos: "center", align: "center"
-        },
+      function resize() {
+        state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        state.width = window.innerWidth;
+        state.height = window.innerHeight;
+        canvas.width = Math.floor(state.width * state.dpr);
+        canvas.height = Math.floor(state.height * state.dpr);
+        ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
 
-        joulu1: {
-          accent: "#dc2626", bg1: "#330c12", bg2: "#10080a", dark: 50,
-          font: "display", scale: 122,
-          badge: "JOULUKAMPANJA", title: "Joulun parhaat lahjat", sub: "Jopa -25% valituista lahjoista.", cta: "Katso lahjat",
-          pos: "bottom", align: "left"
-        },
-        joulu2: {
-          accent: "#16a34a", bg1: "#0d2b1a", bg2: "#08120c", dark: 46,
-          font: "serif", scale: 116,
-          badge: "HYVÄÄ JOULUA", title: "Lämmin jouluhetki", sub: "Perinteiset lahjat ja herkut.", cta: "Jouluvalikoima",
-          pos: "bottom", align: "center"
-        },
-        joulu3: {
-          accent: "#eab308", bg1: "#2e1e09", bg2: "#110c06", dark: 52,
-          font: "serif", scale: 120,
-          badge: "JOULUN LOISTOA", title: "Kultaiset hetket", sub: "Rajoitettu jouluerä nyt myynnissä.", cta: "Varaa nyt",
-          pos: "center", align: "center"
-        },
+        workCanvas.width = Math.max(160, Math.floor(state.width * 0.55));
+        workCanvas.height = Math.max(120, Math.floor(state.height * 0.55));
 
-        kesa1: {
-          accent: "#f97316", bg1: "#2e150a", bg2: "#0c121c", dark: 42,
-          font: "display", scale: 126,
-          badge: "KESÄALE", title: "Kesän kuumimmat edut", sub: "Jopa -40% kesän suosikeista.", cta: "Nappaa etu",
-          pos: "bottom", align: "left"
-        },
-        kesa2: {
-          accent: "#06b6d4", bg1: "#092536", bg2: "#08111c", dark: 38,
-          font: "geo", scale: 114,
-          badge: "KESÄ & LOMA", title: "Valmiina kesään", sub: "Raikkaat uutuudet aurinkopäiviin.", cta: "Tutustu",
-          pos: "top", align: "left"
-        },
-        kesa3: {
-          accent: "#f59e0b", bg1: "#2e1712", bg2: "#110c14", dark: 45,
-          font: "serif", scale: 115,
-          badge: "KESÄILTA", title: "Kesäiltojen parhaat hetket", sub: "Nauti pitkistä illoista tyylillä.", cta: "Lue lisää",
-          pos: "bottom", align: "center"
-        },
+        mosaicCanvas.width = Math.max(80, Math.floor(state.width * 0.18));
+        mosaicCanvas.height = Math.max(60, Math.floor(state.height * 0.18));
 
-        talvi1: {
-          accent: "#38bdf8", bg1: "#0b2236", bg2: "#090d16", dark: 48,
-          font: "display", scale: 122,
-          badge: "TALVIKAMPANJA", title: "Varustaudu talveen", sub: "Lämpimät talvituotteet heti varastosta.", cta: "Katso lisää",
-          pos: "bottom", align: "left"
-        },
-        talvi2: {
-          accent: "#6366f1", bg1: "#161838", bg2: "#090b14", dark: 48,
-          font: "geo", scale: 116,
-          badge: "TALVIETU", title: "Raikkaat talvitarjoukset", sub: "Säästä valituista tuotteista nyt.", cta: "Hyödynnä",
-          pos: "top", align: "center"
-        },
-        talvi3: {
-          accent: "#cbd5e1", bg1: "#1b212c", bg2: "#0c0f14", dark: 50,
-          font: "serif", scale: 110,
-          badge: "PAKKANEN & HYGGE", title: "Lämpöä talvipäiviin", sub: "Pehmeät suosikit arkeen ja kotiin.", cta: "Tutustu",
-          pos: "center", align: "center"
-        }
-      };
-
-      let W = 1080;
-      let H = 1350;
-      let ratioCode = "4x5";
-      let sizeLabel = "4:5 Syöte";
-      let currentTheme = "kampanja";
-      let bg1 = THEMES.kampanja.bg1;
-      let bg2 = THEMES.kampanja.bg2;
-      let photo = null;
-      let panX = 0;
-      let panY = 0;
-      let dragging = false;
-      let lastX = 0;
-      let lastY = 0;
-
-      function setStatus(msg) {
-        document.getElementById("statusText").textContent = msg;
+        logoFxCanvas.width = 512;
+        logoFxCanvas.height = 512;
       }
 
-      function updateScaleLabel() {
-        const val = document.getElementById("textScaleInput").value;
-        document.getElementById("textScaleVal").textContent = val + "%";
+      window.addEventListener("resize", resize);
+      resize();
+
+      function snapPx(val, grid = 12) {
+        return Math.round(val / grid) * grid;
       }
 
-      function wrapText(text, maxW, font) {
-        if (!text || !text.trim()) return [];
-        ctx.font = font;
-        const paragraphs = text.split("\n");
-        const lines = [];
-        for (const para of paragraphs) {
-          const words = para.trim().split(/\s+/).filter(Boolean);
-          if (!words.length) continue;
-          let line = words[0];
-          for (let i = 1; i < words.length; i++) {
-            const test = line + " " + words[i];
-            if (ctx.measureText(test).width <= maxW) {
-              line = test;
-            } else {
-              lines.push(line);
-              line = words[i];
-            }
-          }
-          lines.push(line);
-        }
-        return lines;
+      function pickChar(seed, set = MATRIX_CHARS) {
+        const idx = Math.abs(Math.floor(seed)) % set.length;
+        return set[idx];
       }
 
-      function draw() {
-        updateScaleLabel();
-
-        const accent = document.getElementById("accentInput").value;
-        const dark = Number(document.getElementById("darkInput").value) / 100;
-        const zoom = Number(document.getElementById("zoomInput").value) / 100;
-        const pos = document.getElementById("posSelect").value;
-        const align = document.getElementById("alignSelect").value;
-        const fontKey = document.getElementById("fontSelect").value;
-        const scale = Number(document.getElementById("textScaleInput").value) / 100;
-
-        const fontObj = FONTS[fontKey] || FONTS.sans;
-        const badge = document.getElementById("badgeInput").value;
-        const title = document.getElementById("titleInput").value;
-        const sub = document.getElementById("subInput").value;
-        const cta = document.getElementById("ctaInput").value;
-
-        const grad = ctx.createLinearGradient(0, 0, W, H);
-        grad.addColorStop(0, bg1);
-        grad.addColorStop(1, bg2);
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, W, H);
-
-        if (photo) {
-          const ir = photo.width / photo.height;
-          const cr = W / H;
-          let bw = W;
-          let bh = H;
-          if (ir > cr) {
-            bw = H * ir;
-          } else {
-            bh = W / ir;
-          }
-          const dw = bw * zoom;
-          const dh = bh * zoom;
-          ctx.drawImage(photo, (W - dw) / 2 + panX, (H - dh) / 2 + panY, dw, dh);
-        }
-
-        if (dark > 0) {
-          ctx.fillStyle = "rgba(0,0,0," + dark + ")";
-          ctx.fillRect(0, 0, W, H);
-        }
-
-        const pad = 76;
-        const maxW = W - pad * 2;
-
-        const badgePx = Math.round(34 * scale);
-        const titlePx = Math.round(92 * scale);
-        const subPx = Math.round(42 * scale);
-        const ctaPx = Math.round(38 * scale);
-
-        const badgeFont = "800 " + badgePx + "px " + fontObj.stack;
-        const titleFont = fontObj.titleWeight + " " + titlePx + "px " + fontObj.stack;
-        const subFont = fontObj.subWeight + " " + subPx + "px " + fontObj.stack;
-        const ctaFont = "800 " + ctaPx + "px " + fontObj.stack;
-
-        const tLines = wrapText(title, maxW, titleFont);
-        const sLines = wrapText(sub, maxW, subFont);
-
-        const hasBadge = Boolean(badge.trim());
-        const hasCta = Boolean(cta.trim());
-
-        const badgeH = hasBadge ? Math.round(badgePx * 1.75) : 0;
-        const badgeGap = hasBadge ? Math.round(24 * scale) : 0;
-        const titleStep = Math.round(titlePx * 1.12);
-        const titleBlockH = tLines.length * titleStep;
-        const subGap = sLines.length ? Math.round(22 * scale) : 0;
-        const subStep = Math.round(subPx * 1.25);
-        const subBlockH = sLines.length * subStep;
-        const ctaGap = hasCta ? Math.round(32 * scale) : 0;
-        const ctaH = hasCta ? Math.round(ctaPx * 2.05) : 0;
-
-        const totalH = badgeH + badgeGap + titleBlockH + subGap + subBlockH + ctaGap + ctaH;
-
-        let y = H - 140 - totalH;
-        if (pos === "top") y = H > 1500 ? 190 : 110;
-        if (pos === "center") y = (H - totalH) / 2;
-        y = Math.max(80, Math.min(H - totalH - 80, y));
-
-        const tx = align === "center" ? W / 2 : pad;
-
-        if (hasBadge) {
-          ctx.save();
-          ctx.font = badgeFont;
-          const bTxt = badge.trim().toUpperCase();
-          const bw = ctx.measureText(bTxt).width + Math.round(46 * scale);
-          const bx = align === "center" ? (W - bw) / 2 : pad;
-          ctx.fillStyle = accent;
-          ctx.fillRect(bx, y, bw, badgeH);
-          ctx.fillStyle = "#ffffff";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(bTxt, bx + bw / 2, y + badgeH / 2 + 1);
-          ctx.restore();
-          y += badgeH + badgeGap;
-        }
-
-        if (tLines.length) {
-          ctx.save();
-          ctx.font = titleFont;
-          ctx.fillStyle = "#ffffff";
-          ctx.textAlign = align;
-          ctx.textBaseline = "top";
-          ctx.shadowColor = "rgba(0,0,0,0.6)";
-          ctx.shadowBlur = 18;
-          ctx.shadowOffsetY = 4;
-          tLines.forEach(function (l, idx) {
-            ctx.fillText(l, tx, y + idx * titleStep);
-          });
-          ctx.restore();
-          y += titleBlockH;
-        }
-
-        if (sLines.length) {
-          y += subGap;
-          ctx.save();
-          ctx.font = subFont;
-          ctx.fillStyle = "#f8fafc";
-          ctx.textAlign = align;
-          ctx.textBaseline = "top";
-          ctx.shadowColor = "rgba(0,0,0,0.55)";
-          ctx.shadowBlur = 12;
-          ctx.shadowOffsetY = 2;
-          sLines.forEach(function (l, idx) {
-            ctx.fillText(l, tx, y + idx * subStep);
-          });
-          ctx.restore();
-          y += subBlockH;
-        }
-
-        if (hasCta) {
-          y += ctaGap;
-          ctx.save();
-          ctx.font = ctaFont;
-          const cTxt = cta.trim();
-          const cw = Math.max(Math.round(240 * scale), ctx.measureText(cTxt).width + Math.round(78 * scale));
-          const cx = align === "center" ? (W - cw) / 2 : pad;
-          ctx.fillStyle = accent;
-          ctx.fillRect(cx, y, cw, ctaH);
-          ctx.fillStyle = "#ffffff";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(cTxt, cx + cw / 2, y + ctaH / 2 + 1);
-          ctx.restore();
-        }
-      }
-
-      document.querySelectorAll(".size-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          W = Number(btn.dataset.w);
-          H = Number(btn.dataset.h);
-          ratioCode = btn.dataset.code;
-          sizeLabel = btn.dataset.label;
-          canvas.width = W;
-          canvas.height = H;
-
-          document.querySelectorAll(".size-btn").forEach(function (b) {
-            b.classList.toggle("active", b === btn);
-          });
-          document.getElementById("topSizeLabel").textContent = "Koko: " + sizeLabel + " (" + W + " × " + H + " px)";
-          document.getElementById("exportSizeText").textContent = "Tallennettava koko: " + sizeLabel + " (" + W + " × " + H + " px)";
-          draw();
+      function resetToSingleEffect() {
+        Object.keys(state.shiftFlags).forEach(k => {
+          state.shiftFlags[k] = false;
         });
+        state.morphMixEnabled = false;
+        state.visage.enabled = false;
+        state.visage.headOpenTarget = 0;
+        state.textVisible = false;
+        state.typingActive = false;
+        state.logoFxIndex = 0;
+        state.bgEffect = 1;
+        updateUiReadouts();
+      }
+
+      function adjustLogoScale(delta) {
+        state.logoScale = Math.max(0.25, Math.min(3.2, +(state.logoScale + delta).toFixed(2)));
+        updateUiReadouts();
+      }
+
+      function cycleLogoFx() {
+        state.logoFxIndex = (state.logoFxIndex + 1) % LOGO_FX_MODES.length;
+        state.logoMorphMode = true;
+        updateUiReadouts();
+      }
+
+      function updatePointer(clientX, clientY) {
+        const nx = (clientX / Math.max(1, state.width)) * 2 - 1;
+        const ny = (clientY / Math.max(1, state.height)) * 2 - 1;
+        state.visage.pointerX = Math.max(-1, Math.min(1, nx));
+        state.visage.pointerY = Math.max(-1, Math.min(1, ny));
+
+        if (state.visage.dragSculpting && state.visage.enabled) {
+          state.visage.cheekMorph = Math.max(-0.45, Math.min(0.45, state.visage.pointerX * 0.45));
+          state.visage.jawMorph = Math.max(-0.35, Math.min(0.45, state.visage.pointerY * 0.4));
+        }
+      }
+
+      window.addEventListener("pointermove", e => updatePointer(e.clientX, e.clientY), { passive: true });
+      canvas.addEventListener("pointerdown", e => {
+        updatePointer(e.clientX, e.clientY);
+        if (state.visage.enabled && !e.shiftKey) {
+          state.visage.dragSculpting = true;
+        }
+      });
+      window.addEventListener("pointerup", () => {
+        state.visage.dragSculpting = false;
       });
 
-      document.querySelectorAll(".theme-btn").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          const key = btn.dataset.theme;
-          const t = THEMES[key];
-          if (!t) return;
-          currentTheme = key;
-          bg1 = t.bg1;
-          bg2 = t.bg2;
-          document.getElementById("accentInput").value = t.accent;
-          document.getElementById("darkInput").value = t.dark;
-          document.getElementById("fontSelect").value = t.font;
-          document.getElementById("textScaleInput").value = t.scale;
-          document.getElementById("badgeInput").value = t.badge;
-          document.getElementById("titleInput").value = t.title;
-          document.getElementById("subInput").value = t.sub;
-          document.getElementById("ctaInput").value = t.cta;
-          document.getElementById("posSelect").value = t.pos;
-          document.getElementById("alignSelect").value = t.align;
+      const beatLed = document.getElementById("beat-led");
+      const bpmReadout = document.getElementById("bpm-readout");
+      const bpmSlider = document.getElementById("bpm-slider");
 
-          document.querySelectorAll(".theme-btn").forEach(function (b) {
-            b.classList.toggle("active", b.dataset.theme === currentTheme);
-          });
-          draw();
-        });
+      function triggerQuarterBassHit() {
+        state.bassPulse = 1.0;
+        state.rhythm.bass = Math.min(1.4, state.rhythm.bass + 0.75);
+        state.rhythm.transient = Math.min(1.4, state.rhythm.transient + 0.55);
+        state.beatCount++;
+        beatLed.classList.add("hit");
+        setTimeout(() => beatLed.classList.remove("hit"), 95);
+      }
+
+      function registerTap() {
+        const now = performance.now();
+        state.tapTimes = state.tapTimes.filter(t => now - t < 4000);
+        state.tapTimes.push(now);
+        if (state.tapTimes.length >= 2) {
+          let sum = 0;
+          for (let i = 1; i < state.tapTimes.length; i++) {
+            sum += state.tapTimes[i] - state.tapTimes[i - 1];
+          }
+          const avgMs = sum / (state.tapTimes.length - 1);
+          const computed = Math.round(60000 / avgMs);
+          if (computed >= 50 && computed <= 220) {
+            state.bpm = computed;
+            bpmSlider.value = computed;
+            bpmReadout.textContent = `${state.bpm} BPM`;
+          }
+        }
+        state.beatPhase = 0;
+        triggerQuarterBassHit();
+      }
+
+      bpmSlider.addEventListener("input", () => {
+        state.bpm = Number(bpmSlider.value);
+        bpmReadout.textContent = `${state.bpm} BPM`;
       });
 
-      [
-        "badgeInput", "titleInput", "subInput", "ctaInput",
-        "fontSelect", "textScaleInput", "posSelect", "alignSelect",
-        "accentInput", "darkInput", "zoomInput"
-      ].forEach(function (id) {
-        const el = document.getElementById(id);
-        el.addEventListener("input", draw);
-        el.addEventListener("change", draw);
-      });
+      async function enableMicAudio() {
+        try {
+          if (!state.audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            state.audioCtx = new AudioContext();
+            state.analyser = state.audioCtx.createAnalyser();
+            state.analyser.fftSize = 512;
+            state.analyser.smoothingTimeConstant = 0.72;
+            state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
+          }
+          if (state.audioCtx.state === "suspended") {
+            await state.audioCtx.resume();
+          }
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          if (state.audioSource) {
+            try { state.audioSource.disconnect(); } catch (_) {}
+          }
+          state.audioSource = state.audioCtx.createMediaStreamSource(stream);
+          state.audioSource.connect(state.analyser);
+          state.audioEnabled = true;
+          document.getElementById("btn-audio-mic").classList.add("active");
+        } catch (err) {
+          console.warn("Audio mic error:", err);
+        }
+      }
 
-      document.getElementById("centerPhotoBtn").addEventListener("click", function () {
-        panX = 0;
-        panY = 0;
-        document.getElementById("zoomInput").value = 100;
-        draw();
-      });
+      function playAudioFile(file) {
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        const audio = new Audio(url);
+        audio.crossOrigin = "anonymous";
+        audio.loop = true;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!state.audioCtx) {
+          state.audioCtx = new AudioContext();
+          state.analyser = state.audioCtx.createAnalyser();
+          state.analyser.fftSize = 512;
+          state.analyser.smoothingTimeConstant = 0.72;
+          state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
+        }
+        if (state.audioCtx.state === "suspended") {
+          state.audioCtx.resume();
+        }
+        if (state.audioSource) {
+          try { state.audioSource.disconnect(); } catch (_) {}
+        }
+        state.audioSource = state.audioCtx.createMediaElementSource(audio);
+        state.audioSource.connect(state.analyser);
+        state.analyser.connect(state.audioCtx.destination);
+        audio.play().catch(() => {});
+        state.audioEnabled = true;
+        document.getElementById("btn-audio-mic").classList.add("active");
+      }
 
-      document.getElementById("photoInput").addEventListener("change", function (e) {
-        const file = e.target.files && e.target.files[0];
+      function toggleAudioReactive() {
+        if (!state.audioEnabled) {
+          enableMicAudio();
+        } else {
+          state.audioEnabled = false;
+          state.audioLevel = 0;
+          state.bassLevel = 0;
+          state.midLevel = 0;
+          state.trebleLevel = 0;
+          document.getElementById("btn-audio-mic").classList.remove("active");
+        }
+      }
+
+      function sampleAudioAndRhythm(rawDt) {
+        const r = state.rhythm;
+
+        r.eighths = 0.5 + 0.5 * Math.sin(state.beatPhase * Math.PI * 4);
+        const distToHalf = Math.abs(state.beatPhase - 0.5);
+        if (distToHalf < 0.08) {
+          r.offbeat = Math.max(r.offbeat, 0.85);
+        } else {
+          r.offbeat *= Math.pow(0.05, rawDt);
+        }
+
+        if (state.audioEnabled && state.analyser && state.freqData) {
+          state.analyser.getByteFrequencyData(state.freqData);
+
+          let bassSum = 0;
+          for (let i = 1; i <= 14; i++) bassSum += state.freqData[i];
+          const rawBass = Math.min(1.3, (bassSum / (14 * 255)) * 1.35);
+
+          let midSum = 0;
+          for (let i = 15; i <= 75; i++) midSum += state.freqData[i];
+          const rawMid = Math.min(1.3, (midSum / (61 * 255)) * 1.45);
+
+          let trebleSum = 0;
+          for (let i = 76; i <= 210; i++) trebleSum += state.freqData[i];
+          const rawTreble = Math.min(1.3, (trebleSum / (135 * 255)) * 1.7);
+
+          state.bassLevel = Math.max(rawBass, state.bassLevel * Math.pow(0.08, rawDt));
+          state.midLevel = rawMid * 0.75 + state.midLevel * 0.25;
+          state.trebleLevel = Math.max(rawTreble, state.trebleLevel * Math.pow(0.14, rawDt));
+          state.audioLevel = Math.min(1.2, rawBass * 0.45 + rawMid * 0.35 + rawTreble * 0.25);
+
+          const totalInst = rawBass * 0.5 + rawMid * 0.3 + rawTreble * 0.4;
+          const delta = totalInst - r.prevEnergy;
+          if (delta > 0.14) {
+            r.transient = Math.min(1.4, r.transient + delta * 2.2);
+          }
+          r.prevEnergy = totalInst;
+
+          if (rawBass > 0.68 && state.bassPulse < 0.35) {
+            state.bassPulse = Math.min(1, rawBass);
+          }
+        } else {
+          const qKick = Math.pow(Math.max(0, 1 - state.beatPhase * 2.2), 2);
+          const synthMel = 0.35 + 0.35 * Math.sin(state.time * 4.2) * Math.cos(state.time * 1.7);
+          const hihatSprinkle = Math.max(0, Math.sin(state.time * 19.0)) * 0.45 * (0.4 + 0.6 * r.eighths);
+
+          state.bassLevel = Math.max(qKick * 0.85, state.bassPulse * 0.75);
+          state.midLevel = Math.max(0, synthMel + r.offbeat * 0.3);
+          state.trebleLevel = hihatSprinkle;
+          state.audioLevel = Math.min(1, state.bassLevel * 0.45 + state.midLevel * 0.35 + state.trebleLevel * 0.25);
+        }
+
+        r.bass = Math.max(state.bassLevel, r.bass * Math.pow(0.06, rawDt));
+        r.mid = state.midLevel * 0.65 + r.mid * 0.35;
+        r.treble = Math.max(state.trebleLevel, r.treble * Math.pow(0.18, rawDt));
+        r.transient = Math.max(0, r.transient - rawDt * 3.8);
+      }
+
+      function handleLogoFile(file) {
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function (ev) {
+        reader.onload = () => {
           const img = new Image();
-          img.onload = function () {
-            photo = img;
-            panX = 0;
-            panY = 0;
-            document.getElementById("zoomInput").value = 100;
-            draw();
+          img.onload = () => {
+            state.logoImg = img;
+            state.logoVisible = true;
+            document.getElementById("logo-status").textContent = file.name.slice(0, 18);
+            updateUiReadouts();
           };
-          img.src = ev.target.result;
+          img.src = reader.result;
         };
         reader.readAsDataURL(file);
+      }
+
+      document.getElementById("file-logo").addEventListener("change", e => {
+        if (e.target.files && e.target.files[0]) handleLogoFile(e.target.files[0]);
+      });
+      document.getElementById("file-audio").addEventListener("change", e => {
+        if (e.target.files && e.target.files[0]) playAudioFile(e.target.files[0]);
       });
 
-      function getCanvasPoint(e) {
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches && e.touches[0];
-        const cx = touch ? touch.clientX : e.clientX;
-        const cy = touch ? touch.clientY : e.clientY;
-        return {
-          x: ((cx - rect.left) / rect.width) * W,
-          y: ((cy - rect.top) / rect.height) * H
+      function startDirectTyping() {
+        state.typingActive = true;
+        state.typeDraft = "";
+        state.textVisible = true;
+        hiddenSink.value = "";
+        hiddenSink.focus({ preventScroll: true });
+        updateUiReadouts();
+      }
+
+      function commitDirectTyping() {
+        if (!state.typingActive) return;
+        state.liveText = state.typeDraft;
+        state.typingActive = false;
+        state.textVisible = state.liveText.trim().length > 0;
+        hiddenSink.blur();
+        updateUiReadouts();
+      }
+
+      function cancelDirectTyping() {
+        if (!state.typingActive) return;
+        state.typingActive = false;
+        state.typeDraft = state.liveText;
+        hiddenSink.blur();
+        updateUiReadouts();
+      }
+
+      const SHIFT_KEY_MAP = {
+        "!": "symmetry",
+        "@": "tiles",
+        "#": "twist",
+        "$": "slice",
+        "%": "spin",
+        "^": "hueDrift",
+        "&": "vignette",
+        "*": "chaosHeat",
+        "(": "glassRibs",
+        ")": "anamorphic",
+        "q": "melt",
+        "w": "glitch",
+        "e": "pixels",
+        "r": "flyEye",
+        "y": "oscillators",
+        "u": "pulses",
+        "i": "flares"
+      };
+
+      const SHIFT_DIGIT_MAP = {
+        "1": "symmetry",
+        "2": "tiles",
+        "3": "twist",
+        "4": "slice",
+        "5": "spin",
+        "6": "hueDrift",
+        "7": "vignette",
+        "8": "chaosHeat",
+        "9": "glassRibs",
+        "0": "anamorphic"
+      };
+
+      function toggleShiftFlag(flagKey) {
+        if (!flagKey || !(flagKey in state.shiftFlags)) return;
+        state.shiftFlags[flagKey] = !state.shiftFlags[flagKey];
+        updateUiReadouts();
+      }
+
+      function resetAllShiftFlags() {
+        Object.keys(state.shiftFlags).forEach(k => {
+          state.shiftFlags[k] = false;
+        });
+        updateUiReadouts();
+      }
+
+      function toggleMorphMix() {
+        state.morphMixEnabled = !state.morphMixEnabled;
+        updateUiReadouts();
+      }
+
+      function toggleVisage() {
+        state.visage.enabled = !state.visage.enabled;
+        updateUiReadouts();
+      }
+
+      function toggleVisageHeadOpen() {
+        state.visage.enabled = true;
+        state.visage.headOpenTarget = state.visage.headOpenTarget > 0.5 ? 0 : 1;
+        updateUiReadouts();
+      }
+
+      function saveVisageAngleAndGaze() {
+        const v = state.visage;
+        v.enabled = true;
+        v.savedLook = {
+          angleYaw: v.pointerX * 0.35,
+          anglePitch: v.pointerY * 0.22,
+          gazeX: v.eyeLookX,
+          gazeY: v.eyeLookY,
+          hasSaved: true
         };
+        updateUiReadouts();
       }
 
-      function startMove(e) {
-        if (!photo) return;
-        dragging = true;
-        const pt = getCanvasPoint(e);
-        lastX = pt.x;
-        lastY = pt.y;
-      }
-
-      function doMove(e) {
-        if (!dragging || !photo) return;
-        if (e.cancelable) e.preventDefault();
-        const pt = getCanvasPoint(e);
-        panX += pt.x - lastX;
-        panY += pt.y - lastY;
-        lastX = pt.x;
-        lastY = pt.y;
-        draw();
-      }
-
-      function stopMove() {
-        dragging = false;
-      }
-
-      canvas.addEventListener("mousedown", startMove);
-      window.addEventListener("mousemove", doMove);
-      window.addEventListener("mouseup", stopMove);
-
-      canvas.addEventListener("touchstart", startMove, { passive: true });
-      canvas.addEventListener("touchmove", doMove, { passive: false });
-      window.addEventListener("touchend", stopMove);
-
-      document.getElementById("makePreviewBtn").addEventListener("click", function () {
-        const url = canvas.toDataURL("image/png");
-        const box = document.getElementById("previewSaveBox");
-        const img = document.getElementById("previewSaveImg");
-        const cap = document.getElementById("previewSaveCaption");
-        img.src = url;
-        cap.innerHTML = "<strong>" + sizeLabel + " (" + W + " × " + H + " px):</strong> Paina kuvaa alla pitkään ja valitse <em>Tallenna kuva</em>.";
-        box.style.display = "block";
-        setStatus("Tallennuskuva luotu koossa " + sizeLabel + " (" + W + "×" + H + " px).");
-        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      const bgFxButtons = document.getElementById("bg-fx-buttons");
+      BG_EFFECTS.forEach(fx => {
+        const b = document.createElement("button");
+        b.textContent = `${fx.key}:${fx.name.split(" ")[0]}`;
+        b.dataset.bg = fx.id;
+        b.addEventListener("click", () => setBgEffect(fx.id));
+        bgFxButtons.appendChild(b);
       });
 
-      function saveFile(ext) {
-        const mime = ext === "jpg" ? "image/jpeg" : "image/png";
-        const url = canvas.toDataURL(mime, 0.92);
-        const filename = "ig-" + ratioCode + "-" + W + "x" + H + "." + ext;
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setStatus("Ladattu: " + filename + " (" + sizeLabel + ")");
+      const logoFxButtons = document.getElementById("logo-fx-buttons");
+      LOGO_FX_MODES.forEach((lf, idx) => {
+        const b = document.createElement("button");
+        b.textContent = lf.label;
+        b.dataset.lfx = idx;
+        b.addEventListener("click", () => {
+          state.logoFxIndex = idx;
+          state.logoMorphMode = true;
+          updateUiReadouts();
+        });
+        logoFxButtons.appendChild(b);
+      });
+
+      const shiftFxButtons = document.getElementById("shift-fx-buttons");
+      const flagKeysOrdered = Object.keys(state.shiftFlags);
+      SHIFT_MODES.forEach((sm, idx) => {
+        const fk = flagKeysOrdered[idx];
+        const b = document.createElement("button");
+        b.textContent = `${sm.code} ${sm.name.split("/")[0].trim()}`;
+        b.dataset.sflag = fk;
+        b.addEventListener("click", () => toggleShiftFlag(fk));
+        shiftFxButtons.appendChild(b);
+      });
+
+      const txtFxButtons = document.getElementById("txt-fx-buttons");
+      TXT_EFFECTS.forEach((fx, idx) => {
+        const b = document.createElement("button");
+        b.textContent = `${fx.key}`;
+        b.title = fx.name;
+        b.dataset.tfx = idx;
+        b.addEventListener("click", () => setTxtEffect(idx));
+        txtFxButtons.appendChild(b);
+      });
+
+      function setBgEffect(id) {
+        state.bgEffect = id;
+        updateUiReadouts();
       }
 
-      document.getElementById("dlPngBtn").addEventListener("click", function () {
-        saveFile("png");
-      });
+      function setTxtEffect(idx) {
+        state.txtEffectIndex = ((idx % TXT_EFFECTS.length) + TXT_EFFECTS.length) % TXT_EFFECTS.length;
+        state.textVisible = true;
+        updateUiReadouts();
+      }
 
-      document.getElementById("dlJpgBtn").addEventListener("click", function () {
-        saveFile("jpg");
-      });
+      function cycleFont() {
+        state.fontIndex = (state.fontIndex + 1) % FONTS.length;
+        updateUiReadouts();
+      }
 
-      draw();
-    });
-  </script>
-</body>
-</html>
+      function cycleBlend() {
+        state.blendIndex = (state.blendIndex + 1) % BLEND_MODES.length;
+        updateUiReadouts();
+      }
+
+      function updateUiReadouts() {
+        const currentBg = BG_EFFECTS.find(e => e.id === state.bgEffect) || BG_EFFECTS[0];
+        const currentTxt = TXT_EFFECTS[state.txtEffectIndex];
+        const currentFont = FONTS[state.fontIndex];
+        const currentBlend = BLEND_MODES[state.blendIndex];
+
+        const activeShiftNames = SHIFT_MODES
+          .filter((_, i) => state.shiftFlags[flagKeysOrdered[i]])
+          .map(s => s.name);
+
+        document.getElementById("bg-fx-name").textContent = `${currentBg.key}. ${currentBg.name}`;
+        document.getElementById("txt-fx-name").textContent = `${currentTxt.key}. ${currentTxt.name}`;
+        document.getElementById("shift-fx-name").textContent =
+          activeShiftNames.length ? activeShiftNames.join(", ").slice(0, 28) : "SHIFT FX: OFF";
+        document.getElementById("font-readout").textContent = currentFont.label;
+        document.getElementById("blend-readout").textContent = currentBlend.toUpperCase();
+        document.getElementById("speed-readout").textContent = `${state.speed.toFixed(2)}x`;
+        document.getElementById("logo-scale-readout").textContent = `${state.logoScale.toFixed(2)}x`;
+        document.getElementById("text-scale-readout").textContent = `${state.textScale.toFixed(2)}x`;
+        document.getElementById("audio-level").textContent = `${Math.round((state.audioLevel || state.bassPulse) * 100)}%`;
+        document.getElementById("morph-mix-status").textContent =
+          `MIX: ${state.morphMixEnabled ? "ON" : "OFF"} · LOGO: ${LOGO_FX_MODES[state.logoFxIndex].label}`;
+
+        document.querySelectorAll("#bg-fx-buttons button").forEach(btn => {
+          btn.classList.toggle("active", Number(btn.dataset.bg) === state.bgEffect);
+        });
+        document.querySelectorAll("#logo-fx-buttons button").forEach(btn => {
+          btn.classList.toggle("active", Number(btn.dataset.lfx) === state.logoFxIndex);
+        });
+        document.querySelectorAll("#shift-fx-buttons button").forEach(btn => {
+          btn.classList.toggle("active", Boolean(state.shiftFlags[btn.dataset.sflag]));
+        });
+        document.querySelectorAll("#txt-fx-buttons button").forEach(btn => {
+          btn.classList.toggle("active", Number(btn.dataset.tfx) === state.txtEffectIndex);
+        });
+        document.getElementById("btn-txt-toggle").classList.toggle("active", state.textVisible);
+        document.getElementById("btn-logo-toggle").classList.toggle("active", state.logoVisible);
+        document.getElementById("btn-morph-mix").classList.toggle("active", state.morphMixEnabled);
+        document.getElementById("btn-visage-toggle").classList.toggle("active", state.visage.enabled);
+        document.getElementById("btn-visage-open").classList.toggle("active", state.visage.headOpenTarget > 0.5);
+      }
+      updateUiReadouts();
+
+      const drawer = document.getElementById("control-drawer");
+      const modal = document.getElementById("shortcut-modal");
+
+      function toggleDrawer(force) {
+        const next = typeof force === "boolean" ? force : !drawer.classList.contains("open");
+        drawer.classList.toggle("open", next);
+        document.getElementById("btn-panel").classList.toggle("active", next);
+      }
+
+      function toggleModal(force) {
+        const next = typeof force === "boolean" ? force : !modal.classList.contains("open");
+        modal.classList.toggle("open", next);
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.().catch(() => {});
+        }
+      }
+
+      document.getElementById("btn-panel").addEventListener("click", () => toggleDrawer());
+      document.getElementById("btn-shortcuts").addEventListener("click", () => toggleModal());
+      document.getElementById("btn-close-modal").addEventListener("click", () => toggleModal(false));
+      document.getElementById("btn-fullscreen").addEventListener("click", toggleFullscreen);
+      document.getElementById("btn-tap-top").addEventListener("click", registerTap);
+      document.getElementById("btn-tap-drawer").addEventListener("click", registerTap);
+      document.getElementById("btn-reset-single").addEventListener("click", resetToSingleEffect);
+      document.getElementById("btn-reset-drawer").addEventListener("click", resetToSingleEffect);
+      document.getElementById("btn-logo-dn").addEventListener("click", () => adjustLogoScale(-0.15));
+      document.getElementById("btn-logo-up").addEventListener("click", () => adjustLogoScale(0.15));
+      document.getElementById("btn-audio-mic").addEventListener("click", toggleAudioReactive);
+      document.getElementById("btn-morph-mix").addEventListener("click", toggleMorphMix);
+      document.getElementById("btn-visage-toggle").addEventListener("click", toggleVisage);
+      document.getElementById("btn-visage-open").addEventListener("click", toggleVisageHeadOpen);
+      document.getElementById("btn-visage-save").addEventListener("click", saveVisageAngleAndGaze);
+      document.getElementById("btn-logo-toggle").addEventListener("click", () => {
+        state.logoVisible = !state.logoVisible;
+        updateUiReadouts();
+      });
+      document.getElementById("btn-blend-cycle").addEventListener("click", cycleBlend);
+      document.getElementById("btn-txt-toggle").addEventListener("click", () => {
+        state.textVisible = !state.text
