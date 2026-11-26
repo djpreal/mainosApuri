@@ -6,14 +6,14 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>LIVE VISUALS — MOBILE PIXEL BOARD &amp; MATRIX</title>
+  <title>LIVE VISUALS — MULTI-PAGE PIXEL &amp; THEME BOARD</title>
   <style>
     :root {
-      --bg: #040b0a;
-      --panel: rgba(6, 18, 17, 0.94);
-      --panel-border: rgba(0, 255, 159, 0.38);
-      --text: #e6fff6;
-      --muted: rgba(230, 255, 246, 0.68);
+      --bg: #05070d;
+      --panel: rgba(8, 12, 22, 0.94);
+      --panel-border: rgba(0, 255, 159, 0.36);
+      --text: #f3f7ff;
+      --muted: rgba(243, 247, 255, 0.68);
       --accent: #00ff9f;
       --accent-2: #00d8ff;
       --accent-3: #b8ff2c;
@@ -51,24 +51,67 @@
       width: 100vw;
       height: 100dvh;
       display: block;
-      background: #040b0a;
+      background: #05070d;
       touch-action: none;
       image-rendering: pixelated;
     }
 
-    #hud-toggle {
+    /* Yläpalkki: Sivut / Välilehdet + Top-napit */
+    #top-chrome {
       position: fixed;
-      top: calc(10px + var(--safe-top));
-      right: calc(10px + var(--safe-right));
+      top: calc(8px + var(--safe-top));
+      left: calc(8px + var(--safe-left));
+      right: calc(8px + var(--safe-right));
       z-index: 30;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    #page-tabs {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 2px;
+      pointer-events: auto;
+      touch-action: pan-x;
+    }
+
+    #page-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page-tab {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      padding: 7px 11px;
+      min-height: 36px;
+      font-size: 11px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      background: rgba(8, 13, 24, 0.88);
+      color: var(--text);
+    }
+
+    .page-tab.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(18, 32, 52, 0.96);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+    }
+
+    #hud-toggle {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 5px;
-      max-width: calc(100vw - 20px - var(--safe-left) - var(--safe-right));
+      pointer-events: auto;
     }
 
-    .hud-hidden #hud-toggle,
+    .hud-hidden #top-chrome,
     .hud-hidden #control-drawer,
     .hud-hidden #mobile-pad {
       display: none !important;
@@ -78,10 +121,10 @@
       appearance: none;
       -webkit-appearance: none;
       border: 2px solid var(--panel-border);
-      background: rgba(7, 22, 21, 0.9);
+      background: rgba(8, 15, 28, 0.9);
       color: var(--text);
       border-radius: 5px;
-      padding: 8px 10px;
+      padding: 7px 10px;
       min-height: 36px;
       font-size: 11.5px;
       font-weight: 700;
@@ -102,20 +145,20 @@
 
     button.active {
       border-color: var(--accent-3);
-      box-shadow: 0 0 0 2px rgba(184, 255, 44, 0.28);
+      box-shadow: 0 0 0 2px rgba(184, 255, 44, 0.25);
       color: var(--accent-3);
-      background: rgba(16, 48, 42, 0.98);
+      background: rgba(18, 38, 48, 0.98);
     }
 
     #control-drawer {
       position: fixed;
-      top: calc(56px + var(--safe-top));
-      left: calc(10px + var(--safe-left));
-      right: calc(10px + var(--safe-right));
+      top: calc(92px + var(--safe-top));
+      left: calc(8px + var(--safe-left));
+      right: calc(8px + var(--safe-right));
       width: auto;
-      max-width: 460px;
+      max-width: 470px;
       margin-left: auto;
-      max-height: calc(100dvh - 135px - var(--safe-top) - var(--safe-bottom));
+      max-height: calc(100dvh - 172px - var(--safe-top) - var(--safe-bottom));
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
@@ -127,7 +170,7 @@
       display: none;
       flex-direction: column;
       gap: 11px;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.92);
     }
 
     #control-drawer.open {
@@ -158,8 +201,8 @@
       font-variant-numeric: tabular-nums;
       padding: 5px 8px;
       border-radius: 4px;
-      background: rgba(0, 255, 159, 0.07);
-      border: 1px solid rgba(0, 255, 159, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.16);
     }
 
     .band-meter {
@@ -201,7 +244,7 @@
       width: 11px;
       height: 11px;
       border-radius: 2px;
-      background: #14332d;
+      background: #1a2636;
       display: inline-block;
       transition: transform 0.05s ease, background 0.05s ease;
     }
@@ -255,14 +298,14 @@
       padding: 8px 9px;
       min-height: 38px;
       font-size: 11px;
-      background: rgba(7, 20, 19, 0.88);
+      background: rgba(8, 15, 28, 0.9);
     }
 
     #shortcut-modal {
       position: fixed;
       inset: 0;
       z-index: 50;
-      background: rgba(2, 8, 7, 0.9);
+      background: rgba(2, 6, 12, 0.9);
       display: none;
       align-items: center;
       justify-content: center;
@@ -278,7 +321,7 @@
       max-height: 86dvh;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      background: #071615;
+      background: #08101d;
       border: 2px solid var(--accent);
       border-radius: 6px;
       padding: 16px;
@@ -290,7 +333,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
-      border-bottom: 2px solid rgba(0, 255, 159, 0.16);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.14);
       padding-bottom: 10px;
       gap: 8px;
     }
@@ -302,8 +345,8 @@
     }
 
     .key-box {
-      background: rgba(0, 255, 159, 0.03);
-      border: 1px solid rgba(0, 255, 159, 0.14);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 4px;
       padding: 10px;
     }
@@ -331,8 +374,8 @@
     }
 
     kbd {
-      background: rgba(0, 255, 159, 0.14);
-      border: 1px solid rgba(0, 255, 159, 0.32);
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.28);
       border-radius: 3px;
       padding: 2px 5px;
       font-size: 10.5px;
@@ -367,21 +410,26 @@
     spellcheck="false"
   />
 
-  <div id="hud-toggle">
-    <button id="btn-tap-top" title="TAP BPM (Space / N)">TAP</button>
-    <button id="btn-reset-single" title="Nollaa ja jätä vain yksi tauluefekti päälle">RESET 1</button>
-    <button id="btn-panel" title="Ohjauspaneeli">PANEL</button>
-    <button id="btn-shortcuts" title="Pikanäppäimet (? / H)">KEYS</button>
-    <button id="btn-fullscreen" title="Koko näyttö (F11)">FULL</button>
+  <div id="top-chrome">
+    <nav id="page-tabs" aria-label="Teemasivut"></nav>
+    <div id="hud-toggle">
+      <button id="btn-tap-top" title="TAP BPM (Space / N)">TAP</button>
+      <button id="btn-reset-single" title="Nollaa ja jätä vain yksi efekti päälle">RESET 1</button>
+      <button id="btn-panel" title="Ohjauspaneeli">PANEL</button>
+      <button id="btn-shortcuts" title="Pikanäppäimet (? / H)">KEYS</button>
+      <button id="btn-fullscreen" title="Koko näyttö (F11)">FULL</button>
+    </div>
   </div>
 
   <aside id="control-drawer">
     <div>
       <div class="section-title">
-        <span>Tempo &amp; Taajuuskaistat</span>
-        <span><span id="beat-led" class="beat-led"></span> <strong id="bpm-readout">120 BPM</strong></span>
+        <span>Sivu &amp; Tempo</span>
+        <span><strong id="page-readout">RETRO</strong> · <span id="beat-led" class="beat-led"></span> <strong id="bpm-readout">120 BPM</strong></span>
       </div>
       <div class="row">
+        <button id="btn-page-prev" title="Edellinen sivu">◀ SIVU</button>
+        <button id="btn-page-next" title="Seuraava sivu">SIVU ▶</button>
         <button id="btn-tap-drawer">TAP BPM</button>
         <input id="bpm-slider" type="range" min="50" max="220" value="120" />
         <button id="btn-audio-mic" title="Mikrofoni / Musiikki (M)">MIC</button>
@@ -395,7 +443,7 @@
           <div class="band-bar-wrap"><div id="bar-bass" class="band-bar" style="background:#00ff9f;"></div></div>
         </div>
         <div class="band-box">
-          <span>MID/CODE</span> <strong id="val-mid">0%</strong>
+          <span>MID/MEL</span> <strong id="val-mid">0%</strong>
           <div class="band-bar-wrap"><div id="bar-mid" class="band-bar" style="background:#00d8ff;"></div></div>
         </div>
         <div class="band-box">
@@ -431,7 +479,7 @@
 
     <div>
       <div class="section-title">
-        <span>Logo, Koko, Taululiike &amp; Blend (B)</span>
+        <span>Logo, Koko, Liike &amp; Blend (B)</span>
         <span id="logo-status">Ei ladattua logoa</span>
       </div>
       <div class="row">
@@ -448,15 +496,15 @@
 
     <div>
       <div class="section-title">
-        <span>Pikselitaulu &amp; Koodikohtaukset (1–9, 0)</span>
-        <span id="bg-fx-name">1. MATRIX RAIN</span>
+        <span>Sivun Kohtaukset (1–9, 0)</span>
+        <span id="bg-fx-name">1. SCENE ONE</span>
       </div>
       <div class="row" id="bg-fx-buttons"></div>
     </div>
 
     <div>
       <div class="section-title">
-        <span>Shift + 1–9, 0 · Shift + Q–P (Taulu Post-FX)</span>
+        <span>Shift + Numerot &amp; Kirjaimet (Post-FX)</span>
         <span id="shift-fx-name">SHIFT FX: OFF</span>
       </div>
       <div class="row" id="shift-fx-buttons"></div>
@@ -464,8 +512,8 @@
 
     <div>
       <div class="section-title">
-        <span>Koodi- &amp; Taulutekstit (Q–P) &amp; Fontti (F)</span>
-        <span id="txt-fx-name">Q. MATRIX STREAM</span>
+        <span>Tekstiefektit (Q–P) &amp; Fontti (F)</span>
+        <span id="txt-fx-name">Q. TEXT FX</span>
       </div>
       <div class="row" id="txt-fx-buttons"></div>
       <div class="row" style="margin-top:6px;">
@@ -479,10 +527,10 @@
   <div id="mobile-pad">
     <div class="pad-row">
       <div class="pad-group">
+        <button id="mob-page">SIVU+</button>
         <button id="mob-tap">TAP</button>
         <button id="mob-reset">RESET 1</button>
         <button id="mob-mix">G MIX</button>
-        <button id="mob-visage">V HEAD</button>
         <button id="mob-bg-next">BG+</button>
       </div>
       <div class="pad-group">
@@ -498,10 +546,18 @@
   <div id="shortcut-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 id="modal-title" style="margin:0; font-size:15px;">Pikanäppäimet &amp; Mobiiliohjaus</h2>
+        <h2 id="modal-title" style="margin:0; font-size:15px;">Sivut, Mobiiliohjaus &amp; Pikanäppäimet</h2>
         <button id="btn-close-modal">SULJE (?)</button>
       </div>
       <div class="modal-grid">
+        <div class="key-box">
+          <h3>Sivut / Välilehdet</h3>
+          <div class="key-item"><span>Yläpalkin välilehdet / SIVU+</span><span>10 TEEMASIVUA</span></div>
+          <div class="key-item"><span>Retro · 8-bit · Pixel Art · Cyberpunk · Future</span><span>SIVUT 1–5</span></div>
+          <div class="key-item"><span>Western · Space · Horror · Tekno · Rave</span><span>SIVUT 6–10</span></div>
+          <div class="key-item"><span>Samat näppäimet toimivat kaikilla sivuilla</span><span>1–0 · Q–P · ⇧</span></div>
+        </div>
+
         <div class="key-box">
           <h3>Puhelin- &amp; kosketuseleet</h3>
           <div class="key-item"><span>Kaksinapautus näytöllä</span><span>TAP BPM</span></div>
@@ -511,23 +567,15 @@
         </div>
 
         <div class="key-box">
-          <h3>Pikselitaulu &amp; Koodikohtaukset (1–9, 0)</h3>
-          <div class="key-item"><span>1: Matrix Rain · 2: Hex Dump · 3: Compiler</span><span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></span></div>
-          <div class="key-item"><span>4: Quantum Mesh · 5: Bitstream · 6: Tunnel</span><span><kbd>4</kbd> <kbd>5</kbd> <kbd>6</kbd></span></div>
-          <div class="key-item"><span>7: Cipher Ring · 8: Signal Grid · 9: Beams</span><span><kbd>7</kbd> <kbd>8</kbd> <kbd>9</kbd></span></div>
-          <div class="key-item"><span>0: Node Ten · Reset 1 FX</span><span><kbd>0</kbd> · RESET 1</span></div>
-        </div>
-
-        <div class="key-box">
-          <h3>Shift + Numerot &amp; Kirjaimet</h3>
-          <div class="key-item"><span>⇧1..⇧0: Mirror, LED, Twist, Scan, Spin ym.</span><span><kbd>⇧1</kbd> … <kbd>⇧0</kbd></span></div>
-          <div class="key-item"><span>⇧Q..⇧I: Drip, Glitch, Pixels, Panel, Wave</span><span><kbd>⇧Q</kbd> … <kbd>⇧I</kbd></span></div>
+          <h3>Kohtaukset (1–9, 0) &amp; Shift-FX</h3>
+          <div class="key-item"><span>1–9, 0: 10 kohtausta per teemasivu</span><span><kbd>1</kbd> … <kbd>0</kbd></span></div>
+          <div class="key-item"><span>⇧1..⇧0 &amp; ⇧Q..⇧I: Post-efektit</span><span><kbd>⇧1</kbd> … <kbd>⇧I</kbd></span></div>
           <div class="key-item"><span>⇧P: Tyhjennä Shift-FX</span><span><kbd>⇧P</kbd></span></div>
         </div>
 
         <div class="key-box">
-          <h3>Tekstiefektit &amp; Ohjaus</h3>
-          <div class="key-item"><span>Q, W, E, R, Y, U, I, O, P</span><span>9 KOODITEKSTIÄ</span></div>
+          <h3>Tekstiefektit (Q–P) &amp; Ohjaus</h3>
+          <div class="key-item"><span>Q, W, E, R, Y, U, I, O, P</span><span>9 TEKSTIEFLEKTIÄ</span></div>
           <div class="key-item"><span>G: Morph · V: Visage · K: Open · S: Save</span><span><kbd>G</kbd> <kbd>V</kbd> <kbd>K</kbd> <kbd>S</kbd></span></div>
           <div class="key-item"><span>T: Teksti · F: Fontti · B: Blend · M: Ääni</span><span><kbd>T</kbd> <kbd>F</kbd> <kbd>B</kbd> <kbd>M</kbd></span></div>
           <div class="key-item"><span>↑/↓: Nopeus · ←/→: Logo · A/D: Teksti</span><span><kbd>↑↓</kbd> <kbd>←→</kbd> <kbd>AD</kbd></span></div>
@@ -553,32 +601,172 @@
 
       const hiddenSink = document.getElementById("hidden-type-sink");
 
-      const MATRIX_CHARS = "01アイウエオカキクケコABCDEF<>/{}[]*+=#";
-      const HEX_CHARS = "0123456789ABCDEF";
-      const CODE_SNIPPETS = [
-        "INIT_KERNEL(0xFF00);",
-        "ALLOC_MEM(2048) -> OK",
-        "SYNC_CLOCK(BPM_LOCK);",
-        "STREAM_MATRIX::PULSE();",
-        "PIPE_DATA[0..64] -> BUS",
-        "EXEC_VECTOR(0x7A9C);",
-        "RENDER_BOARD(GRID_16);",
-        "CHECK_PARITY() == TRUE;"
+      // 10 TEEMASIVUA / VÄLILEHTEÄ
+      const THEME_PAGES = [
+        {
+          id: "retro",
+          label: "RETRO",
+          bg: "#090614",
+          gridCol: "rgba(255, 110, 199, 0.12)",
+          palette: ["#ff6ec7", "#ffd319", "#00f5d4", "#9b5de5", "#ff2a85", "#ffffff"],
+          chars: "0123456789ABCDEF<>/*#@",
+          scenes: [
+            "CRT SCANLINES", "SUNSET GRID", "VHS TRACKING", "NEON HORIZON", "ARCADE PULSE",
+            "SYNTH RINGS", "TAPE WAVE", "LASER BEAMS", "CHROMA BURST", "RETRO CORE"
+          ],
+          txtNames: [
+            "VHS GLOW", "CRT SHADOW", "SUNSET OUTLINE", "ARC WAVE", "VHS SPLIT",
+            "ARCADE HOP", "TAPE RIPPLE", "DUAL TAPE", "CRT BOX"
+          ]
+        },
+        {
+          id: "8bit",
+          label: "8 BIT",
+          bg: "#0b0e1a",
+          gridCol: "rgba(255, 230, 109, 0.11)",
+          palette: ["#ffe66d", "#ff6b6b", "#4ecdc4", "#a8e6cf", "#ffffff", "#ff9f1c"],
+          chars: "01[]{}*+-=<>!?#8",
+          scenes: [
+            "CHIPTUNE RAIN", "SPRITE WALL", "STAGE COMPILER", "BLOCK MESH", "8BIT EQ",
+            "WARP TUNNEL", "BIT ORBIT", "SCORE GRID", "COIN BEAMS", "BOSS NODE"
+          ],
+          txtNames: [
+            "SPRITE BOX", "8BIT DROP", "PIXEL EDGE", "STAGE ARC", "CHIP GLITCH",
+            "JUMP 8BIT", "PULSE BIT", "DUAL CHIP", "SCORE FRAME"
+          ]
+        },
+        {
+          id: "pixelart",
+          label: "PIXEL ART",
+          bg: "#071112",
+          gridCol: "rgba(125, 249, 255, 0.12)",
+          palette: ["#7df9ff", "#72efdd", "#ffbe0b", "#fb5607", "#ff006e", "#f8f9fa"],
+          chars: "01#.:*+x/\\|<>[]",
+          scenes: [
+            "DOT MATRIX RAIN", "HEX TILE WALL", "PIXEL CODE", "VOXEL MESH", "PIXEL BARS",
+            "GRID TUNNEL", "DOT RING", "MOSAIC WAVE", "PIXEL BEAMS", "DOT TEN"
+          ],
+          txtNames: [
+            "DOT PANEL", "BLOCK SHADOW", "DOT OUTLINE", "PIXEL ARC", "GRID SPLIT",
+            "PIXEL HOP", "DOT WAVE", "DUAL DOT", "ART FRAME"
+          ]
+        },
+        {
+          id: "cyberpunk",
+          label: "CYBERPUNK",
+          bg: "#090512",
+          gridCol: "rgba(255, 0, 128, 0.13)",
+          palette: ["#ff0080", "#00f0ff", "#fcee0a", "#9d00ff", "#00ff9d", "#ffffff"],
+          chars: "01アイウエオカキクケコ$/\\<>#7X",
+          scenes: [
+            "CYBER MATRIX", "HEX DATA DUMP", "NETRUNNER CODE", "GRID NODES", "CYBER BARS",
+            "HYPER TUNNEL", "CIPHER RING", "NEON SIGNAL", "LASER COLUMNS", "CORE NODES"
+          ],
+          txtNames: [
+            "NET BOX", "CYBER SHADOW", "NEON EDGE", "CHROME ARC", "GLITCH SHIFT",
+            "JACK JUMP", "DATA WAVE", "DUAL LINK", "HUD FRAME"
+          ]
+        },
+        {
+          id: "future",
+          label: "FUTURE",
+          bg: "#040c14",
+          gridCol: "rgba(0, 229, 255, 0.12)",
+          palette: ["#00e5ff", "#00ffaa", "#7b61ff", "#38bdf8", "#e0f2fe", "#22d3ee"],
+          chars: "0123456789ABCDEF<>-+=/",
+          scenes: [
+            "QUANTUM RAIN", "MEMORY WALL", "AI COMPILER", "MATRIX MESH", "VECTOR BARS",
+            "ION TUNNEL", "ORBIT RING", "PULSE GRID", "ION BEAMS", "NODE TEN"
+          ],
+          txtNames: [
+            "ION BOX", "HOLO SHADOW", "CYAN EDGE", "ORBIT ARC", "PHASE SHIFT",
+            "LIFT PULSE", "ION WAVE", "DUAL HOLO", "TECH FRAME"
+          ]
+        },
+        {
+          id: "western",
+          label: "WESTERN",
+          bg: "#140b05",
+          gridCol: "rgba(255, 183, 77, 0.12)",
+          palette: ["#ffb74d", "#e65100", "#ffd54f", "#d84315", "#fff3e0", "#a1887f"],
+          chars: "01*+#!/?=<>X[]",
+          scenes: [
+            "DUST CODE RAIN", "BOUNTY HEX", "TELEGRAPH LINE", "CANYON NODES", "CANYON BARS",
+            "SIGHT TUNNEL", "SPUR RING", "MESA GRID", "SUN BEAMS", "OUTLAW TEN"
+          ],
+          txtNames: [
+            "WANTED BOX", "DUST SHADOW", "GOLD EDGE", "SADDLE ARC", "GUN GLITCH",
+            "SPUR JUMP", "DUST WAVE", "DUAL SHOT", "SALOON BOX"
+          ]
+        },
+        {
+          id: "space",
+          label: "SPACE",
+          bg: "#030510",
+          gridCol: "rgba(139, 92, 246, 0.12)",
+          palette: ["#a78bfa", "#38bdf8", "#f472b6", "#34d399", "#e2e8f0", "#818cf8"],
+          chars: "01.*+<>^v()[]#@",
+          scenes: [
+            "STARFALL CODE", "TELEMETRY HEX", "ORBITAL CODE", "STAR MESH", "COSMIC BARS",
+            "WORMHOLE", "PLANET RING", "STARFIELD", "PULSAR BEAMS", "GALAXY TEN"
+          ],
+          txtNames: [
+            "ORBIT BOX", "COSMIC SHADOW", "STAR EDGE", "NOVA ARC", "WARP SHIFT",
+            "ZERO-G HOP", "GRAVITY WAVE", "DUAL ORBIT", "HELMET HUD"
+          ]
+        },
+        {
+          id: "horror",
+          label: "HORROR",
+          bg: "#090305",
+          gridCol: "rgba(239, 68, 68, 0.12)",
+          palette: ["#ef4444", "#991b1b", "#f87171", "#dc2626", "#fecaca", "#7f1d1d"],
+          chars: "01!@#$%^&*?/\\|<>",
+          scenes: [
+            "BLOOD CODE RAIN", "ERROR HEX DUMP", "SYSTEM CORRUPT", "SHADOW MESH", "PULSE BARS",
+            "ABYSS TUNNEL", "RITUAL RING", "STATIC GRID", "RED BEAMS", "DREAD TEN"
+          ],
+          txtNames: [
+            "DREAD BOX", "SHADOW TRACE", "CRIMSON EDGE", "SPINE ARC", "STATIC SHIFT",
+            "SHOCK JUMP", "HEART WAVE", "DUAL DREAD", "ALARM BOX"
+          ]
+        },
+        {
+          id: "tekno",
+          label: "TEKNO",
+          bg: "#050a0f",
+          gridCol: "rgba(34, 211, 238, 0.12)",
+          palette: ["#22d3ee", "#00ff87", "#0ea5e9", "#a3e635", "#f0f9ff", "#14b8a6"],
+          chars: "01[]<>+-*/=#01",
+          scenes: [
+            "SEQ MATRIX", "HEX CLOCK WALL", "SEQ COMPILER", "GRID PULSE", "SUB BARS",
+            "STROBE TUNNEL", "SEQ RING", "BEAT GRID", "STROBE BEAMS", "SEQ TEN"
+          ],
+          txtNames: [
+            "SEQ BOX", "KICK SHADOW", "ACID EDGE", "SEQ ARC", "STROBE SHIFT",
+            "KICK JUMP", "BASS WAVE", "DUAL SEQ", "CLUB BOX"
+          ]
+        },
+        {
+          id: "rave",
+          label: "RAVE",
+          bg: "#090414",
+          gridCol: "rgba(255, 59, 141, 0.14)",
+          palette: ["#ff3b8d", "#00f5d4", "#fee440", "#9b5de5", "#00bbf9", "#ffffff"],
+          chars: "01*!#<>+~^/\\$%",
+          scenes: [
+            "RAVE RAIN", "LASER HEX WALL", "RAVE CODE", "LASER MESH", "RAVE BARS",
+            "VORTEX TUNNEL", "NEON RING", "RAVE GRID", "LASER BEAMS", "RAVE TEN"
+          ],
+          txtNames: [
+            "RAVE BOX", "NEON SHADOW", "LASER EDGE", "WAVE ARC", "STROBE SPLIT",
+            "BOUNCE HOP", "LASER WAVE", "DUAL NEON", "FESTIVAL BOX"
+          ]
+        }
       ];
-      const BOARD_PALETTE = ["#00ff9f", "#00d8ff", "#b8ff2c", "#18f2b2", "#ff3b8d", "#e6fff6"];
 
-      const BG_EFFECTS = [
-        { id: 1, key: "1", name: "MATRIX RAIN" },
-        { id: 2, key: "2", name: "HEX DUMP WALL" },
-        { id: 3, key: "3", name: "CODE COMPILER" },
-        { id: 4, key: "4", name: "QUANTUM MESH" },
-        { id: 5, key: "5", name: "BITSTREAM BARS" },
-        { id: 6, key: "6", name: "DATA TUNNEL" },
-        { id: 7, key: "7", name: "CIPHER RING" },
-        { id: 8, key: "8", name: "SIGNAL GRID" },
-        { id: 9, key: "9", name: "CORE BEAMS" },
-        { id: 0, key: "0", name: "NODE TEN" }
-      ];
+      const BG_KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+      const BG_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
       const LOGO_FX_MODES = [
         { id: "morph", label: "MORPH" },
@@ -590,36 +778,26 @@
       ];
 
       const SHIFT_MODES = [
-        { code: "⇧1", name: "MIRROR BOARD" },
-        { code: "⇧2", name: "LED MATRIX" },
-        { code: "⇧3", name: "CIPHER TWIST" },
-        { code: "⇧4", name: "ROW SCAN" },
-        { code: "⇧5", name: "GYRO CORE" },
-        { code: "⇧6", name: "PHASE SHIFT" },
-        { code: "⇧7", name: "BEZEL FRAME" },
-        { code: "⇧8", name: "OVERCLOCK" },
-        { code: "⇧9", name: "LED RIBS" },
-        { code: "⇧0", name: "WIDE HUD" },
-        { code: "⇧Q", name: "CODE DRIP" },
-        { code: "⇧W", name: "BIT GLITCH" },
-        { code: "⇧E", name: "MEGA PIXELS" },
-        { code: "⇧R", name: "MULTI-PANEL" },
-        { code: "⇧Y", name: "LOGIC WAVE" },
-        { code: "⇧U", name: "PACKET RING" },
-        { code: "⇧I", name: "LASER FLARE" }
+        { code: "⇧1", name: "MIRROR" },
+        { code: "⇧2", name: "TILES" },
+        { code: "⇧3", name: "TWIST" },
+        { code: "⇧4", name: "SCAN" },
+        { code: "⇧5", name: "SPIN" },
+        { code: "⇧6", name: "TINT" },
+        { code: "⇧7", name: "FRAME" },
+        { code: "⇧8", name: "HEAT" },
+        { code: "⇧9", name: "RIBS" },
+        { code: "⇧0", name: "WIDE" },
+        { code: "⇧Q", name: "DRIP" },
+        { code: "⇧W", name: "GLITCH" },
+        { code: "⇧E", name: "PIXELS" },
+        { code: "⇧R", name: "MULTI" },
+        { code: "⇧Y", name: "WAVE" },
+        { code: "⇧U", name: "PULSE" },
+        { code: "⇧I", name: "FLARE" }
       ];
 
-      const TXT_EFFECTS = [
-        { key: "Q", name: "MATRIX STREAM" },
-        { key: "W", name: "HEX SHADOW" },
-        { key: "E", name: "TERMINAL GLOW" },
-        { key: "R", name: "SYNTAX CURVE" },
-        { key: "Y", name: "PARITY GLITCH" },
-        { key: "U", name: "STACK JUMP" },
-        { key: "I", name: "BUS WAVE" },
-        { key: "O", name: "DUAL BUFFER" },
-        { key: "P", name: "CONSOLE BOX" }
-      ];
+      const TXT_KEYS = ["Q", "W", "E", "R", "Y", "U", "I", "O", "P"];
 
       const FONTS = [
         { label: "MONO", family: '"Courier New", Courier, monospace' },
@@ -633,6 +811,7 @@
       const BLEND_MODES = ["screen", "lighter", "overlay", "difference", "hard-light", "multiply"];
 
       const state = {
+        pageIndex: 0,
         width: 1,
         height: 1,
         dpr: Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.5 : 2),
@@ -726,6 +905,28 @@
         audioSource: null
       };
 
+      function currentPage() {
+        return THEME_PAGES[state.pageIndex] || THEME_PAGES[0];
+      }
+
+      function applyPageThemeStyle() {
+        const p = currentPage();
+        document.documentElement.style.setProperty("--bg", p.bg);
+        document.documentElement.style.setProperty("--accent", p.palette[0] || "#00ff9f");
+        document.documentElement.style.setProperty("--accent-2", p.palette[1] || "#00d8ff");
+        document.documentElement.style.setProperty("--accent-3", p.palette[2] || "#b8ff2c");
+        document.documentElement.style.setProperty("--accent-4", p.palette[3] || "#ff3b8d");
+      }
+
+      function setPageIndex(idx) {
+        state.pageIndex = ((idx % THEME_PAGES.length) + THEME_PAGES.length) % THEME_PAGES.length;
+        applyPageThemeStyle();
+        rebuildDynamicButtonLabels();
+        updateUiReadouts();
+        const activeTab = document.querySelector(`.page-tab[data-page="${state.pageIndex}"]`);
+        activeTab?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+
       function resize() {
         const maxDpr = isTouchDevice ? 1.5 : 2;
         state.dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
@@ -758,9 +959,10 @@
         return Math.round(val / grid) * grid;
       }
 
-      function pickChar(seed, set = MATRIX_CHARS) {
-        const idx = Math.abs(Math.floor(seed)) % set.length;
-        return set[idx];
+      function pickChar(seed, set) {
+        const chars = set || currentPage().chars;
+        const idx = Math.abs(Math.floor(seed)) % chars.length;
+        return chars[idx];
       }
 
       function resetToSingleEffect() {
@@ -800,7 +1002,6 @@
         }
       }
 
-      // Kahden sormen nipistys logolle puhelimella
       let pinchStartDist = 0;
       let pinchStartScale = 1;
 
@@ -1171,12 +1372,23 @@
         updateUiReadouts();
       }
 
+      // Välilehtien rakentaminen
+      const pageTabsEl = document.getElementById("page-tabs");
+      THEME_PAGES.forEach((p, idx) => {
+        const tab = document.createElement("button");
+        tab.className = "page-tab";
+        tab.textContent = p.label;
+        tab.dataset.page = idx;
+        tab.addEventListener("click", () => setPageIndex(idx));
+        pageTabsEl.appendChild(tab);
+      });
+
       const bgFxButtons = document.getElementById("bg-fx-buttons");
-      BG_EFFECTS.forEach(fx => {
+      BG_IDS.forEach((id, idx) => {
         const b = document.createElement("button");
-        b.textContent = `${fx.key}:${fx.name.split(" ")[0]}`;
-        b.dataset.bg = fx.id;
-        b.addEventListener("click", () => setBgEffect(fx.id));
+        b.dataset.bg = id;
+        b.dataset.idx = idx;
+        b.addEventListener("click", () => setBgEffect(id));
         bgFxButtons.appendChild(b);
       });
 
@@ -1198,21 +1410,35 @@
       SHIFT_MODES.forEach((sm, idx) => {
         const fk = flagKeysOrdered[idx];
         const b = document.createElement("button");
-        b.textContent = `${sm.code} ${sm.name.split("/")[0].trim()}`;
+        b.textContent = `${sm.code} ${sm.name}`;
         b.dataset.sflag = fk;
         b.addEventListener("click", () => toggleShiftFlag(fk));
         shiftFxButtons.appendChild(b);
       });
 
       const txtFxButtons = document.getElementById("txt-fx-buttons");
-      TXT_EFFECTS.forEach((fx, idx) => {
+      TXT_KEYS.forEach((k, idx) => {
         const b = document.createElement("button");
-        b.textContent = `${fx.key}`;
-        b.title = fx.name;
+        b.textContent = k;
         b.dataset.tfx = idx;
         b.addEventListener("click", () => setTxtEffect(idx));
         txtFxButtons.appendChild(b);
       });
+
+      function rebuildDynamicButtonLabels() {
+        const p = currentPage();
+        bgFxButtons.querySelectorAll("button").forEach(btn => {
+          const idx = Number(btn.dataset.idx);
+          const sName = p.scenes[idx] || "SCENE";
+          btn.textContent = `${BG_KEYS[idx]}:${sName.split(" ")[0]}`;
+        });
+        txtFxButtons.querySelectorAll("button").forEach(btn => {
+          const idx = Number(btn.dataset.tfx);
+          btn.title = p.txtNames[idx] || TXT_KEYS[idx];
+        });
+      }
+      rebuildDynamicButtonLabels();
+      applyPageThemeStyle();
 
       function setBgEffect(id) {
         state.bgEffect = id;
@@ -1220,7 +1446,7 @@
       }
 
       function setTxtEffect(idx) {
-        state.txtEffectIndex = ((idx % TXT_EFFECTS.length) + TXT_EFFECTS.length) % TXT_EFFECTS.length;
+        state.txtEffectIndex = ((idx % TXT_KEYS.length) + TXT_KEYS.length) % TXT_KEYS.length;
         state.textVisible = true;
         updateUiReadouts();
       }
@@ -1236,8 +1462,10 @@
       }
 
       function updateUiReadouts() {
-        const currentBg = BG_EFFECTS.find(e => e.id === state.bgEffect) || BG_EFFECTS[0];
-        const currentTxt = TXT_EFFECTS[state.txtEffectIndex];
+        const p = currentPage();
+        const sceneIdx = BG_IDS.indexOf(state.bgEffect);
+        const currentSceneName = p.scenes[sceneIdx >= 0 ? sceneIdx : 0];
+        const currentTxtName = p.txtNames[state.txtEffectIndex] || TXT_KEYS[state.txtEffectIndex];
         const currentFont = FONTS[state.fontIndex];
         const currentBlend = BLEND_MODES[state.blendIndex];
 
@@ -1245,8 +1473,9 @@
           .filter((_, i) => state.shiftFlags[flagKeysOrdered[i]])
           .map(s => s.name);
 
-        document.getElementById("bg-fx-name").textContent = `${currentBg.key}. ${currentBg.name}`;
-        document.getElementById("txt-fx-name").textContent = `${currentTxt.key}. ${currentTxt.name}`;
+        document.getElementById("page-readout").textContent = p.label;
+        document.getElementById("bg-fx-name").textContent = `${state.bgEffect}. ${currentSceneName}`;
+        document.getElementById("txt-fx-name").textContent = `${TXT_KEYS[state.txtEffectIndex]}. ${currentTxtName}`;
         document.getElementById("shift-fx-name").textContent =
           activeShiftNames.length ? activeShiftNames.join(", ").slice(0, 26) : "SHIFT FX: OFF";
         document.getElementById("font-readout").textContent = currentFont.label;
@@ -1258,6 +1487,9 @@
         document.getElementById("morph-mix-status").textContent =
           `MIX: ${state.morphMixEnabled ? "ON" : "OFF"} · ${LOGO_FX_MODES[state.logoFxIndex].label}`;
 
+        document.querySelectorAll(".page-tab").forEach(tab => {
+          tab.classList.toggle("active", Number(tab.dataset.page) === state.pageIndex);
+        });
         document.querySelectorAll("#bg-fx-buttons button").forEach(btn => {
           btn.classList.toggle("active", Number(btn.dataset.bg) === state.bgEffect);
         });
@@ -1300,6 +1532,8 @@
         }
       }
 
+      document.getElementById("btn-page-prev").addEventListener("click", () => setPageIndex(state.pageIndex - 1));
+      document.getElementById("btn-page-next").addEventListener("click", () => setPageIndex(state.pageIndex + 1));
       document.getElementById("btn-panel").addEventListener("click", () => toggleDrawer());
       document.getElementById("btn-shortcuts").addEventListener("click", () => toggleModal());
       document.getElementById("btn-close-modal").addEventListener("click", () => toggleModal(false));
@@ -1327,14 +1561,13 @@
       document.getElementById("btn-txt-write").addEventListener("click", startDirectTyping);
       document.getElementById("btn-font-cycle").addEventListener("click", cycleFont);
 
+      document.getElementById("mob-page").addEventListener("click", () => setPageIndex(state.pageIndex + 1));
       document.getElementById("mob-tap").addEventListener("click", registerTap);
       document.getElementById("mob-reset").addEventListener("click", resetToSingleEffect);
       document.getElementById("mob-mix").addEventListener("click", toggleMorphMix);
-      document.getElementById("mob-visage").addEventListener("click", toggleVisage);
       document.getElementById("mob-bg-next").addEventListener("click", () => {
-        const idx = BG_EFFECTS.findIndex(e => e.id === state.bgEffect);
-        const next = BG_EFFECTS[(idx + 1) % BG_EFFECTS.length];
-        setBgEffect(next.id);
+        const idx = BG_IDS.indexOf(state.bgEffect);
+        setBgEffect(BG_IDS[(idx + 1) % BG_IDS.length]);
       });
       document.getElementById("mob-logo-dn").addEventListener("click", () => adjustLogoScale(-0.15));
       document.getElementById("mob-logo-up").addEventListener("click", () => adjustLogoScale(0.15));
@@ -1479,7 +1712,7 @@
           }
           return;
         }
-        const txtIdx = TXT_EFFECTS.findIndex(item => item.key.toLowerCase() === key);
+        const txtIdx = TXT_KEYS.findIndex(k => k.toLowerCase() === key);
         if (txtIdx !== -1) {
           e.preventDefault();
           setTxtEffect(txtIdx);
@@ -1514,35 +1747,33 @@
         }
       });
 
-      function drawBoardGridDots(w, h, cell, r) {
-        ctx.fillStyle = "rgba(0, 255, 159, 0.08)";
+      function drawBoardGridDots(w, h, cell, p) {
+        ctx.fillStyle = p.gridCol;
         for (let y = 0; y < h; y += cell) {
           for (let x = 0; x < w; x += cell) {
             ctx.fillRect(x, y, 2, 2);
           }
         }
-        if (r.treble > 0.35) {
-          ctx.fillStyle = "rgba(184, 255, 44, 0.25)";
-          const sx = snapPx(Math.abs(Math.sin(state.time * 17)) * w, cell);
-          ctx.fillRect(sx, 0, 2, h);
-        }
       }
 
+      // KOHTAUKSET (1-9, 0) MUKAUTUVAT AKTIIVISEEN TEEMASIVUUN
       function renderBackgroundLayer(t) {
+        const p = currentPage();
+        const pal = p.palette;
         const r = state.rhythm;
         const w = state.width;
         const h = state.height;
         const cx = snapPx(w * 0.5 + Math.sin(t * 1.4) * r.mid * 24, 12);
-        const cy = snapPx(h * 0.5 + Math.cos(t * 1.9) * r.bass * 18, 12);
+        const cy = snapPx(h * 0.52 + Math.cos(t * 1.9) * r.bass * 18, 12);
         const minDim = Math.min(w, h);
         const cell = isTouchDevice && w < 520 ? 22 : 18;
 
-        ctx.fillStyle = "#040b0a";
+        ctx.fillStyle = p.bg;
         ctx.fillRect(0, 0, w, h);
 
         ctx.save();
         ctx.globalCompositeOperation = BLEND_MODES[state.blendIndex];
-        drawBoardGridDots(w, h, isTouchDevice && w < 520 ? 32 : 24, r);
+        drawBoardGridDots(w, h, isTouchDevice && w < 520 ? 32 : 24, p);
 
         if (state.bgEffect === 1) {
           const cols = Math.max(10, Math.floor(w / cell));
@@ -1561,67 +1792,77 @@
               if (rowIdx < 0 || rowIdx >= rows) continue;
               const px = c * cell + cell * 0.5;
               const py = rowIdx * cell + cell * 0.5;
-              const chTick = Math.floor(t * (8 + r.treble * 24) + c * 13 + rowIdx * 3);
-              const ch = pickChar(chTick + k, MATRIX_CHARS);
+              const ch = pickChar(t * (8 + r.treble * 24) + c * 13 + rowIdx * 3 + k, p.chars);
 
-              if (k === 0) ctx.fillStyle = "#e6fff6";
-              else if (k < 3) ctx.fillStyle = r.treble > 0.45 && k === 1 ? "#b8ff2c" : "#00ff9f";
-              else ctx.fillStyle = `rgba(0, 216, 255, ${Math.max(0.18, 0.72 - k / trailLen)})`;
-
+              if (k === 0) ctx.fillStyle = pal[4] || "#ffffff";
+              else if (k < 3) ctx.fillStyle = r.treble > 0.45 && k === 1 ? pal[2] : pal[0];
+              else {
+                ctx.globalAlpha = Math.max(0.2, 0.72 - k / trailLen);
+                ctx.fillStyle = pal[1] || pal[0];
+              }
               ctx.fillText(ch, px, py);
+              ctx.globalAlpha = 1;
             }
           }
         } else if (state.bgEffect === 2) {
           const stepX = w < 520 ? 32 : 36;
           const stepY = 24;
           ctx.font = 'bold 12px "Courier New", monospace';
-          for (let y = 24; y < h - 14; y += stepY) {
+          for (let y = 78; y < h - 46; y += stepY) {
             const addr = ((Math.floor(t * (4 + r.mid * 10) + y) * 16) & 0xffff)
               .toString(16)
               .toUpperCase()
               .padStart(4, "0");
-            ctx.fillStyle = "rgba(0, 216, 255, 0.55)";
-            ctx.fillText(`0x${addr}:`, 10, y);
+            ctx.fillStyle = pal[1] || pal[0];
+            ctx.globalAlpha = 0.75;
+            ctx.fillText(`${p.label.slice(0, 3)}:${addr}`, 10, y);
 
-            const startX = w < 520 ? 74 : 82;
+            const startX = w < 520 ? 78 : 88;
             for (let x = startX; x < w - 20; x += stepX) {
               const bitSeed = Math.floor(t * (6 + r.treble * 22) + x * 0.13 + y * 0.37);
               const byteVal = ((bitSeed * 19 + state.beatCount * 7) & 0xff)
                 .toString(16)
                 .toUpperCase()
                 .padStart(2, "0");
-              const hot = r.bass > 0.55 && ((x + y) % 96 === 0);
-              ctx.fillStyle = hot ? "#00ff9f" : r.treble > 0.5 && (bitSeed % 11 === 0) ? "#b8ff2c" : "rgba(230, 255, 246, 0.68)";
+              ctx.globalAlpha = 0.85;
+              ctx.fillStyle = r.bass > 0.55 && ((x + y) % 96 === 0)
+                ? pal[0]
+                : r.treble > 0.5 && (bitSeed % 11 === 0)
+                  ? pal[2]
+                  : pal[4] || "#ffffff";
               ctx.fillText(byteVal, x, y);
             }
           }
+          ctx.globalAlpha = 1;
         } else if (state.bgEffect === 3) {
           const lineH = 26;
-          const totalLines = Math.max(6, Math.floor((h - 56) / lineH));
+          const totalLines = Math.max(6, Math.floor((h - 120) / lineH));
           const activeLine = Math.floor(t * (3 + r.bass * 6 + r.mid * 4)) % totalLines;
           ctx.font = `bold ${w < 520 ? 12 : 15}px "Courier New", monospace`;
 
           for (let i = 0; i < totalLines; i++) {
-            const ly = 56 + i * lineH;
-            const snippet = CODE_SNIPPETS[(i + state.beatCount) % CODE_SNIPPETS.length];
+            const ly = 84 + i * lineH;
             const isCurrent = i === activeLine;
-            const revealChars = isCurrent
-              ? Math.max(2, Math.floor(snippet.length * (0.35 + 0.65 * ((t * 4) % 1) + r.mid * 0.3)))
-              : snippet.length;
+            let lineStr = "";
+            for (let j = 0; j < 20; j++) {
+              lineStr += pickChar(i * 17 + j * 7 + state.beatCount * 3 + Math.floor(t * 2), p.chars);
+            }
+            const reveal = isCurrent ? Math.max(3, Math.floor(lineStr.length * (0.4 + 0.6 * ((t * 4) % 1)))) : lineStr.length;
 
             if (isCurrent) {
-              ctx.fillStyle = `rgba(0, 255, 159, ${0.14 + r.bass * 0.2})`;
-              ctx.fillRect(12, ly - 12, w - 24, lineH - 4);
+              ctx.fillStyle = pal[0];
+              ctx.globalAlpha = 0.16 + r.bass * 0.2;
+              ctx.fillRect(10, ly - 12, w - 20, lineH - 4);
+              ctx.globalAlpha = 1;
             }
-
-            ctx.fillStyle = isCurrent ? "#b8ff2c" : i % 2 === 0 ? "#00ff9f" : "#00d8ff";
-            ctx.fillText(`[${String(i).padStart(2, "0")}] ${snippet.slice(0, revealChars)}`, 18, ly);
+            ctx.fillStyle = isCurrent ? pal[2] : pal[i % pal.length];
+            ctx.fillText(`[${p.label}] ${lineStr.slice(0, reveal)}`, 16, ly);
           }
         } else if (state.bgEffect === 4) {
           const cols = w < 520 ? 5 : 7;
           const rows = 5;
           const padX = w * 0.12;
-          const padY = h * 0.16;
+          const padY = h * 0.18;
           const gx = (w - padX * 2) / Math.max(1, cols - 1);
           const gy = (h - padY * 2) / Math.max(1, rows - 1);
           const nodes = [];
@@ -1641,7 +1882,7 @@
           nodes.forEach((n, idx) => {
             const right = nodes[idx + 1];
             if (right && right.row === n.row) {
-              ctx.strokeStyle = (idx + state.beatCount) % 2 === 0 ? "rgba(0, 255, 159, 0.45)" : "rgba(0, 216, 255, 0.45)";
+              ctx.strokeStyle = pal[(idx + state.beatCount) % pal.length];
               ctx.beginPath();
               ctx.moveTo(n.x, n.y);
               ctx.lineTo(right.x, right.y);
@@ -1649,7 +1890,7 @@
             }
             const down = nodes[idx + cols];
             if (down) {
-              ctx.strokeStyle = "rgba(0, 216, 255, 0.28)";
+              ctx.strokeStyle = pal[(idx + 1) % pal.length];
               ctx.beginPath();
               ctx.moveTo(n.x, n.y);
               ctx.lineTo(down.x, down.y);
@@ -1657,7 +1898,7 @@
             }
 
             const box = snapPx(10 + r.bass * 12 + (r.treble > 0.5 && idx % 3 === 0 ? 8 : 0), 4);
-            ctx.fillStyle = BOARD_PALETTE[(idx + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[(idx + Math.floor(r.treble * 4)) % pal.length];
             ctx.fillRect(n.x - box * 0.5, n.y - box * 0.5, box, box);
           });
         } else if (state.bgEffect === 5) {
@@ -1670,17 +1911,17 @@
             const level = Math.max(liveBin * 1.1, 0.2 + band * 0.7 + 0.12 * Math.sin(t * 8 + i));
             const blocks = Math.max(1, Math.min(14, Math.floor(level * 12)));
             for (let b = 0; b < blocks; b++) {
-              ctx.fillStyle = b > 9 ? "#ff3b8d" : b > 6 ? "#b8ff2c" : "#00ff9f";
-              ctx.fillRect(i * cw + 3, h - (b + 1) * 15 - 48, Math.max(5, cw - 6), 10);
+              ctx.fillStyle = b > 9 ? pal[3] || pal[0] : b > 6 ? pal[2] || pal[1] : pal[0];
+              ctx.fillRect(i * cw + 3, h - (b + 1) * 15 - 52, Math.max(5, cw - 6), 10);
             }
           }
         } else if (state.bgEffect === 6) {
           const rings = 8;
           for (let i = 1; i <= rings; i++) {
-            const p = ((t * (0.45 + r.bass * 0.7) + i / rings) % 1);
-            const s = snapPx(minDim * (0.08 + p * 1.15), 12);
+            const pRatio = ((t * (0.45 + r.bass * 0.7) + i / rings) % 1);
+            const s = snapPx(minDim * (0.08 + pRatio * 1.15), 12);
             const shiftX = snapPx(Math.sin(t * 2.3 + i) * r.mid * 28, 8);
-            ctx.strokeStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.strokeStyle = pal[(i + Math.floor(r.treble * 4)) % pal.length];
             ctx.lineWidth = 3 + r.bass * 3;
             ctx.strokeRect(cx - s * 0.5 + shiftX, cy - s * 0.5, s, s);
           }
@@ -1694,8 +1935,8 @@
             const rad = minDim * (0.2 + r.bass * 0.15 + Math.sin(t * 4 + i) * r.mid * 0.04);
             const px = snapPx(cx + Math.cos(ang) * rad, 8);
             const py = snapPx(cy + Math.sin(ang) * rad, 8);
-            ctx.fillStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 5)) % BOARD_PALETTE.length];
-            ctx.fillText(pickChar(t * (12 + r.treble * 20) + i * 5, HEX_CHARS + "01"), px, py);
+            ctx.fillStyle = pal[(i + Math.floor(r.treble * 5)) % pal.length];
+            ctx.fillText(pickChar(t * (12 + r.treble * 20) + i * 5, p.chars), px, py);
           }
         } else if (state.bgEffect === 8) {
           const step = w < 520 ? 30 : 24;
@@ -1704,8 +1945,8 @@
             for (let x = step; x < w; x += step) {
               const wave = Math.sin(x * (0.015 + r.mid * 0.02) + y * 0.015 - t * (3.5 + r.bass * 5));
               if (wave > 0.25 - r.bass * 0.2) {
-                ctx.fillStyle = wave > 0.7 ? "#b8ff2c" : r.treble > 0.5 ? "#00d8ff" : "#00ff9f";
-                ctx.fillText(pickChar(x + y + t * 20, "01#"), x, y);
+                ctx.fillStyle = wave > 0.7 ? pal[2] : r.treble > 0.5 ? pal[1] : pal[0];
+                ctx.fillText(pickChar(x + y + t * 20, p.chars), x, y);
               }
             }
           }
@@ -1713,7 +1954,7 @@
           const beams = 7;
           for (let i = 0; i < beams; i++) {
             const bx = snapPx((i / beams) * w + Math.sin(t * (1.8 + r.mid * 3) + i) * (24 + r.mid * 45), 16);
-            ctx.fillStyle = BOARD_PALETTE[(i + state.beatCount) % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[(i + state.beatCount) % pal.length];
             ctx.globalAlpha = 0.14 + r.bass * 0.24 + r.treble * 0.3;
             ctx.fillRect(bx, 0, snapPx(18 + r.bass * 32, 8), h);
           }
@@ -1728,10 +1969,10 @@
             const px = snapPx(cx + Math.cos(a) * rad + jitter, 12);
             const py = snapPx(cy + Math.sin(a) * rad + jitter, 12);
             const box = snapPx(18 + r.bass * 16 + r.transient * 10, 4);
-            ctx.fillStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[(i + Math.floor(r.treble * 4)) % pal.length];
             ctx.fillRect(px - box * 0.5, py - box * 0.5, box, box);
-            ctx.fillStyle = "#040b0a";
-            ctx.fillText(pickChar(i + t * 14, "01XF"), px, py);
+            ctx.fillStyle = p.bg;
+            ctx.fillText(pickChar(i + t * 14, p.chars), px, py);
           }
         }
 
@@ -1742,6 +1983,8 @@
         const v = state.visage;
         if (!v.enabled && v.headOpenAmount <= 0.001) return;
 
+        const p = currentPage();
+        const pal = p.palette;
         const r = state.rhythm;
 
         v.blinkTimer -= rawDt;
@@ -1791,7 +2034,7 @@
         const browW = 76 + Math.sin(sSeed * 3.1) * 10;
 
         if (v.headOpenAmount > 0.02) {
-          ctx.fillStyle = "#00ff9f";
+          ctx.fillStyle = pal[0];
           ctx.fillRect(-cheekW * 0.6, -65 * v.headOpenAmount - 30, cheekW * 1.2, 60 * v.headOpenAmount + 16 + r.bass * 16);
         }
 
@@ -1805,28 +2048,28 @@
         ctx.bezierCurveTo(-jawW, 112, -cheekW * 0.75, 58, -cheekW * 0.92, -10);
         ctx.bezierCurveTo(-cheekW, -85, -browW, -152, 0, -148);
         ctx.closePath();
-        ctx.fillStyle = "rgba(5, 24, 22, 0.92)";
+        ctx.fillStyle = p.bg;
         ctx.fill();
         ctx.lineWidth = 5;
-        ctx.strokeStyle = r.treble > 0.55 ? "#b8ff2c" : "#00ff9f";
+        ctx.strokeStyle = r.treble > 0.55 ? pal[2] : pal[0];
         ctx.stroke();
 
         [-1, 1].forEach(side => {
           const ex = side * 38;
           const ey = -24;
           const eh = Math.max(4, 20 * (1 - blinkFactor * 0.9) + r.transient * 4);
-          ctx.fillStyle = "#00d8ff";
+          ctx.fillStyle = pal[1] || pal[0];
           ctx.fillRect(ex - 16, ey - eh * 0.5, 32, eh);
           if (blinkFactor < 0.85) {
             const pSize = 12 + r.treble * 8;
-            ctx.fillStyle = r.treble > 0.45 ? "#b8ff2c" : "#00ff9f";
+            ctx.fillStyle = r.treble > 0.45 ? pal[2] : pal[0];
             ctx.fillRect(ex - pSize * 0.5 + v.eyeLookX * 8, ey - pSize * 0.5 + v.eyeLookY * 6, pSize, pSize);
           }
         });
 
         const mouthH = 8 + r.bass * 24 + r.transient * 10;
         const mouthW = 36 + r.mid * 18;
-        ctx.fillStyle = "#00ff9f";
+        ctx.fillStyle = pal[0];
         ctx.fillRect(-mouthW * 0.5, 58, mouthW, snapPx(mouthH, 4));
 
         for (let i = 0; i < 7; i++) {
@@ -1837,24 +2080,9 @@
           const by = -112 + Math.sin(baseAng) * 34;
           const tipX = bx + Math.cos(baseAng) * len;
           const tipY = by + Math.sin(baseAng) * len - 18;
-          ctx.fillStyle = BOARD_PALETTE[(Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+          ctx.fillStyle = pal[(i + Math.floor(r.treble * 4)) % pal.length];
           ctx.fillRect(snapPx(tipX, 8) - 8, snapPx(tipY, 8) - 8, 16, 16);
         }
-
-        const mushrooms = [
-          { x: -54, y: -124, r: 16, col: "#00ff9f" },
-          { x: -16, y: -146, r: 20, col: "#00d8ff" },
-          { x: 24, y: -144, r: 18, col: "#b8ff2c" },
-          { x: 56, y: -120, r: 15, col: "#00ff9f" }
-        ];
-        mushrooms.forEach((m, idx) => {
-          const my = m.y - v.headOpenAmount * 14 - r.bass * (idx % 2 === 0 ? 12 : 6);
-          const mr = m.r * (1 + r.bass * 0.16);
-          ctx.fillStyle = "#e6fff6";
-          ctx.fillRect(m.x - 5, my, 10, 14);
-          ctx.fillStyle = m.col;
-          ctx.fillRect(m.x - mr, my - mr * 0.7, mr * 2, mr * 0.8);
-        });
 
         ctx.restore();
         ctx.restore();
@@ -1867,7 +2095,7 @@
         const w = state.width;
         const h = state.height;
         const cx = snapPx(w * 0.5, 8);
-        const cy = snapPx(h * 0.5, 8);
+        const cy = snapPx(h * 0.52, 8);
         const logoFx = LOGO_FX_MODES[state.logoFxIndex].id;
 
         const pulseBoost =
@@ -1962,13 +2190,15 @@
 
         if ((!state.textVisible && !state.typingActive) || !displayStr) return;
 
+        const p = currentPage();
+        const pal = p.palette;
         const r = state.rhythm;
         const w = state.width;
         const h = state.height;
         const cx = snapPx(w * 0.5, 8);
-        const cy = snapPx(h * 0.5, 8);
+        const cy = snapPx(h * 0.52, 8);
         const fontObj = FONTS[state.fontIndex];
-        const fxKey = TXT_EFFECTS[state.txtEffectIndex].key;
+        const fxKey = TXT_KEYS[state.txtEffectIndex];
 
         const baseFontSize = snapPx(Math.max(32, Math.min(w, h) * 0.14) * state.textScale * (1 + r.bass * 0.18), 4);
         const fontString = `900 ${baseFontSize}px ${fontObj.family}`;
@@ -1981,28 +2211,30 @@
         if (fxKey === "Q") {
           const boxW = Math.min(w * 0.94, ctx.measureText(displayStr).width + baseFontSize * (0.9 + r.bass * 0.2));
           const boxH = baseFontSize * (1.35 + r.bass * 0.15);
-          ctx.fillStyle = "rgba(4, 15, 13, 0.88)";
+          ctx.fillStyle = p.bg;
+          ctx.globalAlpha = 0.9;
           ctx.fillRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.globalAlpha = 1;
           ctx.lineWidth = 4;
-          ctx.strokeStyle = "#00ff9f";
+          ctx.strokeStyle = pal[0];
           ctx.strokeRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
-          ctx.fillStyle = r.treble > 0.45 ? "#b8ff2c" : "#00ff9f";
+          ctx.fillStyle = r.treble > 0.45 ? pal[2] : pal[0];
           ctx.fillText(displayStr, cx, cy);
         } else if (fxKey === "W") {
           const steps = 4 + Math.round(r.bass * 7);
           for (let s = steps; s >= 1; s--) {
-            ctx.fillStyle = BOARD_PALETTE[(s + Math.floor(r.mid * 4)) % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[(s + Math.floor(r.mid * 4)) % pal.length];
             ctx.globalAlpha = 0.55;
             ctx.fillText(displayStr, cx - s * 3.5, cy + s * 3.5);
           }
           ctx.globalAlpha = 1;
-          ctx.fillStyle = "#e6fff6";
+          ctx.fillStyle = pal[4] || "#ffffff";
           ctx.fillText(displayStr, cx, cy);
         } else if (fxKey === "E") {
           ctx.lineWidth = 4 + r.bass * 4;
-          ctx.strokeStyle = r.treble > 0.45 ? "#b8ff2c" : "#00d8ff";
+          ctx.strokeStyle = r.treble > 0.45 ? pal[2] : pal[1] || pal[0];
           ctx.strokeText(displayStr, cx, cy);
-          ctx.fillStyle = "#00ff9f";
+          ctx.fillStyle = pal[0];
           ctx.fillText(displayStr, cx, cy);
         } else if (fxKey === "R") {
           const chars = Array.from(displayStr);
@@ -2012,21 +2244,21 @@
             const px = snapPx(cx - (chars.length * adv) * 0.5 + (idx + 0.5) * adv, 4);
             const arc = (26 + r.bass * 56) * Math.sin(t * (1.8 + r.mid * 2.5));
             const py = snapPx(cy + (1 - norm * norm) * -arc, 8);
-            ctx.fillStyle = BOARD_PALETTE[(idx + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[(idx + Math.floor(r.treble * 4)) % pal.length];
             ctx.fillText(ch, px, py);
           });
         } else if (fxKey === "Y") {
           const shift = snapPx((4 + r.treble * 24 + r.transient * 12) * (Math.sin(t * 33) > 0.1 ? 1 : 0.25), 4);
-          ctx.fillStyle = "#ff3b8d";
+          ctx.fillStyle = pal[3] || pal[1];
           ctx.fillText(displayStr, cx - shift, cy);
-          ctx.fillStyle = "#00d8ff";
+          ctx.fillStyle = pal[1] || pal[2];
           ctx.fillText(displayStr, cx + shift, cy);
-          ctx.fillStyle = "#00ff9f";
+          ctx.fillStyle = pal[0];
           ctx.fillText(displayStr, cx, cy);
         } else if (fxKey === "U") {
           const jump = snapPx(Math.abs(Math.sin(t * (3 + r.bass * 3))) * (18 + r.bass * 48), 8);
           const slideX = snapPx(Math.sin(t * 2.2) * r.mid * 36, 8);
-          ctx.fillStyle = "#b8ff2c";
+          ctx.fillStyle = pal[2] || pal[0];
           ctx.fillText(displayStr, cx + slideX, cy - jump);
         } else if (fxKey === "I") {
           const chars = Array.from(displayStr);
@@ -2034,26 +2266,28 @@
           chars.forEach((ch, i) => {
             const wy = snapPx(Math.sin(t * (3.8 + r.mid * 4) + i * 0.7) * (12 + r.mid * 24 + r.bass * 10), 8);
             const px = snapPx(cx - (chars.length * adv) * 0.5 + (i + 0.5) * adv, 4);
-            ctx.fillStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 5)) % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[(i + Math.floor(r.treble * 5)) % pal.length];
             ctx.fillText(ch, px, cy + wy);
           });
         } else if (fxKey === "O") {
           ctx.globalCompositeOperation = "screen";
           const sep = snapPx(10 + r.mid * 22 + r.bass * 10, 4);
-          ctx.fillStyle = "#00d8ff";
+          ctx.fillStyle = pal[1] || pal[0];
           ctx.fillText(displayStr, cx + Math.sin(t * 2.5) * sep, cy);
-          ctx.fillStyle = "#00ff9f";
+          ctx.fillStyle = pal[0];
           ctx.fillText(displayStr, cx - Math.cos(t * 2.2) * sep, cy);
         } else if (fxKey === "P") {
           const metrics = ctx.measureText(displayStr);
           const boxW = Math.min(w * 0.92, metrics.width + baseFontSize * (0.75 + r.bass * 0.2));
           const boxH = baseFontSize * (1.4 + r.bass * 0.15);
-          ctx.fillStyle = "rgba(4, 16, 15, 0.9)";
+          ctx.fillStyle = p.bg;
+          ctx.globalAlpha = 0.92;
           ctx.fillRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.globalAlpha = 1;
           ctx.lineWidth = 4 + r.bass * 3;
-          ctx.strokeStyle = r.transient > 0.5 ? "#b8ff2c" : "#00ff9f";
+          ctx.strokeStyle = r.transient > 0.5 ? pal[2] : pal[0];
           ctx.strokeRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
-          ctx.fillStyle = "#e6fff6";
+          ctx.fillStyle = pal[4] || "#ffffff";
           ctx.fillText(displayStr, cx, cy);
         }
 
@@ -2065,11 +2299,13 @@
         const anyActive = Object.values(sf).some(Boolean);
         if (!anyActive) return;
 
+        const p = currentPage();
+        const pal = p.palette;
         const r = state.rhythm;
         const w = state.width;
         const h = state.height;
         const cx = snapPx(w * 0.5, 8);
-        const cy = snapPx(h * 0.5, 8);
+        const cy = snapPx(h * 0.52, 8);
 
         const needsWorkBuffer = sf.tiles || sf.twist || sf.spin || sf.glitch || sf.flyEye;
         const ww = workCanvas.width;
@@ -2127,7 +2363,7 @@
         if (sf.hueDrift) {
           ctx.save();
           ctx.globalCompositeOperation = "screen";
-          ctx.fillStyle = BOARD_PALETTE[Math.floor(t * (3 + r.mid * 6)) % BOARD_PALETTE.length];
+          ctx.fillStyle = pal[Math.floor(t * (3 + r.mid * 6)) % pal.length];
           ctx.globalAlpha = 0.1 + r.mid * 0.14 + r.treble * 0.1;
           ctx.fillRect(0, 0, w, h);
           ctx.restore();
@@ -2135,7 +2371,7 @@
 
         if (sf.glassRibs) {
           ctx.save();
-          ctx.fillStyle = "rgba(0, 12, 10, 0.32)";
+          ctx.fillStyle = "rgba(0, 0, 0, 0.32)";
           for (let y = 0; y < h; y += 6) {
             ctx.fillRect(0, y, w, 2);
           }
@@ -2144,7 +2380,7 @@
 
         if (sf.anamorphic) {
           ctx.save();
-          ctx.fillStyle = "#040b0a";
+          ctx.fillStyle = p.bg;
           const barH = Math.max(20, Math.min(h * 0.12, 56) - r.bass * 14);
           ctx.fillRect(0, 0, w, barH);
           ctx.fillRect(0, h - barH, w, barH);
@@ -2203,7 +2439,7 @@
           ctx.save();
           for (let o = 0; o < 3; o++) {
             const bandVal = o === 0 ? r.bass : o === 1 ? r.mid : r.treble;
-            ctx.fillStyle = BOARD_PALETTE[o % BOARD_PALETTE.length];
+            ctx.fillStyle = pal[o % pal.length];
             for (let x = 0; x < w; x += 16) {
               const sq = Math.sin(x * (0.015 + o * 0.01) + t * (4 + o * 3)) >= 0 ? 1 : -1;
               const y = snapPx(cy + sq * (18 + bandVal * 48 + (o - 1) * 16), 8);
@@ -2216,7 +2452,7 @@
         if (sf.pulses) {
           ctx.save();
           const pulseR = snapPx(((t * 130) % Math.max(w, h) * 0.65) + r.bass * 48, 8);
-          ctx.strokeStyle = r.transient > 0.5 ? "#b8ff2c" : "#00ff9f";
+          ctx.strokeStyle = r.transient > 0.5 ? pal[2] : pal[0];
           ctx.lineWidth = 4 + r.bass * 5;
           ctx.strokeRect(cx - pulseR, cy - pulseR, pulseR * 2, pulseR * 2);
           ctx.restore();
@@ -2226,7 +2462,7 @@
           ctx.save();
           const fx = snapPx(cx + Math.cos(t * 1.5) * w * (0.18 + r.mid * 0.14), 12);
           const fy = snapPx(cy + Math.sin(t * 2.1) * h * (0.15 + r.bass * 0.12), 12);
-          ctx.fillStyle = r.treble > 0.5 ? "#e6fff6" : "#00d8ff";
+          ctx.fillStyle = r.treble > 0.5 ? pal[4] || "#ffffff" : pal[1] || pal[0];
           const fSize = 22 + r.treble * 28 + r.bass * 14;
           ctx.fillRect(fx - fSize * 0.5, fy - fSize * 0.5, snapPx(fSize, 4), snapPx(fSize, 4));
           ctx.restore();
@@ -2234,7 +2470,7 @@
 
         if (sf.vignette) {
           ctx.save();
-          ctx.strokeStyle = "#00ff9f";
+          ctx.strokeStyle = pal[0];
           ctx.lineWidth = 8 + r.bass * 8;
           ctx.strokeRect(10, 10, w - 20, h - 20);
           ctx.restore();
