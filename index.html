@@ -2,25 +2,33 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>LIVE VISUALS — FUTURISTIC PIXEL BOARD &amp; MATRIX CODE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>LIVE VISUALS — MOBILE PIXEL BOARD &amp; MATRIX</title>
   <style>
     :root {
       --bg: #040b0a;
-      --panel: rgba(6, 18, 17, 0.92);
-      --panel-border: rgba(0, 255, 159, 0.36);
+      --panel: rgba(6, 18, 17, 0.94);
+      --panel-border: rgba(0, 255, 159, 0.38);
       --text: #e6fff6;
-      --muted: rgba(230, 255, 246, 0.66);
+      --muted: rgba(230, 255, 246, 0.68);
       --accent: #00ff9f;
       --accent-2: #00d8ff;
       --accent-3: #b8ff2c;
       --accent-4: #ff3b8d;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
     }
 
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none;
     }
 
     html, body {
@@ -28,17 +36,20 @@
       padding: 0;
       width: 100%;
       height: 100%;
+      height: 100dvh;
       overflow: hidden;
+      overscroll-behavior: none;
       background: var(--bg);
       color: var(--text);
       font-family: "Courier New", Courier, monospace;
+      touch-action: none;
     }
 
     #stage {
       position: fixed;
       inset: 0;
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
       display: block;
       background: #040b0a;
       touch-action: none;
@@ -47,18 +58,14 @@
 
     #hud-toggle {
       position: fixed;
-      top: 12px;
-      right: 12px;
+      top: calc(10px + var(--safe-top));
+      right: calc(10px + var(--safe-right));
       z-index: 30;
       display: flex;
-      gap: 6px;
-      opacity: 0.9;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    #hud-toggle:hover,
-    #hud-toggle.active {
-      opacity: 1;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 5px;
+      max-width: calc(100vw - 20px - var(--safe-left) - var(--safe-right));
     }
 
     .hud-hidden #hud-toggle,
@@ -69,51 +76,58 @@
 
     button, .btn-file {
       appearance: none;
+      -webkit-appearance: none;
       border: 2px solid var(--panel-border);
-      background: rgba(7, 22, 21, 0.88);
+      background: rgba(7, 22, 21, 0.9);
       color: var(--text);
-      border-radius: 4px;
-      padding: 7px 11px;
-      font-size: 12px;
+      border-radius: 5px;
+      padding: 8px 10px;
+      min-height: 36px;
+      font-size: 11.5px;
       font-weight: 700;
       font-family: "Courier New", Courier, monospace;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
       transition: transform 0.06s ease, border-color 0.12s ease, background 0.12s ease;
-    }
-
-    button:hover, .btn-file:hover {
-      border-color: var(--accent);
-      background: rgba(12, 38, 36, 0.96);
     }
 
     button:active, .btn-file:active {
       transform: scale(0.95);
+      border-color: var(--accent);
     }
 
     button.active {
       border-color: var(--accent-3);
-      box-shadow: 0 0 0 2px rgba(184, 255, 44, 0.3);
+      box-shadow: 0 0 0 2px rgba(184, 255, 44, 0.28);
       color: var(--accent-3);
-      background: rgba(16, 48, 42, 0.96);
+      background: rgba(16, 48, 42, 0.98);
     }
 
     #control-drawer {
       position: fixed;
-      top: 52px;
-      right: 12px;
-      width: min(440px, calc(100vw - 24px));
-      max-height: calc(100vh - 140px);
+      top: calc(56px + var(--safe-top));
+      left: calc(10px + var(--safe-left));
+      right: calc(10px + var(--safe-right));
+      width: auto;
+      max-width: 460px;
+      margin-left: auto;
+      max-height: calc(100dvh - 135px - var(--safe-top) - var(--safe-bottom));
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
       z-index: 25;
       background: var(--panel);
       border: 2px solid var(--panel-border);
-      border-radius: 6px;
-      padding: 14px;
+      border-radius: 8px;
+      padding: 12px;
       display: none;
       flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.88);
+      gap: 11px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
     }
 
     #control-drawer.open {
@@ -121,14 +135,15 @@
     }
 
     .section-title {
-      font-size: 11px;
+      font-size: 10.5px;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.07em;
       color: var(--accent);
       margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 6px;
     }
 
     .row {
@@ -139,19 +154,25 @@
     }
 
     .stat-pill {
-      font-size: 12px;
+      font-size: 11px;
       font-variant-numeric: tabular-nums;
-      padding: 5px 9px;
+      padding: 5px 8px;
       border-radius: 4px;
-      background: rgba(0, 255, 159, 0.06);
-      border: 1px solid rgba(0, 255, 159, 0.16);
+      background: rgba(0, 255, 159, 0.07);
+      border: 1px solid rgba(0, 255, 159, 0.18);
     }
 
     .band-meter {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 6px;
       margin-top: 6px;
+    }
+
+    @media (min-width: 480px) {
+      .band-meter {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
 
     .band-box {
@@ -159,7 +180,7 @@
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 4px;
       padding: 5px 7px;
-      font-size: 11px;
+      font-size: 10.5px;
     }
 
     .band-bar-wrap {
@@ -173,7 +194,7 @@
     .band-bar {
       height: 100%;
       width: 0%;
-      transition: width 0.05s linear;
+      transition: width 0.06s linear;
     }
 
     .beat-led {
@@ -187,12 +208,14 @@
 
     .beat-led.hit {
       background: var(--accent);
-      transform: scale(1.4);
+      transform: scale(1.35);
       box-shadow: 0 0 10px var(--accent);
     }
 
     input[type="range"] {
       flex: 1;
+      min-width: 90px;
+      height: 28px;
       accent-color: var(--accent);
       cursor: pointer;
     }
@@ -203,39 +226,47 @@
 
     #mobile-pad {
       position: fixed;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
+      left: calc(8px + var(--safe-left));
+      right: calc(8px + var(--safe-right));
+      bottom: calc(8px + var(--safe-bottom));
       z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    #mobile-pad .pad-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      pointer-events: none;
+      gap: 5px;
+      width: 100%;
     }
 
     #mobile-pad .pad-group {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       pointer-events: auto;
       flex-wrap: wrap;
     }
 
     #mobile-pad button {
-      padding: 9px 11px;
-      font-size: 12px;
-      background: rgba(7, 20, 19, 0.86);
+      padding: 8px 9px;
+      min-height: 38px;
+      font-size: 11px;
+      background: rgba(7, 20, 19, 0.88);
     }
 
     #shortcut-modal {
       position: fixed;
       inset: 0;
       z-index: 50;
-      background: rgba(2, 8, 7, 0.88);
+      background: rgba(2, 8, 7, 0.9);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: calc(12px + var(--safe-top)) calc(12px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(12px + var(--safe-left));
     }
 
     #shortcut-modal.open {
@@ -244,12 +275,13 @@
 
     .modal-card {
       width: min(860px, 100%);
-      max-height: 88vh;
+      max-height: 86dvh;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       background: #071615;
       border: 2px solid var(--accent);
       border-radius: 6px;
-      padding: 20px;
+      padding: 16px;
       box-shadow: 0 24px 80px rgba(0, 0, 0, 0.95);
     }
 
@@ -257,27 +289,28 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       border-bottom: 2px solid rgba(0, 255, 159, 0.16);
       padding-bottom: 10px;
+      gap: 8px;
     }
 
     .modal-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
     }
 
     .key-box {
       background: rgba(0, 255, 159, 0.03);
       border: 1px solid rgba(0, 255, 159, 0.14);
       border-radius: 4px;
-      padding: 12px;
+      padding: 10px;
     }
 
     .key-box h3 {
       margin: 0 0 8px 0;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--accent-2);
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -287,10 +320,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12.5px;
+      font-size: 11.5px;
       padding: 4px 0;
       border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
-      gap: 10px;
+      gap: 8px;
     }
 
     .key-item:last-child {
@@ -301,8 +334,8 @@
       background: rgba(0, 255, 159, 0.14);
       border: 1px solid rgba(0, 255, 159, 0.32);
       border-radius: 3px;
-      padding: 2px 6px;
-      font-size: 11px;
+      padding: 2px 5px;
+      font-size: 10.5px;
       font-family: "Courier New", Courier, monospace;
       color: #fff;
       white-space: nowrap;
@@ -310,20 +343,33 @@
 
     #hidden-type-sink {
       position: fixed;
-      left: -9999px;
-      top: -9999px;
-      opacity: 0;
-      pointer-events: none;
+      left: 50%;
+      bottom: calc(64px + var(--safe-bottom));
+      transform: translateX(-50%);
+      width: 240px;
+      height: 36px;
+      opacity: 0.01;
+      z-index: 40;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
   <canvas id="stage"></canvas>
-  <input id="hidden-type-sink" type="text" autocomplete="off" spellcheck="false" />
+  <input
+    id="hidden-type-sink"
+    type="text"
+    inputmode="text"
+    enterkeyhint="done"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="characters"
+    spellcheck="false"
+  />
 
   <div id="hud-toggle">
     <button id="btn-tap-top" title="TAP BPM (Space / N)">TAP</button>
-    <button id="btn-reset-single" title="Nollaa ja jätä vain yksi tauluefekti päälle">RESET 1 FX</button>
+    <button id="btn-reset-single" title="Nollaa ja jätä vain yksi tauluefekti päälle">RESET 1</button>
     <button id="btn-panel" title="Ohjauspaneeli">PANEL</button>
     <button id="btn-shortcuts" title="Pikanäppäimet (? / H)">KEYS</button>
     <button id="btn-fullscreen" title="Koko näyttö (F11)">FULL</button>
@@ -332,7 +378,7 @@
   <aside id="control-drawer">
     <div>
       <div class="section-title">
-        <span>Tempo &amp; Taajuuskaistat (MATRIX/BOARD)</span>
+        <span>Tempo &amp; Taajuuskaistat</span>
         <span><span id="beat-led" class="beat-led"></span> <strong id="bpm-readout">120 BPM</strong></span>
       </div>
       <div class="row">
@@ -418,7 +464,7 @@
 
     <div>
       <div class="section-title">
-        <span>Koodi- &amp; Taulutekstit (Q, W, E, R, Y, U, I, O, P) &amp; Fontti (F)</span>
+        <span>Koodi- &amp; Taulutekstit (Q–P) &amp; Fontti (F)</span>
         <span id="txt-fx-name">Q. MATRIX STREAM</span>
       </div>
       <div class="row" id="txt-fx-buttons"></div>
@@ -431,60 +477,60 @@
   </aside>
 
   <div id="mobile-pad">
-    <div class="pad-group">
-      <button id="mob-tap">TAP</button>
-      <button id="mob-reset">RESET 1</button>
-      <button id="mob-mix">G MIX</button>
-      <button id="mob-visage">V VISAGE</button>
-      <button id="mob-bg-next">BG+</button>
-    </div>
-    <div class="pad-group">
-      <button id="mob-logo-dn">L-</button>
-      <button id="mob-logo-up">L+</button>
-      <button id="mob-logo-fx">L FX</button>
-      <button id="mob-write">C TXT</button>
-      <button id="mob-logo">LOGO</button>
+    <div class="pad-row">
+      <div class="pad-group">
+        <button id="mob-tap">TAP</button>
+        <button id="mob-reset">RESET 1</button>
+        <button id="mob-mix">G MIX</button>
+        <button id="mob-visage">V HEAD</button>
+        <button id="mob-bg-next">BG+</button>
+      </div>
+      <div class="pad-group">
+        <button id="mob-logo-dn">L-</button>
+        <button id="mob-logo-up">L+</button>
+        <button id="mob-logo-fx">L FX</button>
+        <button id="mob-write">C TXT</button>
+        <button id="mob-logo">LOGO</button>
+      </div>
     </div>
   </div>
 
   <div id="shortcut-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <div class="modal-card">
       <div class="modal-header">
-        <h2 id="modal-title" style="margin:0; font-size:17px;">Pikanäppäimet — Futuristic Pixel Board &amp; Matrix Code</h2>
+        <h2 id="modal-title" style="margin:0; font-size:15px;">Pikanäppäimet &amp; Mobiiliohjaus</h2>
         <button id="btn-close-modal">SULJE (?)</button>
       </div>
       <div class="modal-grid">
         <div class="key-box">
+          <h3>Puhelin- &amp; kosketuseleet</h3>
+          <div class="key-item"><span>Kaksinapautus näytöllä</span><span>TAP BPM</span></div>
+          <div class="key-item"><span>Kahden sormen nipistys</span><span>LOGO KOKO</span></div>
+          <div class="key-item"><span>C TXT → näppäimistö → Enter</span><span>LIVE TEKSTI</span></div>
+          <div class="key-item"><span>Visage päällä: vedä sormella</span><span>MUOTOILE</span></div>
+        </div>
+
+        <div class="key-box">
           <h3>Pikselitaulu &amp; Koodikohtaukset (1–9, 0)</h3>
-          <div class="key-item"><span>1: Matrix Rain · 2: Hex Dump Wall · 3: Code Compiler</span><span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></span></div>
-          <div class="key-item"><span>4: Quantum Mesh · 5: Bitstream Bars · 6: Data Tunnel</span><span><kbd>4</kbd> <kbd>5</kbd> <kbd>6</kbd></span></div>
-          <div class="key-item"><span>7: Cipher Ring · 8: Signal Grid · 9: Core Beams</span><span><kbd>7</kbd> <kbd>8</kbd> <kbd>9</kbd></span></div>
-          <div class="key-item"><span>0: Node Ten · Reset 1 FX</span><span><kbd>0</kbd> · RESET 1 FX</span></div>
+          <div class="key-item"><span>1: Matrix Rain · 2: Hex Dump · 3: Compiler</span><span><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></span></div>
+          <div class="key-item"><span>4: Quantum Mesh · 5: Bitstream · 6: Tunnel</span><span><kbd>4</kbd> <kbd>5</kbd> <kbd>6</kbd></span></div>
+          <div class="key-item"><span>7: Cipher Ring · 8: Signal Grid · 9: Beams</span><span><kbd>7</kbd> <kbd>8</kbd> <kbd>9</kbd></span></div>
+          <div class="key-item"><span>0: Node Ten · Reset 1 FX</span><span><kbd>0</kbd> · RESET 1</span></div>
         </div>
 
         <div class="key-box">
-          <h3>Shift + Numerot &amp; Kirjaimet: Taulu Post-FX</h3>
-          <div class="key-item"><span>⇧1: Mirror Board · ⇧2: LED Matrix · ⇧3: Cipher Twist</span><span><kbd>⇧1</kbd> <kbd>⇧2</kbd> <kbd>⇧3</kbd></span></div>
-          <div class="key-item"><span>⇧4: Row Scan · ⇧5: Gyro Core · ⇧6: Phase Shift</span><span><kbd>⇧4</kbd> <kbd>⇧5</kbd> <kbd>⇧6</kbd></span></div>
-          <div class="key-item"><span>⇧7: Bezel Frame · ⇧8: Overclock · ⇧9: LED Ribs</span><span><kbd>⇧7</kbd> <kbd>⇧8</kbd> <kbd>⇧9</kbd></span></div>
-          <div class="key-item"><span>⇧0: Wide HUD · ⇧Q: Code Drip · ⇧W: Bit Glitch</span><span><kbd>⇧0</kbd> · <kbd>⇧Q</kbd> · <kbd>⇧W</kbd></span></div>
-          <div class="key-item"><span>⇧E: Mega Pixels · ⇧R: Multi-Panel · ⇧Y: Logic Wave</span><span><kbd>⇧E</kbd> · <kbd>⇧R</kbd> · <kbd>⇧Y</kbd></span></div>
-          <div class="key-item"><span>⇧U: Packet Ring · ⇧I: Laser Flare · ⇧P: Clear</span><span><kbd>⇧U</kbd> · <kbd>⇧I</kbd> · <kbd>⇧P</kbd></span></div>
+          <h3>Shift + Numerot &amp; Kirjaimet</h3>
+          <div class="key-item"><span>⇧1..⇧0: Mirror, LED, Twist, Scan, Spin ym.</span><span><kbd>⇧1</kbd> … <kbd>⇧0</kbd></span></div>
+          <div class="key-item"><span>⇧Q..⇧I: Drip, Glitch, Pixels, Panel, Wave</span><span><kbd>⇧Q</kbd> … <kbd>⇧I</kbd></span></div>
+          <div class="key-item"><span>⇧P: Tyhjennä Shift-FX</span><span><kbd>⇧P</kbd></span></div>
         </div>
 
         <div class="key-box">
-          <h3>Koodi- &amp; Taulutekstit (Q, W, E, R, Y, U, I, O, P)</h3>
-          <div class="key-item"><span>Q: Matrix Stream · W: Hex Shadow · E: Terminal Glow</span><span><kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd></span></div>
-          <div class="key-item"><span>R: Syntax Curve · Y: Parity Glitch · U: Stack Jump</span><span><kbd>R</kbd> <kbd>Y</kbd> <kbd>U</kbd></span></div>
-          <div class="key-item"><span>I: Bus Wave · O: Dual Buffer · P: Console Box</span><span><kbd>I</kbd> <kbd>O</kbd> <kbd>P</kbd></span></div>
-        </div>
-
-        <div class="key-box">
-          <h3>Ohjausnäppäimet</h3>
-          <div class="key-item"><span>G: Morph Mix · V: Visage · K: Open Head · S: Save</span><span><kbd>G</kbd> · <kbd>V</kbd> · <kbd>K</kbd> · <kbd>S</kbd></span></div>
-          <div class="key-item"><span>C→Enter: Kirjoita · T: Teksti on/off · F: Fontti · A/D: Koko</span><span><kbd>C</kbd> · <kbd>T</kbd> · <kbd>F</kbd> · <kbd>A</kbd>/<kbd>D</kbd></span></div>
-          <div class="key-item"><span>Space/N: TAP BPM · M: Ääni · B: Blend · F11: Full</span><span><kbd>Space</kbd> · <kbd>M</kbd> · <kbd>B</kbd> · <kbd>F11</kbd></span></div>
-          <div class="key-item"><span>↑/↓: Nopeus · ←/→: Logo koko · L / ⇧L: Logo</span><span><kbd>↑</kbd><kbd>↓</kbd> · <kbd>←</kbd><kbd>→</kbd> · <kbd>L</kbd></span></div>
+          <h3>Tekstiefektit &amp; Ohjaus</h3>
+          <div class="key-item"><span>Q, W, E, R, Y, U, I, O, P</span><span>9 KOODITEKSTIÄ</span></div>
+          <div class="key-item"><span>G: Morph · V: Visage · K: Open · S: Save</span><span><kbd>G</kbd> <kbd>V</kbd> <kbd>K</kbd> <kbd>S</kbd></span></div>
+          <div class="key-item"><span>T: Teksti · F: Fontti · B: Blend · M: Ääni</span><span><kbd>T</kbd> <kbd>F</kbd> <kbd>B</kbd> <kbd>M</kbd></span></div>
+          <div class="key-item"><span>↑/↓: Nopeus · ←/→: Logo · A/D: Teksti</span><span><kbd>↑↓</kbd> <kbd>←→</kbd> <kbd>AD</kbd></span></div>
         </div>
       </div>
     </div>
@@ -492,8 +538,9 @@
 
   <script>
     (() => {
+      const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
       const canvas = document.getElementById("stage");
-      const ctx = canvas.getContext("2d", { alpha: false });
+      const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
 
       const workCanvas = document.createElement("canvas");
       const workCtx = workCanvas.getContext("2d");
@@ -506,7 +553,7 @@
 
       const hiddenSink = document.getElementById("hidden-type-sink");
 
-      const MATRIX_CHARS = "01アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEF<>/{}[]*+=#";
+      const MATRIX_CHARS = "01アイウエオカキクケコABCDEF<>/{}[]*+=#";
       const HEX_CHARS = "0123456789ABCDEF";
       const CODE_SNIPPETS = [
         "INIT_KERNEL(0xFF00);",
@@ -588,9 +635,10 @@
       const state = {
         width: 1,
         height: 1,
-        dpr: Math.min(window.devicePixelRatio || 1, 2),
+        dpr: Math.min(window.devicePixelRatio || 1, isTouchDevice ? 1.5 : 2),
         time: 0,
         lastFrame: performance.now(),
+        lastTapScreen: 0,
         bpm: 120,
         beatPhase: 0,
         bassPulse: 0,
@@ -635,7 +683,6 @@
           enabled: false,
           headOpenAmount: 0,
           headOpenTarget: 0,
-          exprIndex: 0,
           silhouetteSeed: 1,
           pointerX: 0,
           pointerY: 0,
@@ -680,24 +727,31 @@
       };
 
       function resize() {
-        state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const maxDpr = isTouchDevice ? 1.5 : 2;
+        state.dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
         state.width = window.innerWidth;
         state.height = window.innerHeight;
         canvas.width = Math.floor(state.width * state.dpr);
         canvas.height = Math.floor(state.height * state.dpr);
         ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
 
-        workCanvas.width = Math.max(160, Math.floor(state.width * 0.55));
-        workCanvas.height = Math.max(120, Math.floor(state.height * 0.55));
+        const workScale = isTouchDevice ? 0.36 : 0.52;
+        workCanvas.width = Math.max(120, Math.floor(state.width * workScale));
+        workCanvas.height = Math.max(90, Math.floor(state.height * workScale));
 
-        mosaicCanvas.width = Math.max(80, Math.floor(state.width * 0.18));
-        mosaicCanvas.height = Math.max(60, Math.floor(state.height * 0.18));
+        const mosScale = isTouchDevice ? 0.14 : 0.18;
+        mosaicCanvas.width = Math.max(64, Math.floor(state.width * mosScale));
+        mosaicCanvas.height = Math.max(48, Math.floor(state.height * mosScale));
 
-        logoFxCanvas.width = 512;
-        logoFxCanvas.height = 512;
+        const logoRes = isTouchDevice ? 320 : 480;
+        logoFxCanvas.width = logoRes;
+        logoFxCanvas.height = logoRes;
       }
 
       window.addEventListener("resize", resize);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", resize);
+      }
       resize();
 
       function snapPx(val, grid = 12) {
@@ -746,13 +800,59 @@
         }
       }
 
-      window.addEventListener("pointermove", e => updatePointer(e.clientX, e.clientY), { passive: true });
+      // Kahden sormen nipistys logolle puhelimella
+      let pinchStartDist = 0;
+      let pinchStartScale = 1;
+
+      function touchDist(t1, t2) {
+        return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      }
+
+      canvas.addEventListener("touchstart", e => {
+        if (e.touches.length === 2) {
+          pinchStartDist = Math.max(20, touchDist(e.touches[0], e.touches[1]));
+          pinchStartScale = state.logoScale;
+          state.visage.dragSculpting = false;
+        } else if (e.touches.length === 1) {
+          const now = performance.now();
+          if (now - state.lastTapScreen < 280) {
+            registerTap();
+          }
+          state.lastTapScreen = now;
+          updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+          if (state.visage.enabled) {
+            state.visage.dragSculpting = true;
+          }
+        }
+      }, { passive: true });
+
+      canvas.addEventListener("touchmove", e => {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+          const d = touchDist(e.touches[0], e.touches[1]);
+          const ratio = d / pinchStartDist;
+          state.logoScale = Math.max(0.25, Math.min(3.2, +(pinchStartScale * ratio).toFixed(2)));
+          updateUiReadouts();
+        } else if (e.touches.length === 1) {
+          updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+
+      canvas.addEventListener("touchend", e => {
+        if (e.touches.length < 2) pinchStartDist = 0;
+        if (e.touches.length === 0) state.visage.dragSculpting = false;
+      }, { passive: true });
+
+      window.addEventListener("pointermove", e => {
+        if (e.pointerType !== "touch") updatePointer(e.clientX, e.clientY);
+      }, { passive: true });
+
       canvas.addEventListener("pointerdown", e => {
-        updatePointer(e.clientX, e.clientY);
-        if (state.visage.enabled && !e.shiftKey) {
-          state.visage.dragSculpting = true;
+        if (e.pointerType !== "touch") {
+          updatePointer(e.clientX, e.clientY);
+          if (state.visage.enabled && !e.shiftKey) state.visage.dragSculpting = true;
         }
       });
+
       window.addEventListener("pointerup", () => {
         state.visage.dragSculpting = false;
       });
@@ -767,7 +867,7 @@
         state.rhythm.transient = Math.min(1.4, state.rhythm.transient + 0.55);
         state.beatCount++;
         beatLed.classList.add("hit");
-        setTimeout(() => beatLed.classList.remove("hit"), 95);
+        setTimeout(() => beatLed.classList.remove("hit"), 90);
       }
 
       function registerTap() {
@@ -802,7 +902,7 @@
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             state.audioCtx = new AudioContext();
             state.analyser = state.audioCtx.createAnalyser();
-            state.analyser.fftSize = 512;
+            state.analyser.fftSize = isTouchDevice ? 256 : 512;
             state.analyser.smoothingTimeConstant = 0.72;
             state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
           }
@@ -833,7 +933,7 @@
         if (!state.audioCtx) {
           state.audioCtx = new AudioContext();
           state.analyser = state.audioCtx.createAnalyser();
-          state.analyser.fftSize = 512;
+          state.analyser.fftSize = isTouchDevice ? 256 : 512;
           state.analyser.smoothingTimeConstant = 0.72;
           state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
         }
@@ -877,18 +977,23 @@
 
         if (state.audioEnabled && state.analyser && state.freqData) {
           state.analyser.getByteFrequencyData(state.freqData);
+          const len = state.freqData.length;
+
+          const bEnd = Math.max(4, Math.floor(len * 0.12));
+          const mEnd = Math.max(bEnd + 4, Math.floor(len * 0.45));
+          const tEnd = Math.max(mEnd + 4, Math.floor(len * 0.85));
 
           let bassSum = 0;
-          for (let i = 1; i <= 14; i++) bassSum += state.freqData[i];
-          const rawBass = Math.min(1.3, (bassSum / (14 * 255)) * 1.35);
+          for (let i = 1; i < bEnd; i++) bassSum += state.freqData[i];
+          const rawBass = Math.min(1.3, (bassSum / (Math.max(1, bEnd - 1) * 255)) * 1.35);
 
           let midSum = 0;
-          for (let i = 15; i <= 75; i++) midSum += state.freqData[i];
-          const rawMid = Math.min(1.3, (midSum / (61 * 255)) * 1.45);
+          for (let i = bEnd; i < mEnd; i++) midSum += state.freqData[i];
+          const rawMid = Math.min(1.3, (midSum / (Math.max(1, mEnd - bEnd) * 255)) * 1.45);
 
           let trebleSum = 0;
-          for (let i = 76; i <= 210; i++) trebleSum += state.freqData[i];
-          const rawTreble = Math.min(1.3, (trebleSum / (135 * 255)) * 1.7);
+          for (let i = mEnd; i < tEnd; i++) trebleSum += state.freqData[i];
+          const rawTreble = Math.min(1.3, (trebleSum / (Math.max(1, tEnd - mEnd) * 255)) * 1.7);
 
           state.bassLevel = Math.max(rawBass, state.bassLevel * Math.pow(0.08, rawDt));
           state.midLevel = rawMid * 0.75 + state.midLevel * 0.25;
@@ -959,6 +1064,7 @@
         state.liveText = state.typeDraft;
         state.typingActive = false;
         state.textVisible = state.liveText.trim().length > 0;
+        hiddenSink.value = "";
         hiddenSink.blur();
         updateUiReadouts();
       }
@@ -967,9 +1073,28 @@
         if (!state.typingActive) return;
         state.typingActive = false;
         state.typeDraft = state.liveText;
+        hiddenSink.value = "";
         hiddenSink.blur();
         updateUiReadouts();
       }
+
+      hiddenSink.addEventListener("input", () => {
+        if (state.typingActive) {
+          state.typeDraft = hiddenSink.value;
+        }
+      });
+
+      hiddenSink.addEventListener("keydown", e => {
+        if (!state.typingActive) return;
+        if (e.key === "Enter") {
+          e.preventDefault();
+          state.typeDraft = hiddenSink.value || state.typeDraft;
+          commitDirectTyping();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          cancelDirectTyping();
+        }
+      });
 
       const SHIFT_KEY_MAP = {
         "!": "symmetry",
@@ -1123,7 +1248,7 @@
         document.getElementById("bg-fx-name").textContent = `${currentBg.key}. ${currentBg.name}`;
         document.getElementById("txt-fx-name").textContent = `${currentTxt.key}. ${currentTxt.name}`;
         document.getElementById("shift-fx-name").textContent =
-          activeShiftNames.length ? activeShiftNames.join(", ").slice(0, 28) : "SHIFT FX: OFF";
+          activeShiftNames.length ? activeShiftNames.join(", ").slice(0, 26) : "SHIFT FX: OFF";
         document.getElementById("font-readout").textContent = currentFont.label;
         document.getElementById("blend-readout").textContent = currentBlend.toUpperCase();
         document.getElementById("speed-readout").textContent = `${state.speed.toFixed(2)}x`;
@@ -1131,7 +1256,7 @@
         document.getElementById("text-scale-readout").textContent = `${state.textScale.toFixed(2)}x`;
         document.getElementById("audio-level").textContent = `${Math.round((state.audioLevel || state.bassPulse) * 100)}%`;
         document.getElementById("morph-mix-status").textContent =
-          `MIX: ${state.morphMixEnabled ? "ON" : "OFF"} · LOGO: ${LOGO_FX_MODES[state.logoFxIndex].label}`;
+          `MIX: ${state.morphMixEnabled ? "ON" : "OFF"} · ${LOGO_FX_MODES[state.logoFxIndex].label}`;
 
         document.querySelectorAll("#bg-fx-buttons button").forEach(btn => {
           btn.classList.toggle("active", Number(btn.dataset.bg) === state.bgEffect);
@@ -1196,4 +1321,979 @@
       });
       document.getElementById("btn-blend-cycle").addEventListener("click", cycleBlend);
       document.getElementById("btn-txt-toggle").addEventListener("click", () => {
-        state.textVisible = !state.text
+        state.textVisible = !state.textVisible;
+        updateUiReadouts();
+      });
+      document.getElementById("btn-txt-write").addEventListener("click", startDirectTyping);
+      document.getElementById("btn-font-cycle").addEventListener("click", cycleFont);
+
+      document.getElementById("mob-tap").addEventListener("click", registerTap);
+      document.getElementById("mob-reset").addEventListener("click", resetToSingleEffect);
+      document.getElementById("mob-mix").addEventListener("click", toggleMorphMix);
+      document.getElementById("mob-visage").addEventListener("click", toggleVisage);
+      document.getElementById("mob-bg-next").addEventListener("click", () => {
+        const idx = BG_EFFECTS.findIndex(e => e.id === state.bgEffect);
+        const next = BG_EFFECTS[(idx + 1) % BG_EFFECTS.length];
+        setBgEffect(next.id);
+      });
+      document.getElementById("mob-logo-dn").addEventListener("click", () => adjustLogoScale(-0.15));
+      document.getElementById("mob-logo-up").addEventListener("click", () => adjustLogoScale(0.15));
+      document.getElementById("mob-logo-fx").addEventListener("click", cycleLogoFx);
+      document.getElementById("mob-write").addEventListener("click", startDirectTyping);
+      document.getElementById("mob-logo").addEventListener("click", () => {
+        document.getElementById("file-logo").click();
+      });
+
+      window.addEventListener("keydown", e => {
+        if (state.typingActive && document.activeElement !== hiddenSink) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commitDirectTyping();
+            return;
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            cancelDirectTyping();
+            return;
+          }
+          if (e.key === "Backspace") {
+            e.preventDefault();
+            state.typeDraft = state.typeDraft.slice(0, -1);
+            return;
+          }
+          if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            e.preventDefault();
+            state.typeDraft += e.key;
+            return;
+          }
+          return;
+        }
+
+        if (document.activeElement === hiddenSink) return;
+
+        if (e.key === "?" || (e.key.toLowerCase() === "h" && e.shiftKey)) {
+          e.preventDefault();
+          toggleModal();
+          return;
+        }
+        if (e.key === "Escape" && modal.classList.contains("open")) {
+          e.preventDefault();
+          toggleModal(false);
+          return;
+        }
+
+        const key = e.key.toLowerCase();
+
+        if (e.shiftKey) {
+          if (e.key in SHIFT_KEY_MAP) {
+            e.preventDefault();
+            toggleShiftFlag(SHIFT_KEY_MAP[e.key]);
+            return;
+          }
+          if (key in SHIFT_KEY_MAP) {
+            e.preventDefault();
+            toggleShiftFlag(SHIFT_KEY_MAP[key]);
+            return;
+          }
+          if (key in SHIFT_DIGIT_MAP) {
+            e.preventDefault();
+            toggleShiftFlag(SHIFT_DIGIT_MAP[key]);
+            return;
+          }
+          if (key === "p") {
+            e.preventDefault();
+            resetAllShiftFlags();
+            return;
+          }
+        }
+
+        if (key === "g" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          toggleMorphMix();
+          return;
+        }
+        if (key === "v" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          toggleVisage();
+          return;
+        }
+        if (key === "k" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          toggleVisageHeadOpen();
+          return;
+        }
+        if (key === "s" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          saveVisageAngleAndGaze();
+          return;
+        }
+        if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(key)) {
+          e.preventDefault();
+          setBgEffect(Number(key));
+          return;
+        }
+        if (e.code === "Space" || key === "n") {
+          e.preventDefault();
+          registerTap();
+          return;
+        }
+        if (key === "c" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          startDirectTyping();
+          return;
+        }
+        if (key === "t" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          state.textVisible = !state.textVisible;
+          updateUiReadouts();
+          return;
+        }
+        if (key === "f" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          cycleFont();
+          return;
+        }
+        if (key === "b" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          cycleBlend();
+          return;
+        }
+        if (key === "m" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          toggleAudioReactive();
+          return;
+        }
+        if (key === "h" && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          state.hudHidden = !state.hudHidden;
+          document.body.classList.toggle("hud-hidden", state.hudHidden);
+          return;
+        }
+        if (key === "l") {
+          e.preventDefault();
+          if (e.shiftKey) {
+            state.logoVisible = !state.logoVisible;
+            updateUiReadouts();
+          } else {
+            document.getElementById("file-logo").click();
+          }
+          return;
+        }
+        const txtIdx = TXT_EFFECTS.findIndex(item => item.key.toLowerCase() === key);
+        if (txtIdx !== -1) {
+          e.preventDefault();
+          setTxtEffect(txtIdx);
+          return;
+        }
+        if (key === "a") {
+          e.preventDefault();
+          state.textScale = Math.max(0.45, +(state.textScale - 0.14).toFixed(2));
+          updateUiReadouts();
+          return;
+        }
+        if (key === "d") {
+          e.preventDefault();
+          state.textScale = Math.min(3.6, +(state.textScale + 0.14).toFixed(2));
+          updateUiReadouts();
+          return;
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          state.speed = Math.min(3.5, +(state.speed + 0.12).toFixed(2));
+          updateUiReadouts();
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault();
+          state.speed = Math.max(0.2, +(state.speed - 0.12).toFixed(2));
+          updateUiReadouts();
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          adjustLogoScale(0.12);
+        } else if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          adjustLogoScale(-0.12);
+        }
+      });
+
+      function drawBoardGridDots(w, h, cell, r) {
+        ctx.fillStyle = "rgba(0, 255, 159, 0.08)";
+        for (let y = 0; y < h; y += cell) {
+          for (let x = 0; x < w; x += cell) {
+            ctx.fillRect(x, y, 2, 2);
+          }
+        }
+        if (r.treble > 0.35) {
+          ctx.fillStyle = "rgba(184, 255, 44, 0.25)";
+          const sx = snapPx(Math.abs(Math.sin(state.time * 17)) * w, cell);
+          ctx.fillRect(sx, 0, 2, h);
+        }
+      }
+
+      function renderBackgroundLayer(t) {
+        const r = state.rhythm;
+        const w = state.width;
+        const h = state.height;
+        const cx = snapPx(w * 0.5 + Math.sin(t * 1.4) * r.mid * 24, 12);
+        const cy = snapPx(h * 0.5 + Math.cos(t * 1.9) * r.bass * 18, 12);
+        const minDim = Math.min(w, h);
+        const cell = isTouchDevice && w < 520 ? 22 : 18;
+
+        ctx.fillStyle = "#040b0a";
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.save();
+        ctx.globalCompositeOperation = BLEND_MODES[state.blendIndex];
+        drawBoardGridDots(w, h, isTouchDevice && w < 520 ? 32 : 24, r);
+
+        if (state.bgEffect === 1) {
+          const cols = Math.max(10, Math.floor(w / cell));
+          const rows = Math.max(10, Math.floor(h / cell));
+          ctx.font = `bold ${cell - 2}px "Courier New", monospace`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+
+          for (let c = 0; c < cols; c++) {
+            const colSpeed = 0.65 + (c % 5) * 0.22 + r.bass * 0.9 + r.mid * 0.5;
+            const headRow = ((t * 9 * colSpeed + c * 7.3) % (rows + 10));
+            const trailLen = 5 + Math.round(r.bass * 7);
+
+            for (let k = 0; k < trailLen; k++) {
+              const rowIdx = Math.floor(headRow - k);
+              if (rowIdx < 0 || rowIdx >= rows) continue;
+              const px = c * cell + cell * 0.5;
+              const py = rowIdx * cell + cell * 0.5;
+              const chTick = Math.floor(t * (8 + r.treble * 24) + c * 13 + rowIdx * 3);
+              const ch = pickChar(chTick + k, MATRIX_CHARS);
+
+              if (k === 0) ctx.fillStyle = "#e6fff6";
+              else if (k < 3) ctx.fillStyle = r.treble > 0.45 && k === 1 ? "#b8ff2c" : "#00ff9f";
+              else ctx.fillStyle = `rgba(0, 216, 255, ${Math.max(0.18, 0.72 - k / trailLen)})`;
+
+              ctx.fillText(ch, px, py);
+            }
+          }
+        } else if (state.bgEffect === 2) {
+          const stepX = w < 520 ? 32 : 36;
+          const stepY = 24;
+          ctx.font = 'bold 12px "Courier New", monospace';
+          for (let y = 24; y < h - 14; y += stepY) {
+            const addr = ((Math.floor(t * (4 + r.mid * 10) + y) * 16) & 0xffff)
+              .toString(16)
+              .toUpperCase()
+              .padStart(4, "0");
+            ctx.fillStyle = "rgba(0, 216, 255, 0.55)";
+            ctx.fillText(`0x${addr}:`, 10, y);
+
+            const startX = w < 520 ? 74 : 82;
+            for (let x = startX; x < w - 20; x += stepX) {
+              const bitSeed = Math.floor(t * (6 + r.treble * 22) + x * 0.13 + y * 0.37);
+              const byteVal = ((bitSeed * 19 + state.beatCount * 7) & 0xff)
+                .toString(16)
+                .toUpperCase()
+                .padStart(2, "0");
+              const hot = r.bass > 0.55 && ((x + y) % 96 === 0);
+              ctx.fillStyle = hot ? "#00ff9f" : r.treble > 0.5 && (bitSeed % 11 === 0) ? "#b8ff2c" : "rgba(230, 255, 246, 0.68)";
+              ctx.fillText(byteVal, x, y);
+            }
+          }
+        } else if (state.bgEffect === 3) {
+          const lineH = 26;
+          const totalLines = Math.max(6, Math.floor((h - 56) / lineH));
+          const activeLine = Math.floor(t * (3 + r.bass * 6 + r.mid * 4)) % totalLines;
+          ctx.font = `bold ${w < 520 ? 12 : 15}px "Courier New", monospace`;
+
+          for (let i = 0; i < totalLines; i++) {
+            const ly = 56 + i * lineH;
+            const snippet = CODE_SNIPPETS[(i + state.beatCount) % CODE_SNIPPETS.length];
+            const isCurrent = i === activeLine;
+            const revealChars = isCurrent
+              ? Math.max(2, Math.floor(snippet.length * (0.35 + 0.65 * ((t * 4) % 1) + r.mid * 0.3)))
+              : snippet.length;
+
+            if (isCurrent) {
+              ctx.fillStyle = `rgba(0, 255, 159, ${0.14 + r.bass * 0.2})`;
+              ctx.fillRect(12, ly - 12, w - 24, lineH - 4);
+            }
+
+            ctx.fillStyle = isCurrent ? "#b8ff2c" : i % 2 === 0 ? "#00ff9f" : "#00d8ff";
+            ctx.fillText(`[${String(i).padStart(2, "0")}] ${snippet.slice(0, revealChars)}`, 18, ly);
+          }
+        } else if (state.bgEffect === 4) {
+          const cols = w < 520 ? 5 : 7;
+          const rows = 5;
+          const padX = w * 0.12;
+          const padY = h * 0.16;
+          const gx = (w - padX * 2) / Math.max(1, cols - 1);
+          const gy = (h - padY * 2) / Math.max(1, rows - 1);
+          const nodes = [];
+
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+              const wave = Math.sin(t * (2.2 + r.mid * 3) + col * 0.8 + row * 0.6) * (10 + r.mid * 18);
+              nodes.push({
+                x: snapPx(padX + col * gx + wave, 8),
+                y: snapPx(padY + row * gy - r.bass * Math.sin(row * 0.7) * 14, 8),
+                row
+              });
+            }
+          }
+
+          ctx.lineWidth = 2 + r.bass * 2;
+          nodes.forEach((n, idx) => {
+            const right = nodes[idx + 1];
+            if (right && right.row === n.row) {
+              ctx.strokeStyle = (idx + state.beatCount) % 2 === 0 ? "rgba(0, 255, 159, 0.45)" : "rgba(0, 216, 255, 0.45)";
+              ctx.beginPath();
+              ctx.moveTo(n.x, n.y);
+              ctx.lineTo(right.x, right.y);
+              ctx.stroke();
+            }
+            const down = nodes[idx + cols];
+            if (down) {
+              ctx.strokeStyle = "rgba(0, 216, 255, 0.28)";
+              ctx.beginPath();
+              ctx.moveTo(n.x, n.y);
+              ctx.lineTo(down.x, down.y);
+              ctx.stroke();
+            }
+
+            const box = snapPx(10 + r.bass * 12 + (r.treble > 0.5 && idx % 3 === 0 ? 8 : 0), 4);
+            ctx.fillStyle = BOARD_PALETTE[(idx + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.fillRect(n.x - box * 0.5, n.y - box * 0.5, box, box);
+          });
+        } else if (state.bgEffect === 5) {
+          const cols = w < 520 ? 14 : 22;
+          const cw = Math.floor(w / cols);
+          for (let i = 0; i < cols; i++) {
+            const ratio = i / cols;
+            const liveBin = state.freqData ? state.freqData[Math.min(state.freqData.length - 1, i * 4)] / 255 : 0;
+            const band = ratio < 0.35 ? r.bass : ratio < 0.7 ? r.mid : r.treble;
+            const level = Math.max(liveBin * 1.1, 0.2 + band * 0.7 + 0.12 * Math.sin(t * 8 + i));
+            const blocks = Math.max(1, Math.min(14, Math.floor(level * 12)));
+            for (let b = 0; b < blocks; b++) {
+              ctx.fillStyle = b > 9 ? "#ff3b8d" : b > 6 ? "#b8ff2c" : "#00ff9f";
+              ctx.fillRect(i * cw + 3, h - (b + 1) * 15 - 48, Math.max(5, cw - 6), 10);
+            }
+          }
+        } else if (state.bgEffect === 6) {
+          const rings = 8;
+          for (let i = 1; i <= rings; i++) {
+            const p = ((t * (0.45 + r.bass * 0.7) + i / rings) % 1);
+            const s = snapPx(minDim * (0.08 + p * 1.15), 12);
+            const shiftX = snapPx(Math.sin(t * 2.3 + i) * r.mid * 28, 8);
+            ctx.strokeStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.lineWidth = 3 + r.bass * 3;
+            ctx.strokeRect(cx - s * 0.5 + shiftX, cy - s * 0.5, s, s);
+          }
+        } else if (state.bgEffect === 7) {
+          const count = 16;
+          ctx.font = 'bold 14px "Courier New", monospace';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          for (let i = 0; i < count; i++) {
+            const ang = (i / count) * Math.PI * 2 + t * (0.6 + r.mid * 2.1);
+            const rad = minDim * (0.2 + r.bass * 0.15 + Math.sin(t * 4 + i) * r.mid * 0.04);
+            const px = snapPx(cx + Math.cos(ang) * rad, 8);
+            const py = snapPx(cy + Math.sin(ang) * rad, 8);
+            ctx.fillStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 5)) % BOARD_PALETTE.length];
+            ctx.fillText(pickChar(t * (12 + r.treble * 20) + i * 5, HEX_CHARS + "01"), px, py);
+          }
+        } else if (state.bgEffect === 8) {
+          const step = w < 520 ? 30 : 24;
+          ctx.font = 'bold 12px "Courier New", monospace';
+          for (let y = step; y < h; y += step) {
+            for (let x = step; x < w; x += step) {
+              const wave = Math.sin(x * (0.015 + r.mid * 0.02) + y * 0.015 - t * (3.5 + r.bass * 5));
+              if (wave > 0.25 - r.bass * 0.2) {
+                ctx.fillStyle = wave > 0.7 ? "#b8ff2c" : r.treble > 0.5 ? "#00d8ff" : "#00ff9f";
+                ctx.fillText(pickChar(x + y + t * 20, "01#"), x, y);
+              }
+            }
+          }
+        } else if (state.bgEffect === 9) {
+          const beams = 7;
+          for (let i = 0; i < beams; i++) {
+            const bx = snapPx((i / beams) * w + Math.sin(t * (1.8 + r.mid * 3) + i) * (24 + r.mid * 45), 16);
+            ctx.fillStyle = BOARD_PALETTE[(i + state.beatCount) % BOARD_PALETTE.length];
+            ctx.globalAlpha = 0.14 + r.bass * 0.24 + r.treble * 0.3;
+            ctx.fillRect(bx, 0, snapPx(18 + r.bass * 32, 8), h);
+          }
+        } else if (state.bgEffect === 0) {
+          ctx.font = 'bold 13px "Courier New", monospace';
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          for (let i = 0; i < 10; i++) {
+            const a = (i / 10) * Math.PI * 2 - t * (0.7 + r.mid * 1.8);
+            const rad = minDim * (0.24 + r.bass * 0.12);
+            const jitter = r.treble > 0.3 ? snapPx(Math.sin(t * 42 + i * 5) * r.treble * 16, 4) : 0;
+            const px = snapPx(cx + Math.cos(a) * rad + jitter, 12);
+            const py = snapPx(cy + Math.sin(a) * rad + jitter, 12);
+            const box = snapPx(18 + r.bass * 16 + r.transient * 10, 4);
+            ctx.fillStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.fillRect(px - box * 0.5, py - box * 0.5, box, box);
+            ctx.fillStyle = "#040b0a";
+            ctx.fillText(pickChar(i + t * 14, "01XF"), px, py);
+          }
+        }
+
+        ctx.restore();
+      }
+
+      function renderVisageLayer(t, rawDt) {
+        const v = state.visage;
+        if (!v.enabled && v.headOpenAmount <= 0.001) return;
+
+        const r = state.rhythm;
+
+        v.blinkTimer -= rawDt;
+        if (v.blinkTimer <= 0 && v.blinkProgress === 0) {
+          v.blinkProgress = 0.01;
+          v.blinkTimer = 2.2 + Math.abs(Math.sin(t * 0.7)) * 2.5;
+        }
+        if (v.blinkProgress > 0) {
+          v.blinkProgress += rawDt * 8.0;
+          if (v.blinkProgress >= 2) v.blinkProgress = 0;
+        }
+        const blinkFactor =
+          v.blinkProgress === 0
+            ? 0
+            : v.blinkProgress <= 1
+              ? v.blinkProgress
+              : 2 - v.blinkProgress;
+
+        v.headOpenAmount += (v.headOpenTarget - v.headOpenAmount) * Math.min(1, rawDt * 7);
+
+        const targetGazeX = v.savedLook.hasSaved ? v.savedLook.gazeX : v.pointerX + Math.sin(t * 3.1) * r.mid * 0.25;
+        const targetGazeY = v.savedLook.hasSaved ? v.savedLook.gazeY : v.pointerY + Math.cos(t * 2.4) * r.bass * 0.2;
+        v.eyeLookX += (targetGazeX - v.eyeLookX) * Math.min(1, rawDt * 12);
+        v.eyeLookY += (targetGazeY - v.eyeLookY) * Math.min(1, rawDt * 12);
+
+        const yaw = (v.savedLook.hasSaved ? v.savedLook.angleYaw : v.pointerX * 0.2) + Math.sin(t * 2.5) * r.mid * 0.14;
+        const pitch = (v.savedLook.hasSaved ? v.savedLook.anglePitch : v.pointerY * 0.12) + Math.cos(t * 2.0) * r.bass * 0.1;
+
+        const w = state.width;
+        const h = state.height;
+        const trebleShakeX = r.treble > 0.3 ? snapPx(Math.sin(t * 50) * r.treble * 10, 4) : 0;
+        const cx = snapPx(w * 0.5 + v.eyeLookX * 20 + trebleShakeX, 8);
+        const cy = snapPx(h * 0.53 + v.eyeLookY * 12 + pitch * 28 - r.bass * 10, 8);
+        const scale = Math.min(w, h) * 0.0021 * (1 + r.bass * 0.12 + r.transient * 0.05);
+
+        ctx.save();
+        if (state.morphMixEnabled) {
+          ctx.globalCompositeOperation = BLEND_MODES[state.blendIndex];
+        }
+        ctx.translate(cx, cy);
+        ctx.rotate(yaw);
+        ctx.scale(scale, scale);
+
+        const sSeed = v.silhouetteSeed;
+        const cheekW = 86 + v.cheekMorph * 95 + Math.sin(sSeed * 2.1) * 14 + r.mid * 10;
+        const jawW = 48 + v.jawMorph * 75 + Math.cos(sSeed * 1.7) * 12 + r.bass * 12;
+        const browW = 76 + Math.sin(sSeed * 3.1) * 10;
+
+        if (v.headOpenAmount > 0.02) {
+          ctx.fillStyle = "#00ff9f";
+          ctx.fillRect(-cheekW * 0.6, -65 * v.headOpenAmount - 30, cheekW * 1.2, 60 * v.headOpenAmount + 16 + r.bass * 16);
+        }
+
+        const lidLift = v.headOpenAmount * 56;
+        ctx.save();
+        ctx.translate(0, -lidLift);
+        ctx.beginPath();
+        ctx.moveTo(0, -148);
+        ctx.bezierCurveTo(browW, -152, cheekW, -85, cheekW * 0.92, -10);
+        ctx.bezierCurveTo(cheekW * 0.75, 58, jawW, 112, 0, 134);
+        ctx.bezierCurveTo(-jawW, 112, -cheekW * 0.75, 58, -cheekW * 0.92, -10);
+        ctx.bezierCurveTo(-cheekW, -85, -browW, -152, 0, -148);
+        ctx.closePath();
+        ctx.fillStyle = "rgba(5, 24, 22, 0.92)";
+        ctx.fill();
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = r.treble > 0.55 ? "#b8ff2c" : "#00ff9f";
+        ctx.stroke();
+
+        [-1, 1].forEach(side => {
+          const ex = side * 38;
+          const ey = -24;
+          const eh = Math.max(4, 20 * (1 - blinkFactor * 0.9) + r.transient * 4);
+          ctx.fillStyle = "#00d8ff";
+          ctx.fillRect(ex - 16, ey - eh * 0.5, 32, eh);
+          if (blinkFactor < 0.85) {
+            const pSize = 12 + r.treble * 8;
+            ctx.fillStyle = r.treble > 0.45 ? "#b8ff2c" : "#00ff9f";
+            ctx.fillRect(ex - pSize * 0.5 + v.eyeLookX * 8, ey - pSize * 0.5 + v.eyeLookY * 6, pSize, pSize);
+          }
+        });
+
+        const mouthH = 8 + r.bass * 24 + r.transient * 10;
+        const mouthW = 36 + r.mid * 18;
+        ctx.fillStyle = "#00ff9f";
+        ctx.fillRect(-mouthW * 0.5, 58, mouthW, snapPx(mouthH, 4));
+
+        for (let i = 0; i < 7; i++) {
+          const frac = i / 6;
+          const baseAng = -Math.PI * 0.88 + frac * Math.PI * 0.76 + Math.sin(t * 4 + i) * r.mid * 0.18;
+          const len = (72 + 28 * Math.sin(frac * Math.PI)) * (1 + r.bass * 0.2);
+          const bx = Math.cos(baseAng) * cheekW * 0.75;
+          const by = -112 + Math.sin(baseAng) * 34;
+          const tipX = bx + Math.cos(baseAng) * len;
+          const tipY = by + Math.sin(baseAng) * len - 18;
+          ctx.fillStyle = BOARD_PALETTE[(Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+          ctx.fillRect(snapPx(tipX, 8) - 8, snapPx(tipY, 8) - 8, 16, 16);
+        }
+
+        const mushrooms = [
+          { x: -54, y: -124, r: 16, col: "#00ff9f" },
+          { x: -16, y: -146, r: 20, col: "#00d8ff" },
+          { x: 24, y: -144, r: 18, col: "#b8ff2c" },
+          { x: 56, y: -120, r: 15, col: "#00ff9f" }
+        ];
+        mushrooms.forEach((m, idx) => {
+          const my = m.y - v.headOpenAmount * 14 - r.bass * (idx % 2 === 0 ? 12 : 6);
+          const mr = m.r * (1 + r.bass * 0.16);
+          ctx.fillStyle = "#e6fff6";
+          ctx.fillRect(m.x - 5, my, 10, 14);
+          ctx.fillStyle = m.col;
+          ctx.fillRect(m.x - mr, my - mr * 0.7, mr * 2, mr * 0.8);
+        });
+
+        ctx.restore();
+        ctx.restore();
+      }
+
+      function renderLogoLayer(t) {
+        if (!state.logoVisible || !state.logoImg) return;
+        const r = state.rhythm;
+        const img = state.logoImg;
+        const w = state.width;
+        const h = state.height;
+        const cx = snapPx(w * 0.5, 8);
+        const cy = snapPx(h * 0.5, 8);
+        const logoFx = LOGO_FX_MODES[state.logoFxIndex].id;
+
+        const pulseBoost =
+          (logoFx === "pulse" ? 1 + Math.sin(t * 7) * 0.2 : 1) +
+          r.bass * 0.26 +
+          r.transient * 0.12;
+        const baseSize = Math.min(w, h) * 0.28 * state.logoScale * pulseBoost;
+        const aspect = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1;
+        let drawW = baseSize;
+        let drawH = baseSize;
+        if (aspect >= 1) drawH = baseSize / aspect;
+        else drawW = baseSize * aspect;
+
+        const lw = logoFxCanvas.width;
+        const lh = logoFxCanvas.height;
+        logoFxCtx.clearRect(0, 0, lw, lh);
+        logoFxCtx.save();
+        logoFxCtx.imageSmoothingEnabled = false;
+
+        const pad = 40;
+        const innerW = lw - pad * 2;
+        const innerH = lh - pad * 2;
+
+        if (logoFx === "morph" || logoFx === "wave" || logoFx === "twist" || state.logoMorphMode || state.morphMixEnabled) {
+          const slices = isTouchDevice ? 16 : 24;
+          const sliceH = innerH / slices;
+          for (let i = 0; i < slices; i++) {
+            const sy = (i / slices) * img.naturalHeight;
+            const sh = Math.max(1, img.naturalHeight / slices);
+            const dy = pad + i * sliceH;
+            const normY = (i / slices) * 2 - 1;
+
+            let morphWave = 0;
+            if (logoFx === "twist") {
+              morphWave = snapPx(Math.sin(normY * Math.PI * 2 + t * (2.5 + r.mid * 3)) * (14 + r.mid * 28), 8);
+            } else if (logoFx === "wave") {
+              morphWave = snapPx(Math.sin(i * 0.45 + t * (4 + r.mid * 4)) * (12 + r.mid * 26), 8);
+            } else {
+              morphWave = snapPx(
+                Math.sin(i * 0.35 + t * 4.0) * (10 + r.mid * 22) +
+                  Math.cos(i * 0.9 + t * 28) * r.treble * 12,
+                8
+              );
+            }
+
+            logoFxCtx.drawImage(img, 0, sy, img.naturalWidth, sh, pad + morphWave, dy, innerW, sliceH + 1.2);
+          }
+        } else {
+          logoFxCtx.drawImage(img, pad, pad, innerW, innerH);
+        }
+        logoFxCtx.restore();
+
+        ctx.save();
+        ctx.imageSmoothingEnabled = false;
+        ctx.globalCompositeOperation = state.morphMixEnabled
+          ? BLEND_MODES[(state.blendIndex + 1) % BLEND_MODES.length]
+          : BLEND_MODES[state.blendIndex];
+
+        const selfMorphX = snapPx(Math.sin(t * 1.9) * (state.morphMixEnabled ? w * 0.12 : 12 + r.mid * 20), 8);
+        const selfMorphY = snapPx(Math.cos(t * 1.6) * (state.morphMixEnabled ? h * 0.1 : 10 + r.bass * 18), 8);
+        let rotAngle = 0;
+        if (logoFx === "spin") rotAngle = Math.floor(t * (6 + r.mid * 8)) * 0.25;
+        else if (logoFx === "twist") rotAngle = Math.floor(Math.sin(t * 2.8) * 6) * 0.04;
+
+        ctx.translate(cx + selfMorphX, cy + selfMorphY);
+        ctx.rotate(rotAngle);
+
+        const scaleX = drawW / innerW;
+        const scaleY = drawH / innerH;
+        const dstW = lw * scaleX;
+        const dstH = lh * scaleY;
+
+        if (logoFx === "glitch-rgb" || r.treble > 0.42) {
+          const shift = snapPx((6 + r.treble * 24 + r.transient * 10) * (Math.sin(t * 35) > 0.05 ? 1 : 0.3), 4);
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.globalAlpha = 0.72;
+          ctx.drawImage(logoFxCanvas, -dstW * 0.5 - shift, -dstH * 0.5, dstW, dstH);
+          ctx.drawImage(logoFxCanvas, -dstW * 0.5 + shift, -dstH * 0.5, dstW, dstH);
+          ctx.restore();
+        }
+
+        ctx.drawImage(logoFxCanvas, -dstW * 0.5, -dstH * 0.5, dstW, dstH);
+        ctx.restore();
+      }
+
+      function renderTextLayer(t) {
+        const currentDraft = state.typingActive && document.activeElement === hiddenSink ? hiddenSink.value : state.typeDraft;
+        const displayStr = state.typingActive
+          ? `${currentDraft}${Math.floor(t * 4) % 2 === 0 ? "_" : ""}`
+          : state.liveText;
+
+        if ((!state.textVisible && !state.typingActive) || !displayStr) return;
+
+        const r = state.rhythm;
+        const w = state.width;
+        const h = state.height;
+        const cx = snapPx(w * 0.5, 8);
+        const cy = snapPx(h * 0.5, 8);
+        const fontObj = FONTS[state.fontIndex];
+        const fxKey = TXT_EFFECTS[state.txtEffectIndex].key;
+
+        const baseFontSize = snapPx(Math.max(32, Math.min(w, h) * 0.14) * state.textScale * (1 + r.bass * 0.18), 4);
+        const fontString = `900 ${baseFontSize}px ${fontObj.family}`;
+
+        ctx.save();
+        ctx.font = fontString;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        if (fxKey === "Q") {
+          const boxW = Math.min(w * 0.94, ctx.measureText(displayStr).width + baseFontSize * (0.9 + r.bass * 0.2));
+          const boxH = baseFontSize * (1.35 + r.bass * 0.15);
+          ctx.fillStyle = "rgba(4, 15, 13, 0.88)";
+          ctx.fillRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = "#00ff9f";
+          ctx.strokeRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.fillStyle = r.treble > 0.45 ? "#b8ff2c" : "#00ff9f";
+          ctx.fillText(displayStr, cx, cy);
+        } else if (fxKey === "W") {
+          const steps = 4 + Math.round(r.bass * 7);
+          for (let s = steps; s >= 1; s--) {
+            ctx.fillStyle = BOARD_PALETTE[(s + Math.floor(r.mid * 4)) % BOARD_PALETTE.length];
+            ctx.globalAlpha = 0.55;
+            ctx.fillText(displayStr, cx - s * 3.5, cy + s * 3.5);
+          }
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = "#e6fff6";
+          ctx.fillText(displayStr, cx, cy);
+        } else if (fxKey === "E") {
+          ctx.lineWidth = 4 + r.bass * 4;
+          ctx.strokeStyle = r.treble > 0.45 ? "#b8ff2c" : "#00d8ff";
+          ctx.strokeText(displayStr, cx, cy);
+          ctx.fillStyle = "#00ff9f";
+          ctx.fillText(displayStr, cx, cy);
+        } else if (fxKey === "R") {
+          const chars = Array.from(displayStr);
+          const adv = baseFontSize * 0.62;
+          chars.forEach((ch, idx) => {
+            const norm = chars.length > 1 ? (idx / (chars.length - 1)) * 2 - 1 : 0;
+            const px = snapPx(cx - (chars.length * adv) * 0.5 + (idx + 0.5) * adv, 4);
+            const arc = (26 + r.bass * 56) * Math.sin(t * (1.8 + r.mid * 2.5));
+            const py = snapPx(cy + (1 - norm * norm) * -arc, 8);
+            ctx.fillStyle = BOARD_PALETTE[(idx + Math.floor(r.treble * 4)) % BOARD_PALETTE.length];
+            ctx.fillText(ch, px, py);
+          });
+        } else if (fxKey === "Y") {
+          const shift = snapPx((4 + r.treble * 24 + r.transient * 12) * (Math.sin(t * 33) > 0.1 ? 1 : 0.25), 4);
+          ctx.fillStyle = "#ff3b8d";
+          ctx.fillText(displayStr, cx - shift, cy);
+          ctx.fillStyle = "#00d8ff";
+          ctx.fillText(displayStr, cx + shift, cy);
+          ctx.fillStyle = "#00ff9f";
+          ctx.fillText(displayStr, cx, cy);
+        } else if (fxKey === "U") {
+          const jump = snapPx(Math.abs(Math.sin(t * (3 + r.bass * 3))) * (18 + r.bass * 48), 8);
+          const slideX = snapPx(Math.sin(t * 2.2) * r.mid * 36, 8);
+          ctx.fillStyle = "#b8ff2c";
+          ctx.fillText(displayStr, cx + slideX, cy - jump);
+        } else if (fxKey === "I") {
+          const chars = Array.from(displayStr);
+          const adv = baseFontSize * 0.62;
+          chars.forEach((ch, i) => {
+            const wy = snapPx(Math.sin(t * (3.8 + r.mid * 4) + i * 0.7) * (12 + r.mid * 24 + r.bass * 10), 8);
+            const px = snapPx(cx - (chars.length * adv) * 0.5 + (i + 0.5) * adv, 4);
+            ctx.fillStyle = BOARD_PALETTE[(i + Math.floor(r.treble * 5)) % BOARD_PALETTE.length];
+            ctx.fillText(ch, px, cy + wy);
+          });
+        } else if (fxKey === "O") {
+          ctx.globalCompositeOperation = "screen";
+          const sep = snapPx(10 + r.mid * 22 + r.bass * 10, 4);
+          ctx.fillStyle = "#00d8ff";
+          ctx.fillText(displayStr, cx + Math.sin(t * 2.5) * sep, cy);
+          ctx.fillStyle = "#00ff9f";
+          ctx.fillText(displayStr, cx - Math.cos(t * 2.2) * sep, cy);
+        } else if (fxKey === "P") {
+          const metrics = ctx.measureText(displayStr);
+          const boxW = Math.min(w * 0.92, metrics.width + baseFontSize * (0.75 + r.bass * 0.2));
+          const boxH = baseFontSize * (1.4 + r.bass * 0.15);
+          ctx.fillStyle = "rgba(4, 16, 15, 0.9)";
+          ctx.fillRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.lineWidth = 4 + r.bass * 3;
+          ctx.strokeStyle = r.transient > 0.5 ? "#b8ff2c" : "#00ff9f";
+          ctx.strokeRect(cx - boxW * 0.5, cy - boxH * 0.5, boxW, boxH);
+          ctx.fillStyle = "#e6fff6";
+          ctx.fillText(displayStr, cx, cy);
+        }
+
+        ctx.restore();
+      }
+
+      function renderShiftPostEffects(t) {
+        const sf = state.shiftFlags;
+        const anyActive = Object.values(sf).some(Boolean);
+        if (!anyActive) return;
+
+        const r = state.rhythm;
+        const w = state.width;
+        const h = state.height;
+        const cx = snapPx(w * 0.5, 8);
+        const cy = snapPx(h * 0.5, 8);
+
+        const needsWorkBuffer = sf.tiles || sf.twist || sf.spin || sf.glitch || sf.flyEye;
+        const ww = workCanvas.width;
+        const wh = workCanvas.height;
+        if (needsWorkBuffer) {
+          workCtx.clearRect(0, 0, ww, wh);
+          workCtx.drawImage(canvas, 0, 0, ww, wh);
+        }
+
+        if (sf.symmetry) {
+          ctx.save();
+          ctx.translate(w, 0);
+          ctx.scale(-1, 1);
+          ctx.globalAlpha = 0.42 + r.bass * 0.2;
+          ctx.drawImage(canvas, 0, 0, w * 0.5, h, 0, 0, w * 0.5, h);
+          ctx.restore();
+        }
+
+        if (sf.tiles) {
+          const cols = w < 520 ? 3 : 4;
+          const rows = 3;
+          const tw = w / cols;
+          const th = h / rows;
+          ctx.save();
+          ctx.globalAlpha = 0.28 + r.mid * 0.2;
+          for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+              ctx.drawImage(workCanvas, col * tw, row * th, tw, th);
+            }
+          }
+          ctx.restore();
+        }
+
+        if (sf.twist || sf.spin) {
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.globalAlpha = 0.35;
+          ctx.translate(cx, cy);
+          ctx.rotate((sf.spin ? Math.floor(t * (5 + r.mid * 8)) * 0.2 : 0) + (sf.twist ? Math.sin(t * 2) * (0.15 + r.mid * 0.25) : 0));
+          ctx.drawImage(workCanvas, -w * 0.45, -h * 0.45, w * 0.9, h * 0.9);
+          ctx.restore();
+        }
+
+        if (sf.slice) {
+          const slices = isTouchDevice ? 8 : 12;
+          const sh = h / slices;
+          ctx.save();
+          for (let i = 0; i < slices; i++) {
+            const offset = snapPx(Math.sin(t * 6 + i * 1.3) * (10 + r.mid * 24 + r.treble * 20), 8);
+            ctx.drawImage(canvas, 0, i * sh, w, sh, offset, i * sh, w, sh);
+          }
+          ctx.restore();
+        }
+
+        if (sf.hueDrift) {
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.fillStyle = BOARD_PALETTE[Math.floor(t * (3 + r.mid * 6)) % BOARD_PALETTE.length];
+          ctx.globalAlpha = 0.1 + r.mid * 0.14 + r.treble * 0.1;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+        }
+
+        if (sf.glassRibs) {
+          ctx.save();
+          ctx.fillStyle = "rgba(0, 12, 10, 0.32)";
+          for (let y = 0; y < h; y += 6) {
+            ctx.fillRect(0, y, w, 2);
+          }
+          ctx.restore();
+        }
+
+        if (sf.anamorphic) {
+          ctx.save();
+          ctx.fillStyle = "#040b0a";
+          const barH = Math.max(20, Math.min(h * 0.12, 56) - r.bass * 14);
+          ctx.fillRect(0, 0, w, barH);
+          ctx.fillRect(0, h - barH, w, barH);
+          ctx.restore();
+        }
+
+        if (sf.melt) {
+          const cols = isTouchDevice ? 16 : 24;
+          const cw = w / cols;
+          ctx.save();
+          for (let c = 0; c < cols; c++) {
+            const drip = snapPx(Math.abs(Math.sin(t * 1.8 + c * 0.55)) * (16 + r.bass * 42), 8);
+            ctx.drawImage(canvas, c * cw, 0, cw, h - drip, c * cw, drip, cw, h);
+          }
+          ctx.restore();
+        }
+
+        if (sf.glitch) {
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          const gx = snapPx(Math.sin(t * 42) * (6 + r.treble * 28), 8);
+          ctx.globalAlpha = 0.35 + r.treble * 0.35;
+          ctx.drawImage(workCanvas, gx, 0, w, h);
+          ctx.restore();
+        }
+
+        if (sf.pixels) {
+          const mw = mosaicCanvas.width;
+          const mh = mosaicCanvas.height;
+          mosaicCtx.clearRect(0, 0, mw, mh);
+          mosaicCtx.drawImage(canvas, 0, 0, mw, mh);
+          ctx.save();
+          ctx.globalAlpha = 0.45 + r.bass * 0.3;
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(mosaicCanvas, 0, 0, w, h);
+          ctx.restore();
+        }
+
+        if (sf.flyEye) {
+          const eyeCols = 3;
+          const eyeRows = 3;
+          const ew = w / eyeCols;
+          const eh = h / eyeRows;
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          ctx.globalAlpha = 0.32;
+          for (let row = 0; row < eyeRows; row++) {
+            for (let col = 0; col < eyeCols; col++) {
+              ctx.drawImage(workCanvas, col * ew, row * eh, ew, eh);
+            }
+          }
+          ctx.restore();
+        }
+
+        if (sf.oscillators) {
+          ctx.save();
+          for (let o = 0; o < 3; o++) {
+            const bandVal = o === 0 ? r.bass : o === 1 ? r.mid : r.treble;
+            ctx.fillStyle = BOARD_PALETTE[o % BOARD_PALETTE.length];
+            for (let x = 0; x < w; x += 16) {
+              const sq = Math.sin(x * (0.015 + o * 0.01) + t * (4 + o * 3)) >= 0 ? 1 : -1;
+              const y = snapPx(cy + sq * (18 + bandVal * 48 + (o - 1) * 16), 8);
+              ctx.fillRect(x, y, 12, 8);
+            }
+          }
+          ctx.restore();
+        }
+
+        if (sf.pulses) {
+          ctx.save();
+          const pulseR = snapPx(((t * 130) % Math.max(w, h) * 0.65) + r.bass * 48, 8);
+          ctx.strokeStyle = r.transient > 0.5 ? "#b8ff2c" : "#00ff9f";
+          ctx.lineWidth = 4 + r.bass * 5;
+          ctx.strokeRect(cx - pulseR, cy - pulseR, pulseR * 2, pulseR * 2);
+          ctx.restore();
+        }
+
+        if (sf.flares) {
+          ctx.save();
+          const fx = snapPx(cx + Math.cos(t * 1.5) * w * (0.18 + r.mid * 0.14), 12);
+          const fy = snapPx(cy + Math.sin(t * 2.1) * h * (0.15 + r.bass * 0.12), 12);
+          ctx.fillStyle = r.treble > 0.5 ? "#e6fff6" : "#00d8ff";
+          const fSize = 22 + r.treble * 28 + r.bass * 14;
+          ctx.fillRect(fx - fSize * 0.5, fy - fSize * 0.5, snapPx(fSize, 4), snapPx(fSize, 4));
+          ctx.restore();
+        }
+
+        if (sf.vignette) {
+          ctx.save();
+          ctx.strokeStyle = "#00ff9f";
+          ctx.lineWidth = 8 + r.bass * 8;
+          ctx.strokeRect(10, 10, w - 20, h - 20);
+          ctx.restore();
+        }
+      }
+
+      function updateBandMeters() {
+        const r = state.rhythm;
+        const bPct = Math.min(100, Math.round(r.bass * 100));
+        const mPct = Math.min(100, Math.round(r.mid * 100));
+        const tPct = Math.min(100, Math.round(r.treble * 100));
+        const trPct = Math.min(100, Math.round(r.transient * 100));
+
+        document.getElementById("val-bass").textContent = `${bPct}%`;
+        document.getElementById("val-mid").textContent = `${mPct}%`;
+        document.getElementById("val-treble").textContent = `${tPct}%`;
+        document.getElementById("val-trans").textContent = `${trPct}%`;
+
+        document.getElementById("bar-bass").style.width = `${bPct}%`;
+        document.getElementById("bar-mid").style.width = `${mPct}%`;
+        document.getElementById("bar-treble").style.width = `${tPct}%`;
+        document.getElementById("bar-trans").style.width = `${trPct}%`;
+
+        document.getElementById("audio-level").textContent =
+          `${Math.round((state.audioLevel || state.bassPulse) * 100)}%`;
+      }
+
+      function frame(now) {
+        const rawDt = Math.min(0.05, (now - state.lastFrame) / 1000);
+        state.lastFrame = now;
+
+        const dt = rawDt * state.speed;
+        state.time += dt;
+
+        const beatsPerSec = (state.bpm / 60) * state.speed;
+        state.beatPhase += rawDt * beatsPerSec;
+        if (state.beatPhase >= 1) {
+          state.beatPhase -= 1;
+          triggerQuarterBassHit();
+        }
+
+        state.bassPulse = Math.max(0, state.bassPulse - rawDt * 3.6);
+        sampleAudioAndRhythm(rawDt);
+
+        if (drawer.classList.contains("open") && state.beatCount % 3 === 0) {
+          updateBandMeters();
+        }
+
+        renderBackgroundLayer(state.time);
+        renderVisageLayer(state.time, rawDt);
+        renderLogoLayer(state.time);
+        renderTextLayer(state.time);
+        renderShiftPostEffects(state.time);
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
