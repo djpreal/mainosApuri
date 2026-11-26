@@ -6,7 +6,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>LIVE CAM FX — PC &amp; MOBILE</title>
+  <title>LIVE VISUALS — 1-0 FX, MORPH, LIQUID, WAVE &amp; CAM</title>
   <style>
     :root {
       --bg: #05070d;
@@ -53,7 +53,7 @@
       touch-action: none;
     }
 
-    #cam-hud-pill {
+    #hud-pill {
       position: fixed;
       top: calc(10px + var(--safe-top));
       left: calc(10px + var(--safe-left));
@@ -62,15 +62,19 @@
       border-radius: 6px;
       font-size: 11px;
       font-weight: 700;
-      background: rgba(8, 13, 24, 0.78);
+      background: rgba(8, 13, 24, 0.82);
       border: 1px solid rgba(255, 255, 255, 0.18);
       color: var(--accent);
       pointer-events: none;
+      max-width: calc(100vw - 24px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .hud-hidden #bottom-dock,
     .hud-hidden #control-drawer,
-    .hud-hidden #cam-hud-pill {
+    .hud-hidden #hud-pill {
       display: none !important;
     }
 
@@ -112,7 +116,7 @@
       left: calc(8px + var(--safe-left));
       right: calc(8px + var(--safe-right));
       bottom: calc(102px + var(--safe-bottom));
-      max-width: 480px;
+      max-width: 520px;
       margin-left: auto;
       max-height: calc(100dvh - 140px - var(--safe-top) - var(--safe-bottom));
       overflow-y: auto;
@@ -229,75 +233,82 @@
     spellcheck="false"
   />
 
-  <div id="cam-hud-pill">CAM: OFF · RAW</div>
+  <div id="hud-pill">FX: ON · NUM: 1 · MORPH · CAM: OFF · TXT: ON · LOGO: ON</div>
 
   <aside id="control-drawer">
     <div>
       <div class="section-title">
-        <span>Kamera (Puhelin &amp; PC)</span>
-        <span id="drawer-cam-info">EI AKTIIVINEN</span>
+        <span>Efektit Päälle/Pois &amp; Numeronäppäimet (1-0)</span>
+        <span id="drawer-num-fx">1. HORIZON</span>
       </div>
-      <div class="row">
-        <button id="btn-cam-toggle">KAMERA ON/OFF</button>
-        <button id="btn-cam-front" class="active">ETU</button>
-        <button id="btn-cam-back">TAKA</button>
-        <button id="btn-cam-cycle">VAIHDA (PC/PUH)</button>
+      <div class="row" style="margin-bottom:6px;">
+        <button id="btn-fx-toggle" class="active">EFEKTIT ON/OFF</button>
+        <button id="btn-mic">MIC AUDIO</button>
+        <button id="btn-tap">TAP BPM: <span id="bpm-val">120</span></button>
+        <input id="bpm-slider" type="range" min="50" max="220" value="120" />
       </div>
+      <div class="row" id="drawer-num-fx-list"></div>
     </div>
 
     <div>
       <div class="section-title">
-        <span>Live Kameraefektit</span>
-        <span id="drawer-cam-fx">RAW</span>
+        <span>Musiikkiin Reagoiva Mix: MORPH · LIQUID · WAVE</span>
+        <span id="drawer-mix-fx">MORPH</span>
+      </div>
+      <div class="row" id="drawer-mix-fx-list"></div>
+    </div>
+
+    <div>
+      <div class="section-title">
+        <span>Kamera (PC &amp; Puhelin) + Kameraefektit</span>
+        <span id="drawer-cam-info">EI AKTIIVINEN</span>
+      </div>
+      <div class="row" style="margin-bottom:6px;">
+        <button id="btn-cam-toggle">KAMERA ON/OFF</button>
+        <button id="btn-cam-front" class="active">ETU / PC</button>
+        <button id="btn-cam-back">TAKA</button>
+        <button id="btn-cam-cycle">VAIHDA LAITE</button>
       </div>
       <div class="row" id="drawer-cam-fx-list"></div>
     </div>
 
     <div>
       <div class="section-title">
-        <span>Taustaefektit (Päälle / Pois)</span>
-        <span id="drawer-bg-status">POIS</span>
+        <span>Logo / Kuva &amp; 9 Tekstiefektiä</span>
+        <span id="drawer-txt-fx">1. AALTO</span>
       </div>
       <div class="row" style="margin-bottom:6px;">
-        <button id="btn-bg-toggle">TAUSTA-FX ON/OFF</button>
-        <button id="btn-tap">TAP BPM: <span id="bpm-val">120</span></button>
-        <input id="bpm-slider" type="range" min="50" max="220" value="120" />
-      </div>
-      <div class="row" id="drawer-bg-fx-list"></div>
-    </div>
-
-    <div>
-      <div class="section-title">
-        <span>Kuva / Logo &amp; Teksti</span>
-        <span id="drawer-logo-status">Ei kuvaa</span>
-      </div>
-      <div class="row">
         <label class="btn-file">
-          LATAA KUVA/LOGO <input id="file-logo" type="file" accept="image/*" />
+          LATAA LOGO/KUVA <input id="file-logo" type="file" accept="image/*" />
         </label>
-        <button id="btn-logo-toggle">KUVA ON/OFF</button>
+        <button id="btn-logo-toggle" class="active">LOGO ON/OFF</button>
         <button id="btn-logo-dn">L-</button>
         <button id="btn-logo-up">L+</button>
-        <button id="btn-txt-toggle">TXT ON/OFF</button>
+        <button id="btn-txt-toggle" class="active">TXT ON/OFF</button>
         <button id="btn-txt-write">KIRJOITA</button>
         <button id="btn-font-cycle">FONT: <span id="font-val">MONO</span></button>
       </div>
+      <div class="row" id="drawer-txt-fx-list"></div>
     </div>
   </aside>
 
   <div id="bottom-dock">
     <div class="dock-row">
+      <button id="dock-fx" class="active">FX: ON</button>
+      <button id="dock-numfx">NUM 1: HORIZON</button>
+      <button id="dock-mix">MIX: MORPH</button>
       <button id="dock-cam">CAM ON/OFF</button>
-      <button id="dock-front" class="active">ETU</button>
+      <button id="dock-front" class="active">ETU/PC</button>
       <button id="dock-back">TAKA</button>
-      <button id="dock-flip">VAIHDA</button>
-      <button id="dock-camfx">FX: RAW</button>
+      <button id="dock-camfx">CAM FX: GHOST</button>
     </div>
     <div class="dock-row">
-      <button id="dock-bgfx">TAUSTA-FX: OFF</button>
-      <button id="dock-txt-toggle">TXT ON/OFF</button>
+      <button id="dock-logo" class="active">LOGO ON/OFF</button>
+      <button id="dock-load-logo">LATAA KUVA</button>
+      <button id="dock-txt" class="active">TXT ON/OFF</button>
+      <button id="dock-txtfx">TXT: 1. AALTO</button>
       <button id="dock-write">KIRJOITA</button>
-      <button id="dock-logo">KUVA/LOGO</button>
+      <button id="dock-mic">MIC</button>
       <button id="dock-panel">ASETUKSET</button>
     </div>
   </div>
@@ -310,6 +321,9 @@
       const videoEl = document.getElementById("cam-video");
       const hiddenSink = document.getElementById("hidden-type-sink");
 
+      const fxBuffer = document.createElement("canvas");
+      const fxBufferCtx = fxBuffer.getContext("2d");
+
       const camInCanvas = document.createElement("canvas");
       const camInCtx = camInCanvas.getContext("2d", { willReadFrequently: true });
 
@@ -319,23 +333,46 @@
       const smokeTrailCanvas = document.createElement("canvas");
       const smokeTrailCtx = smokeTrailCanvas.getContext("2d");
 
+      // 10 NUMERONÄPPÄINEFEKTIÄ (1-9 ja 0)
+      const NUM_FX = [
+        { id: 1, key: "1", label: "HORIZON" },
+        { id: 2, key: "2", label: "ORBIT" },
+        { id: 3, key: "3", label: "DOT MATRIX" },
+        { id: 4, key: "4", label: "CIRCUIT" },
+        { id: 5, key: "5", label: "ION RINGS" },
+        { id: 6, key: "6", label: "STARFALL" },
+        { id: 7, key: "7", label: "BASS EQ" },
+        { id: 8, key: "8", label: "LASER FAN" },
+        { id: 9, key: "9", label: "WAVE MESH" },
+        { id: 0, key: "0", label: "VORTEX RING" }
+      ];
+
+      // MUSIIKKIIN REAGOIVAT MIX-EFEKTIT: MORPH, LIQUID, WAVE
+      const MIX_MODES = [
+        { id: "morph", label: "MORPH" },
+        { id: "liquid", label: "LIQUID" },
+        { id: "wave", label: "WAVE" }
+      ];
+
       const CAM_FX = [
-        { id: "raw", label: "RAW" },
         { id: "ghost", label: "GHOST" },
         { id: "smoke", label: "SAVU" },
         { id: "fire", label: "TULI" },
         { id: "matrix", label: "MATRIX" },
         { id: "neon", label: "NEON" },
-        { id: "vhs", label: "VHS" }
+        { id: "raw", label: "RAW" }
       ];
 
-      const BG_SCENES = [
-        { id: 0, label: "POIS" },
-        { id: 1, label: "AALLOT" },
-        { id: 2, label: "PYÖRRE" },
-        { id: 3, label: "KEHÄT" },
-        { id: 4, label: "RUUDUKKO" },
-        { id: 5, label: "SÄTEET" }
+      const TXT_FX = [
+        { id: "wave", label: "1. AALTO" },
+        { id: "jitter", label: "2. VÄREILY" },
+        { id: "bounce", label: "3. POMPPU" },
+        { id: "split", label: "4. JAKO" },
+        { id: "glow", label: "5. HEHKU" },
+        { id: "box", label: "6. KEHYS" },
+        { id: "tilt", label: "7. KIERTO" },
+        { id: "pulse", label: "8. PULSSI" },
+        { id: "shadow", label: "9. VARJO" }
       ];
 
       const FONTS = [
@@ -345,7 +382,7 @@
         { label: "SERIF", family: '"Georgia", serif' }
       ];
 
-      const PALETTE = ["#00ff9f", "#00d8ff", "#ff3b8d", "#ffd319", "#ffffff"];
+      const PALETTE = ["#00ff9f", "#00d8ff", "#ff3b8d", "#ffd319", "#9b5de5", "#ffffff"];
 
       const state = {
         width: 1,
@@ -356,31 +393,43 @@
         bpm: 120,
         beatPhase: 0,
         bassPulse: 0,
-        tapTimes: [],
         hudHidden: false,
 
-        bgEnabled: false,
-        bgScene: 1,
+        effectsEnabled: true,
+        numFxId: 1,
+        mixIndex: 0, // 0: MORPH, 1: LIQUID, 2: WAVE
+
+        audioEnabled: false,
+        audioLevel: 0,
+        bassLevel: 0,
+        midLevel: 0,
+        trebleLevel: 0,
+        audioCtx: null,
+        analyser: null,
+        freqData: null,
+        audioSource: null,
 
         cam: {
           enabled: false,
-          fxIndex: 1, // aloitetaan GHOST-efektillä kun kamera avataan
+          fxIndex: 0,
           facingMode: "user",
           devices: [],
           deviceIndex: 0,
-          isMirrored: !isTouchDevice,
+          isMirrored: true,
           stream: null,
-          lastProcessTime: 0
+          lastProcessTime: 0,
+          lastError: ""
         },
 
         logoVisible: true,
         logoScale: 1.0,
         logoImg: null,
 
-        textVisible: false,
-        liveText: "LIVE CAM",
+        textVisible: true,
+        liveText: "LIVE MIX",
+        txtFxIndex: 0,
         typingActive: false,
-        typeDraft: "LIVE CAM",
+        typeDraft: "LIVE MIX",
         fontIndex: 0,
         textScale: 1.35
       };
@@ -393,6 +442,11 @@
         canvas.width = Math.floor(state.width * state.dpr);
         canvas.height = Math.floor(state.height * state.dpr);
         ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+
+        const bw = isTouchDevice ? 360 : 540;
+        const bh = Math.max(220, Math.round(bw * (state.height / Math.max(1, state.width))));
+        fxBuffer.width = bw;
+        fxBuffer.height = bh;
 
         const gw = isTouchDevice ? 144 : 192;
         const gh = Math.max(84, Math.round(gw * (state.height / Math.max(1, state.width))));
@@ -408,7 +462,79 @@
       if (window.visualViewport) window.visualViewport.addEventListener("resize", resize);
       resize();
 
-      // KAMERAHALLINTA: PC + PUHELIN ETU/TAKA
+      // AUDIO / MUSIIKKIREAKTIIVISUUS
+      async function toggleMicAudio() {
+        if (state.audioEnabled) {
+          state.audioEnabled = false;
+          state.audioLevel = 0;
+          state.bassLevel = 0;
+          state.midLevel = 0;
+          state.trebleLevel = 0;
+          updateUi();
+          return;
+        }
+        try {
+          if (!state.audioCtx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            state.audioCtx = new AudioCtx();
+            state.analyser = state.audioCtx.createAnalyser();
+            state.analyser.fftSize = 256;
+            state.analyser.smoothingTimeConstant = 0.72;
+            state.freqData = new Uint8Array(state.analyser.frequencyBinCount);
+          }
+          if (state.audioCtx.state === "suspended") await state.audioCtx.resume();
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          if (state.audioSource) {
+            try { state.audioSource.disconnect(); } catch (_) {}
+          }
+          state.audioSource = state.audioCtx.createMediaStreamSource(stream);
+          state.audioSource.connect(state.analyser);
+          state.audioEnabled = true;
+        } catch (err) {
+          console.warn("Mic error:", err);
+          state.audioEnabled = false;
+        }
+        updateUi();
+      }
+
+      function sampleMusicEnergy(dt) {
+        if (state.audioEnabled && state.analyser && state.freqData) {
+          state.analyser.getByteFrequencyData(state.freqData);
+          const len = state.freqData.length;
+          const bEnd = Math.max(3, Math.floor(len * 0.14));
+          const mEnd = Math.max(bEnd + 3, Math.floor(len * 0.45));
+          const tEnd = Math.max(mEnd + 3, Math.floor(len * 0.85));
+
+          let bSum = 0;
+          for (let i = 1; i < bEnd; i++) bSum += state.freqData[i];
+          const rawBass = Math.min(1.4, (bSum / (Math.max(1, bEnd - 1) * 255)) * 1.45);
+
+          let mSum = 0;
+          for (let i = bEnd; i < mEnd; i++) mSum += state.freqData[i];
+          const rawMid = Math.min(1.4, (mSum / (Math.max(1, mEnd - bEnd) * 255)) * 1.5);
+
+          let tSum = 0;
+          for (let i = mEnd; i < tEnd; i++) tSum += state.freqData[i];
+          const rawTreble = Math.min(1.4, (tSum / (Math.max(1, tEnd - mEnd) * 255)) * 1.75);
+
+          state.bassLevel = Math.max(rawBass, state.bassLevel * Math.pow(0.08, dt));
+          state.midLevel = rawMid * 0.7 + state.midLevel * 0.3;
+          state.trebleLevel = Math.max(rawTreble, state.trebleLevel * Math.pow(0.14, dt));
+          state.audioLevel = Math.min(1.4, rawBass * 0.5 + rawMid * 0.35 + rawTreble * 0.25);
+          if (rawBass > 0.65 && state.bassPulse < 0.4) state.bassPulse = Math.min(1.2, rawBass);
+        } else {
+          // Rytmipulssi BPM + TAP tahdilla kun mikrofoni ei ole päällä
+          const kick = Math.pow(Math.max(0, 1 - state.beatPhase * 2.3), 2);
+          const mel = 0.35 + 0.35 * Math.sin(state.time * 3.8) * Math.cos(state.time * 1.6);
+          const hi = 0.2 + 0.35 * Math.max(0, Math.sin(state.time * 16));
+          state.bassLevel = Math.max(kick * 0.85, state.bassPulse * 0.8);
+          state.midLevel = mel;
+          state.trebleLevel = hi;
+          state.audioLevel = Math.min(1.2, state.bassLevel * 0.5 + state.midLevel * 0.35 + state.trebleLevel * 0.2);
+        }
+      }
+
+      // KAMERA (PC + PUHELIN ETU / TAKA)
       async function refreshVideoDevices() {
         try {
           if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return [];
@@ -421,104 +547,107 @@
         }
       }
 
-      function inferMirrorFromLabel(label, fallbackFacing) {
+      function inferMirror(label, facing) {
         const l = (label || "").toLowerCase();
         if (/back|rear|environment|taka|world/i.test(l)) return false;
-        if (/front|user|face|etu|integrated|webcam|pc|usb/i.test(l)) return true;
-        return fallbackFacing === "user";
+        return facing === "user" || !isTouchDevice;
       }
 
       async function startCamera(mode = "auto") {
-        try {
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-          if (state.cam.stream) {
-            state.cam.stream.getTracks().forEach(t => t.stop());
-            state.cam.stream = null;
-          }
-
-          const devices = await refreshVideoDevices();
-          let stream = null;
-
-          if (mode === "front") {
-            state.cam.facingMode = "user";
-            const frontDev = devices.find(d => /front|user|face|etu/i.test(d.label || ""));
-            if (frontDev) {
-              stream = await navigator.mediaDevices.getUserMedia({
-                video: { deviceId: { exact: frontDev.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: false
-              }).catch(() => null);
-              if (stream) state.cam.isMirrored = true;
-            }
-            if (!stream) {
-              stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: false
-              }).catch(() => null);
-              if (stream) state.cam.isMirrored = true;
-            }
-          } else if (mode === "back") {
-            state.cam.facingMode = "environment";
-            const backDev = devices.find(d => /back|rear|environment|taka|world/i.test(d.label || ""));
-            if (backDev) {
-              stream = await navigator.mediaDevices.getUserMedia({
-                video: { deviceId: { exact: backDev.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: false
-              }).catch(() => null);
-              if (stream) state.cam.isMirrored = false;
-            }
-            if (!stream) {
-              stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
-                audio: false
-              }).catch(() => null);
-              if (stream) state.cam.isMirrored = false;
-            }
-          } else if (mode === "cycle" && devices.length > 1) {
-            state.cam.deviceIndex = (state.cam.deviceIndex + 1) % devices.length;
-            const dev = devices[state.cam.deviceIndex];
-            stream = await navigator.mediaDevices.getUserMedia({
-              video: { deviceId: { exact: dev.deviceId }, width: { ideal: 1280 }, height: { ideal: 720 } },
-              audio: false
-            }).catch(() => null);
-            if (stream) {
-              state.cam.isMirrored = inferMirrorFromLabel(dev.label, state.cam.facingMode);
-              state.cam.facingMode = state.cam.isMirrored ? "user" : "environment";
-            }
-          }
-
-          if (!stream) {
-            stream = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: state.cam.facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
-              audio: false
-            }).catch(() => null);
-            if (stream) state.cam.isMirrored = state.cam.facingMode === "user";
-          }
-
-          if (!stream) {
-            stream = await navigator.mediaDevices.getUserMedia({
-              video: true,
-              audio: false
-            }).catch(() => null);
-            if (stream) state.cam.isMirrored = !isTouchDevice;
-          }
-
-          if (!stream) {
-            state.cam.enabled = false;
-            updateUi();
-            return;
-          }
-
-          await refreshVideoDevices();
-          state.cam.stream = stream;
-          videoEl.srcObject = stream;
-          await videoEl.play().catch(() => {});
-          state.cam.enabled = true;
+        state.cam.lastError = "";
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          state.cam.lastError = "EI KAMERATUKKEA";
           updateUi();
-        } catch (err) {
-          console.warn("Camera error:", err);
+          return;
+        }
+        if (state.cam.stream) {
+          state.cam.stream.getTracks().forEach(t => t.stop());
+          state.cam.stream = null;
+        }
+
+        const devices = await refreshVideoDevices();
+        const attempts = [];
+
+        if (mode === "cycle" && devices.length > 1) {
+          state.cam.deviceIndex = (state.cam.deviceIndex + 1) % devices.length;
+          const dev = devices[state.cam.deviceIndex];
+          const mir = inferMirror(dev.label, state.cam.facingMode);
+          attempts.push({
+            constraints: { video: { deviceId: { exact: dev.deviceId } }, audio: false },
+            mirror: mir,
+            facing: mir ? "user" : "environment"
+          });
+        } else if (mode === "front") {
+          const frontDev = devices.find(d => /front|user|face|etu/i.test(d.label || ""));
+          if (frontDev) {
+            attempts.push({
+              constraints: { video: { deviceId: { exact: frontDev.deviceId } }, audio: false },
+              mirror: true,
+              facing: "user"
+            });
+          }
+          attempts.push({
+            constraints: { video: { facingMode: "user" }, audio: false },
+            mirror: true,
+            facing: "user"
+          });
+        } else if (mode === "back") {
+          const backDev = devices.find(d => /back|rear|environment|taka|world/i.test(d.label || ""));
+          if (backDev) {
+            attempts.push({
+              constraints: { video: { deviceId: { exact: backDev.deviceId } }, audio: false },
+              mirror: false,
+              facing: "environment"
+            });
+          }
+          attempts.push({
+            constraints: { video: { facingMode: { ideal: "environment" } }, audio: false },
+            mirror: false,
+            facing: "environment"
+          });
+        } else {
+          attempts.push({
+            constraints: { video: true, audio: false },
+            mirror: !isTouchDevice || state.cam.facingMode === "user",
+            facing: state.cam.facingMode
+          });
+        }
+
+        attempts.push({
+          constraints: { video: true, audio: false },
+          mirror: !isTouchDevice,
+          facing: "user"
+        });
+
+        let stream = null;
+        for (const att of attempts) {
+          try {
+            stream = await navigator.mediaDevices.getUserMedia(att.constraints);
+            if (stream) {
+              state.cam.isMirrored = att.mirror;
+              state.cam.facingMode = att.facing;
+              break;
+            }
+          } catch (err) {
+            state.cam.lastError = err && err.name ? err.name : "LUPA ESTETTY";
+          }
+        }
+
+        if (!stream) {
           state.cam.enabled = false;
           updateUi();
+          return;
         }
+
+        await refreshVideoDevices();
+        state.cam.lastError = "";
+        state.cam.stream = stream;
+        videoEl.srcObject = stream;
+        videoEl.muted = true;
+        videoEl.playsInline = true;
+        try { await videoEl.play(); } catch (_) {}
+        state.cam.enabled = true;
+        updateUi();
       }
 
       function stopCamera() {
@@ -537,42 +666,152 @@
         else startCamera("auto");
       }
 
-      function switchToFrontCamera() {
+      function switchFrontCamera() {
         state.cam.facingMode = "user";
-        state.cam.isMirrored = true;
         startCamera("front");
       }
 
-      function switchToBackCamera() {
+      function switchBackCamera() {
         state.cam.facingMode = "environment";
-        state.cam.isMirrored = false;
         startCamera("back");
       }
 
       function flipCameraDevice() {
-        if (state.cam.devices.length > 1) {
-          startCamera("cycle");
-        } else if (state.cam.facingMode === "user") {
-          switchToBackCamera();
+        if (state.cam.devices.length > 1) startCamera("cycle");
+        else if (state.cam.facingMode === "user") switchBackCamera();
+        else switchFrontCamera();
+      }
+
+      // 10 NUMERONÄPPÄINEFEKTIÄ (1-9 ja 0)
+      function drawNumberEffect(t, id) {
+        const w = state.width;
+        const h = state.height;
+        const cx = w * 0.5;
+        const cy = h * 0.5;
+        const minDim = Math.min(w, h);
+        const bass = state.bassLevel;
+        const mid = state.midLevel;
+        const treble = state.trebleLevel;
+
+        ctx.save();
+        ctx.globalCompositeOperation = "screen";
+
+        if (id === 1) {
+          // 1. HORIZON
+          const horY = h * 0.58 + Math.sin(t * 2.2) * 18;
+          for (let i = 0; i < 9; i++) {
+            const ry = horY - minDim * 0.25 + i * (11 + bass * 8);
+            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillRect(cx - minDim * 0.28, ry, minDim * 0.56, 5 + bass * 4);
+          }
+        } else if (id === 2) {
+          // 2. ORBIT
+          for (let i = 0; i < 16; i++) {
+            const ang = t * (1.4 + mid * 2.2) + i * 0.4;
+            const rad = minDim * (0.14 + (i % 5) * 0.065 + bass * 0.06);
+            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillRect(cx + Math.cos(ang) * rad - 8, cy + Math.sin(ang) * rad - 8, 16, 16);
+          }
+        } else if (id === 3) {
+          // 3. DOT MATRIX
+          const step = 26;
+          for (let y = 50; y < h - 90; y += step) {
+            for (let x = 16; x < w - 16; x += step) {
+              const v = Math.sin(x * 0.02 + y * 0.02 - t * 3.5 + bass * 3.5);
+              if (v > 0.15) {
+                ctx.fillStyle = PALETTE[Math.abs(Math.floor((x + y) / step)) % PALETTE.length];
+                ctx.fillRect(x, y, 9 + bass * 5, 9 + bass * 5);
+              }
+            }
+          }
+        } else if (id === 4) {
+          // 4. CIRCUIT
+          ctx.lineWidth = 3;
+          for (let i = 0; i < 8; i++) {
+            const y = 70 + ((t * 75 + i * 52) % Math.max(90, h - 160));
+            ctx.strokeStyle = PALETTE[i % PALETTE.length];
+            ctx.beginPath();
+            ctx.moveTo(16, y);
+            ctx.lineTo(w * 0.36, y);
+            ctx.lineTo(w * 0.44, y + 16 + mid * 14);
+            ctx.lineTo(w - 16, y + 16 + mid * 14);
+            ctx.stroke();
+          }
+        } else if (id === 5) {
+          // 5. ION RINGS
+          ctx.lineWidth = 3;
+          for (let i = 1; i <= 6; i++) {
+            const rad = minDim * (0.08 * i + bass * 0.05);
+            ctx.strokeStyle = PALETTE[i % PALETTE.length];
+            ctx.beginPath();
+            ctx.arc(cx, cy, rad, t * (0.9 + i * 0.18), t * (0.9 + i * 0.18) + Math.PI * 1.45);
+            ctx.stroke();
+          }
+        } else if (id === 6) {
+          // 6. STARFALL
+          for (let i = 0; i < 34; i++) {
+            const a = i * 2.39996 + t * 0.4;
+            const d = ((t * 110 + i * 28) % (minDim * 0.78)) + 10;
+            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillRect(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 4 + treble * 6, 4 + treble * 6);
+          }
+        } else if (id === 7) {
+          // 7. BASS EQ
+          const cols = 18;
+          const cw = w / cols;
+          for (let i = 0; i < cols; i++) {
+            const active = (Math.floor(t * 8) + i) % 4 === 0;
+            const bh = active ? 65 + bass * 140 : 20 + mid * 55;
+            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillRect(i * cw + 4, cy - bh * 0.5, cw - 8, bh);
+          }
+        } else if (id === 8) {
+          // 8. LASER FAN
+          const rays = 18;
+          for (let i = 0; i < rays; i++) {
+            const ang = (i / rays) * Math.PI * 2 + t * (1.6 + mid * 2.5);
+            ctx.strokeStyle = PALETTE[i % PALETTE.length];
+            ctx.lineWidth = 2.5 + bass * 3.5;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + Math.cos(ang) * minDim * 0.88, cy + Math.sin(ang) * minDim * 0.88);
+            ctx.stroke();
+          }
+        } else if (id === 9) {
+          // 9. WAVE MESH
+          ctx.lineWidth = 2.5;
+          for (let row = 0; row < 8; row++) {
+            ctx.strokeStyle = PALETTE[row % PALETTE.length];
+            ctx.beginPath();
+            for (let x = 0; x <= w; x += 24) {
+              const wy = 90 + row * ((h - 180) / 7) + Math.sin(x * 0.02 + t * 3.5 + row * 0.6) * (18 + bass * 28);
+              if (x === 0) ctx.moveTo(x, wy);
+              else ctx.lineTo(x, wy);
+            }
+            ctx.stroke();
+          }
         } else {
-          switchToFrontCamera();
+          // 0. VORTEX RING
+          for (let i = 0; i < 24; i++) {
+            const ang = (i / 24) * Math.PI * 2 - t * (2.0 + mid * 2.4);
+            const rad = minDim * (0.22 + (i % 3) * 0.08 + bass * 0.08);
+            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillRect(cx + Math.cos(ang) * rad - 7, cy + Math.sin(ang) * rad - 7, 14, 14);
+          }
         }
+
+        ctx.restore();
       }
 
-      function cycleCamFx() {
-        state.cam.fxIndex = (state.cam.fxIndex + 1) % CAM_FX.length;
-        updateUi();
-      }
-
-      function renderLiveCameraEffects(t, now) {
-        if (!state.cam.enabled || videoEl.readyState < 2) return;
+      function renderCameraLayer(t, now) {
+        if (!state.cam.enabled) return;
         const w = state.width;
         const h = state.height;
         const gw = camInCanvas.width;
         const gh = camInCanvas.height;
         const fx = CAM_FX[state.cam.fxIndex].id;
 
-        if (now - state.cam.lastProcessTime > 32) {
+        if (videoEl.readyState >= 2 && now - state.cam.lastProcessTime > 32) {
           state.cam.lastProcessTime = now;
           camInCtx.save();
           if (state.cam.isMirrored) {
@@ -582,7 +821,7 @@
           camInCtx.drawImage(videoEl, 0, 0, gw, gh);
           camInCtx.restore();
 
-          if (fx === "raw" || fx === "vhs") {
+          if (fx === "raw") {
             camFxCtx.clearRect(0, 0, gw, gh);
             camFxCtx.drawImage(camInCanvas, 0, 0, gw, gh);
           } else {
@@ -602,19 +841,18 @@
                 for (let x = 0; x < gw; x++) {
                   const idx = (y * gw + x) * 4;
                   const lum = d[idx] * 0.3 + d[idx + 1] * 0.59 + d[idx + 2] * 0.11;
-                  const puff = Math.max(0, (lum - 48) / 207);
-                  const swirl = 0.65 + 0.35 * Math.sin(x * 0.14 + t * 3.0) * Math.cos(y * 0.12 - t * 2.3);
-                  const a = Math.min(215, Math.round(puff * swirl * 195));
+                  const puff = Math.max(0, (lum - 46) / 209);
+                  const wisp = 0.65 + 0.35 * Math.sin(x * 0.14 + t * 3.0) * Math.cos(y * 0.12 - t * 2.3);
                   od[idx] = Math.min(255, Math.round(180 + puff * 75));
                   od[idx + 1] = Math.min(255, Math.round(210 + puff * 45));
                   od[idx + 2] = Math.min(255, Math.round(235 + puff * 20));
-                  od[idx + 3] = a;
+                  od[idx + 3] = Math.min(215, Math.round(puff * wisp * 195));
                 }
               }
               camFxCtx.putImageData(outImg, 0, 0);
 
               smokeTrailCtx.save();
-              smokeTrailCtx.globalAlpha = 0.75;
+              smokeTrailCtx.globalAlpha = 0.76;
               smokeTrailCtx.drawImage(camFxCanvas, Math.sin(t * 1.5) * 2.5, -2.0, gw, gh);
               smokeTrailCtx.restore();
             } else if (fx === "fire") {
@@ -671,7 +909,6 @@
               camFxCtx.putImageData(outImg, 0, 0);
             } else {
               // GHOST
-              const edgeThreshold = 42;
               for (let y = 1; y < gh - 1; y++) {
                 for (let x = 1; x < gw - 1; x++) {
                   const idx = (y * gw + x) * 4;
@@ -684,12 +921,11 @@
                   const lumU = d[idxU] * 0.3 + d[idxU + 1] * 0.59 + d[idxU + 2] * 0.11;
                   const lumD = d[idxD] * 0.3 + d[idxD + 1] * 0.59 + d[idxD + 2] * 0.11;
                   const mag = Math.abs(lumR - lumL) + Math.abs(lumD - lumU);
-                  if (mag > edgeThreshold) {
-                    const strength = Math.min(1, (mag - edgeThreshold) / 68);
+                  if (mag > 40) {
                     od[idx] = 160;
                     od[idx + 1] = 255;
                     od[idx + 2] = 225;
-                    od[idx + 3] = Math.min(235, Math.round(120 + strength * 115));
+                    od[idx + 3] = Math.min(235, Math.round(120 + Math.min(1, (mag - 40) / 68) * 115));
                   } else {
                     od[idx + 3] = 0;
                   }
@@ -732,17 +968,6 @@
           ctx.globalAlpha = 0.92;
           ctx.drawImage(camFxCanvas, -4, 0, w, h);
           ctx.drawImage(camFxCanvas, 4, 0, w, h);
-        } else if (fx === "vhs") {
-          ctx.globalCompositeOperation = "source-over";
-          ctx.globalAlpha = 1;
-          const slices = 12;
-          const sh = h / slices;
-          for (let i = 0; i < slices; i++) {
-            const jitter = ((i + Math.floor(t * 12)) % 5 === 0) ? Math.sin(t * 35 + i) * 14 : 0;
-            ctx.drawImage(camFxCanvas, 0, (i / slices) * gh, gw, gh / slices, jitter, i * sh, w, sh + 1);
-          }
-          ctx.fillStyle = "rgba(0,0,0,0.22)";
-          for (let y = 0; y < h; y += 5) ctx.fillRect(0, y, w, 2);
         } else {
           ctx.globalCompositeOperation = "screen";
           const dx = Math.sin(t * 1.6) * 7;
@@ -755,71 +980,88 @@
         ctx.restore();
       }
 
-      function renderBackgroundScene() {
+      // MUSIIKKIIN REAGOIVA MORPH, LIQUID JA WAVE MIXAUS
+      function applyMusicMorphLiquidWave() {
+        if (!state.effectsEnabled) return;
+        const mode = MIX_MODES[state.mixIndex].id;
         const w = state.width;
         const h = state.height;
-        const cx = w * 0.5;
-        const cy = h * 0.5;
-        const minDim = Math.min(w, h);
         const t = state.time;
+        const bass = state.bassLevel;
+        const mid = state.midLevel;
+        const treble = state.trebleLevel;
 
-        ctx.fillStyle = state.cam.enabled && !state.bgEnabled ? "#000000" : "#05070d";
-        ctx.fillRect(0, 0, w, h);
+        const bw = fxBuffer.width;
+        const bh = fxBuffer.height;
+        fxBufferCtx.clearRect(0, 0, bw, bh);
+        fxBufferCtx.drawImage(canvas, 0, 0, bw, bh);
 
-        if (!state.bgEnabled || state.bgScene === 0) return;
+        const slices = mode === "liquid" ? 28 : 22;
+        const sh = bh / slices;
+        const outH = h / slices;
 
         ctx.save();
-        ctx.globalCompositeOperation = "screen";
+        ctx.globalCompositeOperation = "source-over";
 
-        if (state.bgScene === 1) {
-          for (let i = 0; i < 7; i++) {
-            ctx.strokeStyle = PALETTE[i % PALETTE.length];
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            for (let x = 0; x <= w; x += 24) {
-              const y = cy - 90 + i * 30 + Math.sin(x * 0.018 + t * 3 + i * 0.5) * (18 + state.bassPulse * 24);
-              if (x === 0) ctx.moveTo(x, y);
-              else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
+        if (mode === "morph") {
+          const morphScale = 1 + Math.sin(t * 2.4) * (0.04 + mid * 0.08) + bass * 0.06;
+          for (let i = 0; i < slices; i++) {
+            const normY = (i / slices) * 2 - 1;
+            const curveShift = Math.sin(normY * Math.PI + t * 2.6) * (12 + bass * 28 + mid * 18);
+            const sliceScaleX = 1 + Math.cos(normY * Math.PI * 1.5 + t * 2.0) * (0.04 + bass * 0.09);
+            const drawW = w * sliceScaleX * morphScale;
+            const drawX = (w - drawW) * 0.5 + curveShift;
+            ctx.drawImage(
+              fxBuffer,
+              0,
+              i * sh,
+              bw,
+              sh + 0.5,
+              drawX,
+              i * outH,
+              drawW,
+              outH + 1.2
+            );
           }
-        } else if (state.bgScene === 2) {
-          for (let i = 1; i <= 36; i++) {
-            const ang = i * 0.42 - t * 2.2;
-            const rad = (i / 36) * minDim * (0.45 + state.bassPulse * 0.14);
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
-            ctx.fillRect(cx + Math.cos(ang) * rad - 5, cy + Math.sin(ang) * rad - 5, 10, 10);
+        } else if (mode === "liquid") {
+          for (let i = 0; i < slices; i++) {
+            const liqX = Math.sin(i * 0.45 + t * 4.2 + bass * 4) * (14 + mid * 30 + bass * 24);
+            const liqY = Math.cos(i * 0.35 - t * 3.4) * (4 + treble * 10);
+            ctx.drawImage(
+              fxBuffer,
+              0,
+              i * sh,
+              bw,
+              sh + 0.5,
+              liqX,
+              i * outH + liqY,
+              w,
+              outH + 1.4
+            );
           }
-        } else if (state.bgScene === 3) {
-          for (let i = 1; i <= 6; i++) {
-            const rad = minDim * (0.08 * i + state.bassPulse * 0.04);
-            ctx.strokeStyle = PALETTE[i % PALETTE.length];
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(cx, cy, rad, t * (0.7 + i * 0.15), t * (0.7 + i * 0.15) + Math.PI * 1.4);
-            ctx.stroke();
-          }
-        } else if (state.bgScene === 4) {
-          const step = 36;
-          for (let y = 40; y < h - 90; y += step) {
-            for (let x = 16; x < w - 16; x += step) {
-              if (Math.sin(x * 0.02 + y * 0.02 - t * 3 + state.bassPulse * 3) > 0.25) {
-                ctx.fillStyle = PALETTE[Math.abs(Math.floor((x + y) / step)) % PALETTE.length];
-                ctx.fillRect(x, y, 10, 10);
-              }
-            }
-          }
-        } else if (state.bgScene === 5) {
-          for (let i = 0; i < 16; i++) {
-            const ang = (i / 16) * Math.PI * 2 + t * 1.5;
-            ctx.strokeStyle = PALETTE[i % PALETTE.length];
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(cx + Math.cos(ang) * minDim * 0.85, cy + Math.sin(ang) * minDim * 0.85);
-            ctx.stroke();
+        } else {
+          // WAVE
+          for (let i = 0; i < slices; i++) {
+            const waveX = Math.sin(t * 5.0 + i * 0.55) * (18 + bass * 34);
+            ctx.drawImage(
+              fxBuffer,
+              0,
+              i * sh,
+              bw,
+              sh + 0.5,
+              waveX,
+              i * outH,
+              w,
+              outH + 1.2
+            );
           }
         }
+
+        // Väri- ja mixauskerros musiikin tahdissa
+        ctx.globalCompositeOperation = "screen";
+        ctx.globalAlpha = 0.14 + bass * 0.18 + treble * 0.1;
+        ctx.fillStyle = PALETTE[Math.floor(t * 3 + bass * 4) % PALETTE.length];
+        ctx.fillRect(0, 0, w, h);
 
         ctx.restore();
       }
@@ -829,7 +1071,13 @@
         const img = state.logoImg;
         const w = state.width;
         const h = state.height;
-        const size = Math.min(w, h) * 0.28 * state.logoScale * (1 + state.bassPulse * 0.18);
+        const t = state.time;
+        const bass = state.bassLevel;
+        const mid = state.midLevel;
+        const mode = MIX_MODES[state.mixIndex].id;
+
+        const pulse = state.effectsEnabled ? (1 + bass * 0.24 + Math.sin(t * 4) * 0.04) : 1;
+        const size = Math.min(w, h) * 0.28 * state.logoScale * pulse;
         const aspect = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1;
         let dw = size;
         let dh = size;
@@ -838,6 +1086,11 @@
 
         ctx.save();
         ctx.translate(w * 0.5, h * 0.5);
+        if (state.effectsEnabled) {
+          if (mode === "morph") ctx.scale(1 + Math.sin(t * 3) * (0.08 + bass * 0.12), 1 - Math.sin(t * 3) * (0.08 + bass * 0.12));
+          else if (mode === "liquid") ctx.rotate(Math.sin(t * 2.5 + mid * 2) * 0.12);
+          else if (mode === "wave") ctx.translate(Math.sin(t * 5) * (8 + bass * 16), Math.cos(t * 3.5) * 6);
+        }
         ctx.drawImage(img, -dw * 0.5, -dh * 0.5, dw, dh);
         ctx.restore();
       }
@@ -851,32 +1104,130 @@
 
         const w = state.width;
         const h = state.height;
-        const fontSize = Math.max(30, Math.min(w, h) * 0.13) * state.textScale * (1 + state.bassPulse * 0.12);
+        const cx = w * 0.5;
+        const cy = h * 0.5;
+        const t = state.time;
+        const fx = TXT_FX[state.txtFxIndex].id;
+        const bass = state.bassLevel;
+        const fontSize = Math.max(30, Math.min(w, h) * 0.13) * state.textScale * (state.effectsEnabled ? 1 + bass * 0.16 : 1);
+
         ctx.save();
         ctx.font = `900 ${fontSize}px ${FONTS[state.fontIndex].family}`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = "#05070d";
-        ctx.lineWidth = 4;
-        ctx.strokeText(txt, w * 0.5, h * 0.5);
-        ctx.fillText(txt, w * 0.5, h * 0.5);
+
+        if (!state.effectsEnabled) {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(txt, cx, cy);
+          ctx.restore();
+          return;
+        }
+
+        if (fx === "wave") {
+          const chars = Array.from(txt);
+          const adv = fontSize * 0.62;
+          chars.forEach((ch, i) => {
+            const x = cx - (chars.length * adv) * 0.5 + (i + 0.5) * adv;
+            const y = cy + Math.sin(t * 4.5 + i * 0.65) * (18 + bass * 14);
+            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.strokeStyle = "#05070d";
+            ctx.lineWidth = 4;
+            ctx.strokeText(ch, x, y);
+            ctx.fillText(ch, x, y);
+          });
+        } else if (fx === "jitter") {
+          const jx = Math.sin(t * 45) * (8 + bass * 10);
+          const jy = Math.cos(t * 38) * 6;
+          ctx.fillStyle = "#ff3b8d";
+          ctx.fillText(txt, cx - jx, cy - jy);
+          ctx.fillStyle = "#00d8ff";
+          ctx.fillText(txt, cx + jx, cy + jy);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(txt, cx, cy);
+        } else if (fx === "bounce") {
+          const hop = Math.abs(Math.sin(t * 5)) * (26 + bass * 20);
+          ctx.fillStyle = "#ffd319";
+          ctx.strokeStyle = "#05070d";
+          ctx.lineWidth = 4;
+          ctx.strokeText(txt, cx, cy - hop);
+          ctx.fillText(txt, cx, cy - hop);
+        } else if (fx === "split") {
+          const off = 8 + Math.sin(t * 4) * 8 + bass * 10;
+          ctx.fillStyle = "#00ff9f";
+          ctx.fillText(txt, cx - off, cy);
+          ctx.fillStyle = "#ff3b8d";
+          ctx.fillText(txt, cx + off, cy);
+        } else if (fx === "glow") {
+          ctx.shadowColor = "#00ff9f";
+          ctx.shadowBlur = 24 + bass * 18;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(txt, cx, cy);
+        } else if (fx === "box") {
+          const bw = Math.min(w * 0.92, ctx.measureText(txt).width + 36);
+          const bh = fontSize * 1.35;
+          ctx.fillStyle = "rgba(5, 7, 13, 0.72)";
+          ctx.fillRect(cx - bw * 0.5, cy - bh * 0.5, bw, bh);
+          ctx.strokeStyle = "#00ff9f";
+          ctx.lineWidth = 4;
+          ctx.strokeRect(cx - bw * 0.5, cy - bh * 0.5, bw, bh);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(txt, cx, cy);
+        } else if (fx === "tilt") {
+          ctx.translate(cx, cy);
+          ctx.rotate(Math.sin(t * 2.5) * 0.16);
+          ctx.fillStyle = "#00d8ff";
+          ctx.strokeStyle = "#05070d";
+          ctx.lineWidth = 4;
+          ctx.strokeText(txt, 0, 0);
+          ctx.fillText(txt, 0, 0);
+        } else if (fx === "pulse") {
+          const sc = 1 + Math.sin(t * 7) * 0.16 + bass * 0.2;
+          ctx.translate(cx, cy);
+          ctx.scale(sc, sc);
+          ctx.fillStyle = "#ffd319";
+          ctx.strokeStyle = "#05070d";
+          ctx.lineWidth = 4;
+          ctx.strokeText(txt, 0, 0);
+          ctx.fillText(txt, 0, 0);
+        } else {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+          ctx.fillText(txt, cx + 8, cy + 8);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(txt, cx, cy);
+        }
+
         ctx.restore();
       }
 
+      function setNumFx(id) {
+        state.numFxId = id;
+        state.effectsEnabled = true;
+        updateUi();
+      }
+
+      function cycleNumFx() {
+        const idx = NUM_FX.findIndex(n => n.id === state.numFxId);
+        const next = NUM_FX[(idx + 1) % NUM_FX.length];
+        setNumFx(next.id);
+      }
+
+      function cycleMixMode() {
+        state.mixIndex = (state.mixIndex + 1) % MIX_MODES.length;
+        state.effectsEnabled = true;
+        updateUi();
+      }
+
+      function setTxtFx(idx) {
+        state.txtFxIndex = ((idx % TXT_FX.length) + TXT_FX.length) % TXT_FX.length;
+        state.textVisible = true;
+        updateUi();
+      }
+
+      function cycleTxtFx() {
+        setTxtFx(state.txtFxIndex + 1);
+      }
+
       function registerTap() {
-        const now = performance.now();
-        state.tapTimes = state.tapTimes.filter(t => now - t < 4000);
-        state.tapTimes.push(now);
-        if (state.tapTimes.length >= 2) {
-          let sum = 0;
-          for (let i = 1; i < state.tapTimes.length; i++) sum += state.tapTimes[i] - state.tapTimes[i - 1];
-          const bpm = Math.round(60000 / (sum / (state.tapTimes.length - 1)));
-          if (bpm >= 50 && bpm <= 220) {
-            state.bpm = bpm;
-            document.getElementById("bpm-slider").value = bpm;
-          }
-        }
         state.beatPhase = 0;
         state.bassPulse = 1.0;
         updateUi();
@@ -928,7 +1279,6 @@
           img.onload = () => {
             state.logoImg = img;
             state.logoVisible = true;
-            document.getElementById("drawer-logo-status").textContent = file.name.slice(0, 18);
             updateUi();
           };
           img.src = reader.result;
@@ -936,7 +1286,29 @@
         reader.readAsDataURL(file);
       });
 
-      // Rakennan asetuspaneelin listat
+      // Rakennan paneelin napit
+      const numFxListEl = document.getElementById("drawer-num-fx-list");
+      NUM_FX.forEach(nf => {
+        const b = document.createElement("button");
+        b.textContent = `${nf.key}:${nf.label}`;
+        b.dataset.num = nf.id;
+        b.addEventListener("click", () => setNumFx(nf.id));
+        numFxListEl.appendChild(b);
+      });
+
+      const mixFxListEl = document.getElementById("drawer-mix-fx-list");
+      MIX_MODES.forEach((mm, idx) => {
+        const b = document.createElement("button");
+        b.textContent = mm.label;
+        b.dataset.mix = idx;
+        b.addEventListener("click", () => {
+          state.mixIndex = idx;
+          state.effectsEnabled = true;
+          updateUi();
+        });
+        mixFxListEl.appendChild(b);
+      });
+
       const camFxListEl = document.getElementById("drawer-cam-fx-list");
       CAM_FX.forEach((cf, idx) => {
         const b = document.createElement("button");
@@ -949,55 +1321,68 @@
         camFxListEl.appendChild(b);
       });
 
-      const bgFxListEl = document.getElementById("drawer-bg-fx-list");
-      BG_SCENES.forEach(sc => {
+      const txtFxListEl = document.getElementById("drawer-txt-fx-list");
+      TXT_FX.forEach((tf, idx) => {
         const b = document.createElement("button");
-        b.textContent = sc.label;
-        b.dataset.bg = sc.id;
-        b.addEventListener("click", () => {
-          state.bgScene = sc.id;
-          state.bgEnabled = sc.id !== 0;
-          updateUi();
-        });
-        bgFxListEl.appendChild(b);
+        b.textContent = tf.label;
+        b.dataset.tfx = idx;
+        b.addEventListener("click", () => setTxtFx(idx));
+        txtFxListEl.appendChild(b);
       });
 
       function updateUi() {
-        const fxLabel = CAM_FX[state.cam.fxIndex].label;
-        const sideLabel = state.cam.facingMode === "user" ? "ETU" : "TAKA";
-        const bgLabel = state.bgEnabled && state.bgScene !== 0
-          ? (BG_SCENES.find(s => s.id === state.bgScene)?.label || "ON")
-          : "OFF";
+        const numObj = NUM_FX.find(n => n.id === state.numFxId) || NUM_FX[0];
+        const mixLabel = MIX_MODES[state.mixIndex].label;
+        const camFxLabel = CAM_FX[state.cam.fxIndex].label;
+        const txtFxLabel = TXT_FX[state.txtFxIndex].label;
+        const sideLabel = state.cam.facingMode === "user" ? "ETU/PC" : "TAKA";
+        const camStatus = state.cam.enabled
+          ? `ON (${sideLabel})`
+          : (state.cam.lastError ? `OFF (${state.cam.lastError})` : "OFF");
 
-        document.getElementById("cam-hud-pill").textContent =
-          `CAM: ${state.cam.enabled ? `ON (${sideLabel})` : "OFF"} · FX: ${fxLabel}`;
+        document.getElementById("hud-pill").textContent =
+          `FX: ${state.effectsEnabled ? "ON" : "OFF"} · ${numObj.key}:${numObj.label} · ${mixLabel} · CAM: ${camStatus} · TXT: ${state.textVisible ? "ON" : "OFF"} · LOGO: ${state.logoVisible ? "ON" : "OFF"}`;
+
+        document.getElementById("drawer-num-fx").textContent = `${numObj.key}. ${numObj.label}`;
+        document.getElementById("drawer-mix-fx").textContent = mixLabel;
         document.getElementById("drawer-cam-info").textContent =
-          state.cam.enabled ? `${sideLabel} · ${state.cam.devices.length || 1} KAM` : "EI AKTIIVINEN";
-        document.getElementById("drawer-cam-fx").textContent = fxLabel;
-        document.getElementById("drawer-bg-status").textContent = bgLabel;
+          state.cam.enabled ? `${sideLabel} · ${state.cam.devices.length || 1} KAM` : (state.cam.lastError || "EI AKTIIVINEN");
+        document.getElementById("drawer-txt-fx").textContent = txtFxLabel;
         document.getElementById("bpm-val").textContent = state.bpm;
         document.getElementById("font-val").textContent = FONTS[state.fontIndex].label;
 
+        document.getElementById("dock-fx").textContent = `FX: ${state.effectsEnabled ? "ON" : "OFF"}`;
+        document.getElementById("dock-fx").classList.toggle("active", state.effectsEnabled);
+        document.getElementById("dock-numfx").textContent = `NUM ${numObj.key}: ${numObj.label}`;
+        document.getElementById("dock-mix").textContent = `MIX: ${mixLabel}`;
         document.getElementById("dock-cam").classList.toggle("active", state.cam.enabled);
         document.getElementById("dock-front").classList.toggle("active", state.cam.facingMode === "user");
         document.getElementById("dock-back").classList.toggle("active", state.cam.facingMode === "environment");
-        document.getElementById("dock-camfx").textContent = `FX: ${fxLabel}`;
-        document.getElementById("dock-bgfx").textContent = `TAUSTA-FX: ${bgLabel}`;
-        document.getElementById("dock-bgfx").classList.toggle("active", state.bgEnabled && state.bgScene !== 0);
-        document.getElementById("dock-txt-toggle").classList.toggle("active", state.textVisible);
+        document.getElementById("dock-camfx").textContent = `CAM FX: ${camFxLabel}`;
+        document.getElementById("dock-logo").classList.toggle("active", state.logoVisible);
+        document.getElementById("dock-txt").classList.toggle("active", state.textVisible);
+        document.getElementById("dock-txtfx").textContent = `TXT: ${txtFxLabel}`;
+        document.getElementById("dock-mic").classList.toggle("active", state.audioEnabled);
 
+        document.getElementById("btn-fx-toggle").classList.toggle("active", state.effectsEnabled);
+        document.getElementById("btn-mic").classList.toggle("active", state.audioEnabled);
         document.getElementById("btn-cam-toggle").classList.toggle("active", state.cam.enabled);
         document.getElementById("btn-cam-front").classList.toggle("active", state.cam.facingMode === "user");
         document.getElementById("btn-cam-back").classList.toggle("active", state.cam.facingMode === "environment");
-        document.getElementById("btn-bg-toggle").classList.toggle("active", state.bgEnabled && state.bgScene !== 0);
-        document.getElementById("btn-txt-toggle").classList.toggle("active", state.textVisible);
         document.getElementById("btn-logo-toggle").classList.toggle("active", state.logoVisible);
+        document.getElementById("btn-txt-toggle").classList.toggle("active", state.textVisible);
 
+        numFxListEl.querySelectorAll("button").forEach(b =>
+          b.classList.toggle("active", state.effectsEnabled && Number(b.dataset.num) === state.numFxId)
+        );
+        mixFxListEl.querySelectorAll("button").forEach(b =>
+          b.classList.toggle("active", Number(b.dataset.mix) === state.mixIndex)
+        );
         camFxListEl.querySelectorAll("button").forEach(b =>
           b.classList.toggle("active", Number(b.dataset.cfx) === state.cam.fxIndex)
         );
-        bgFxListEl.querySelectorAll("button").forEach(b =>
-          b.classList.toggle("active", state.bgEnabled && Number(b.dataset.bg) === state.bgScene)
+        txtFxListEl.querySelectorAll("button").forEach(b =>
+          b.classList.toggle("active", Number(b.dataset.tfx) === state.txtFxIndex)
         );
       }
       updateUi();
@@ -1009,43 +1394,47 @@
         document.getElementById("dock-panel").classList.toggle("active", open);
       }
 
-      document.getElementById("dock-cam").addEventListener("click", toggleCamera);
-      document.getElementById("dock-front").addEventListener("click", switchToFrontCamera);
-      document.getElementById("dock-back").addEventListener("click", switchToBackCamera);
-      document.getElementById("dock-flip").addEventListener("click", flipCameraDevice);
-      document.getElementById("dock-camfx").addEventListener("click", cycleCamFx);
-      document.getElementById("dock-bgfx").addEventListener("click", () => {
-        if (!state.bgEnabled) {
-          state.bgEnabled = true;
-          if (state.bgScene === 0) state.bgScene = 1;
-        } else {
-          state.bgScene = (state.bgScene + 1) % BG_SCENES.length;
-          state.bgEnabled = state.bgScene !== 0;
-        }
+      document.getElementById("dock-fx").addEventListener("click", () => {
+        state.effectsEnabled = !state.effectsEnabled;
         updateUi();
       });
-      document.getElementById("dock-txt-toggle").addEventListener("click", () => {
+      document.getElementById("dock-numfx").addEventListener("click", cycleNumFx);
+      document.getElementById("dock-mix").addEventListener("click", cycleMixMode);
+      document.getElementById("dock-cam").addEventListener("click", toggleCamera);
+      document.getElementById("dock-front").addEventListener("click", switchFrontCamera);
+      document.getElementById("dock-back").addEventListener("click", switchBackCamera);
+      document.getElementById("dock-camfx").addEventListener("click", () => {
+        state.cam.fxIndex = (state.cam.fxIndex + 1) % CAM_FX.length;
+        updateUi();
+      });
+      document.getElementById("dock-logo").addEventListener("click", () => {
+        state.logoVisible = !state.logoVisible;
+        updateUi();
+      });
+      document.getElementById("dock-load-logo").addEventListener("click", () => document.getElementById("file-logo").click());
+      document.getElementById("dock-txt").addEventListener("click", () => {
         state.textVisible = !state.textVisible;
         updateUi();
       });
+      document.getElementById("dock-txtfx").addEventListener("click", cycleTxtFx);
       document.getElementById("dock-write").addEventListener("click", startDirectTyping);
-      document.getElementById("dock-logo").addEventListener("click", () => document.getElementById("file-logo").click());
+      document.getElementById("dock-mic").addEventListener("click", toggleMicAudio);
       document.getElementById("dock-panel").addEventListener("click", toggleDrawer);
 
-      document.getElementById("btn-cam-toggle").addEventListener("click", toggleCamera);
-      document.getElementById("btn-cam-front").addEventListener("click", switchToFrontCamera);
-      document.getElementById("btn-cam-back").addEventListener("click", switchToBackCamera);
-      document.getElementById("btn-cam-cycle").addEventListener("click", flipCameraDevice);
-      document.getElementById("btn-bg-toggle").addEventListener("click", () => {
-        state.bgEnabled = !state.bgEnabled;
-        if (state.bgEnabled && state.bgScene === 0) state.bgScene = 1;
+      document.getElementById("btn-fx-toggle").addEventListener("click", () => {
+        state.effectsEnabled = !state.effectsEnabled;
         updateUi();
       });
+      document.getElementById("btn-mic").addEventListener("click", toggleMicAudio);
       document.getElementById("btn-tap").addEventListener("click", registerTap);
       document.getElementById("bpm-slider").addEventListener("input", e => {
         state.bpm = Number(e.target.value);
         updateUi();
       });
+      document.getElementById("btn-cam-toggle").addEventListener("click", toggleCamera);
+      document.getElementById("btn-cam-front").addEventListener("click", switchFrontCamera);
+      document.getElementById("btn-cam-back").addEventListener("click", switchBackCamera);
+      document.getElementById("btn-cam-cycle").addEventListener("click", flipCameraDevice);
       document.getElementById("btn-logo-toggle").addEventListener("click", () => {
         state.logoVisible = !state.logoVisible;
         updateUi();
@@ -1077,16 +1466,47 @@
         if (document.activeElement === hiddenSink) return;
 
         const k = e.key.toLowerCase();
-        if (k === "v") { e.preventDefault(); toggleCamera(); }
-        else if (k === "f") { e.preventDefault(); switchToFrontCamera(); }
-        else if (k === "b") { e.preventDefault(); switchToBackCamera(); }
-        else if (k === "g") { e.preventDefault(); cycleCamFx(); }
-        else if (k === "e") { e.preventDefault(); state.bgEnabled = !state.bgEnabled; updateUi(); }
-        else if (k === "t") { e.preventDefault(); state.textVisible = !state.textVisible; updateUi(); }
-        else if (k === "c") { e.preventDefault(); startDirectTyping(); }
-        else if (k === "l") { e.preventDefault(); document.getElementById("file-logo").click(); }
-        else if (e.code === "Space") { e.preventDefault(); registerTap(); }
-        else if (k === "h") {
+        if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(k)) {
+          e.preventDefault();
+          setNumFx(Number(k));
+        } else if (k === "e") {
+          e.preventDefault();
+          state.effectsEnabled = !state.effectsEnabled;
+          updateUi();
+        } else if (k === "m") {
+          e.preventDefault();
+          cycleMixMode();
+        } else if (k === "v") {
+          e.preventDefault();
+          toggleCamera();
+        } else if (k === "f") {
+          e.preventDefault();
+          switchFrontCamera();
+        } else if (k === "b") {
+          e.preventDefault();
+          switchBackCamera();
+        } else if (k === "g") {
+          e.preventDefault();
+          state.cam.fxIndex = (state.cam.fxIndex + 1) % CAM_FX.length;
+          updateUi();
+        } else if (k === "t") {
+          e.preventDefault();
+          state.textVisible = !state.textVisible;
+          updateUi();
+        } else if (k === "x") {
+          e.preventDefault();
+          cycleTxtFx();
+        } else if (k === "c") {
+          e.preventDefault();
+          startDirectTyping();
+        } else if (k === "l") {
+          e.preventDefault();
+          state.logoVisible = !state.logoVisible;
+          updateUi();
+        } else if (e.code === "Space") {
+          e.preventDefault();
+          registerTap();
+        } else if (k === "h") {
           e.preventDefault();
           state.hudHidden = !state.hudHidden;
           document.body.classList.toggle("hud-hidden", state.hudHidden);
@@ -1104,11 +1524,18 @@
           state.bassPulse = 1.0;
         }
         state.bassPulse = Math.max(0, state.bassPulse - dt * 3.5);
+        sampleMusicEnergy(dt);
 
-        renderBackgroundScene();
-        renderLiveCameraEffects(state.time, now);
+        ctx.fillStyle = "#05070d";
+        ctx.fillRect(0, 0, state.width, state.height);
+
+        renderCameraLayer(state.time, now);
+        if (state.effectsEnabled) {
+          drawNumberEffect(state.time, state.numFxId);
+        }
         renderLogo();
         renderText();
+        applyMusicMorphLiquidWave();
 
         requestAnimationFrame(frame);
       }
