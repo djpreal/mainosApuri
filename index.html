@@ -6,14 +6,14 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>LIVE VISUALS — 1-0 FX, MORPH, LIQUID, WAVE &amp; CAM</title>
+  <title>LIVE VISUALS — GHOST, ZOOM, SCROLL &amp; PALETTES</title>
   <style>
     :root {
       --bg: #05070d;
       --panel: rgba(8, 12, 22, 0.94);
-      --panel-border: rgba(0, 255, 159, 0.38);
+      --panel-border: rgba(0, 255, 102, 0.42);
       --text: #f3f7ff;
-      --accent: #00ff9f;
+      --accent: #00ff66;
       --accent-2: #00d8ff;
       --accent-3: #b8ff2c;
       --safe-top: env(safe-area-inset-top, 0px);
@@ -233,9 +233,17 @@
     spellcheck="false"
   />
 
-  <div id="hud-pill">FX: ON · NUM: 1 · MORPH · CAM: OFF · TXT: ON · LOGO: ON</div>
+  <div id="hud-pill">FX: ON · BW · NUM: 1 · MORPH · CAM: OFF 1.0x · GHOST · TXT: ON</div>
 
   <aside id="control-drawer">
+    <div>
+      <div class="section-title">
+        <span>Väripaletti (BW / Matrix / Cyber)</span>
+        <span id="drawer-pal">BW</span>
+      </div>
+      <div class="row" id="drawer-pal-list"></div>
+    </div>
+
     <div>
       <div class="section-title">
         <span>Efektit Päälle/Pois &amp; Numeronäppäimet (1-0)</span>
@@ -260,14 +268,17 @@
 
     <div>
       <div class="section-title">
-        <span>Kamera (PC &amp; Puhelin) + Kameraefektit</span>
-        <span id="drawer-cam-info">EI AKTIIVINEN</span>
+        <span>Kamera Zoom + Ghost &amp; Ääriviivat</span>
+        <span id="drawer-cam-info">EI AKTIIVINEN · 1.0x</span>
       </div>
       <div class="row" style="margin-bottom:6px;">
         <button id="btn-cam-toggle">KAMERA ON/OFF</button>
         <button id="btn-cam-front" class="active">ETU / PC</button>
         <button id="btn-cam-back">TAKA</button>
         <button id="btn-cam-cycle">VAIHDA LAITE</button>
+        <button id="btn-zoom-dn">ZOOM -</button>
+        <button id="btn-zoom-up">ZOOM +</button>
+        <button id="btn-zoom-reset">1.0x</button>
       </div>
       <div class="row" id="drawer-cam-fx-list"></div>
     </div>
@@ -295,14 +306,16 @@
   <div id="bottom-dock">
     <div class="dock-row">
       <button id="dock-fx" class="active">FX: ON</button>
+      <button id="dock-pal">VÄRI: BW</button>
       <button id="dock-numfx">NUM 1: HORIZON</button>
       <button id="dock-mix">MIX: MORPH</button>
       <button id="dock-cam">CAM ON/OFF</button>
       <button id="dock-front" class="active">ETU/PC</button>
       <button id="dock-back">TAKA</button>
-      <button id="dock-camfx">CAM FX: GHOST</button>
+      <button id="dock-camfx">CAM: GHOST</button>
     </div>
     <div class="dock-row">
+      <button id="dock-zoom">ZOOM: 1.0x</button>
       <button id="dock-logo" class="active">LOGO ON/OFF</button>
       <button id="dock-load-logo">LATAA KUVA</button>
       <button id="dock-txt" class="active">TXT ON/OFF</button>
@@ -330,10 +343,46 @@
       const camFxCanvas = document.createElement("canvas");
       const camFxCtx = camFxCanvas.getContext("2d");
 
-      const smokeTrailCanvas = document.createElement("canvas");
-      const smokeTrailCtx = smokeTrailCanvas.getContext("2d");
+      const ghostTrailCanvas = document.createElement("canvas");
+      const ghostTrailCtx = ghostTrailCanvas.getContext("2d");
 
-      // 10 NUMERONÄPPÄINEFEKTIÄ (1-9 ja 0)
+      // VAIN MUSTAVALKO, MATRIX VIHREÄ JA CYBERPUNK
+      const PALETTES = [
+        {
+          id: "bw",
+          label: "BW",
+          bg: "#050505",
+          accent: "#ffffff",
+          accent2: "#b8b8b8",
+          accent3: "#ffffff",
+          colors: ["#ffffff", "#d0d0d0", "#969696", "#ffffff"],
+          edgeRgb: [255, 255, 255],
+          edgeSecondaryRgb: [190, 190, 190]
+        },
+        {
+          id: "matrix",
+          label: "MATRIX",
+          bg: "#020b05",
+          accent: "#00ff66",
+          accent2: "#00c853",
+          accent3: "#76ff03",
+          colors: ["#00ff66", "#00cc52", "#69f0ae", "#00ff66"],
+          edgeRgb: [0, 255, 102],
+          edgeSecondaryRgb: [105, 240, 174]
+        },
+        {
+          id: "cyber",
+          label: "CYBER",
+          bg: "#070312",
+          accent: "#ff007f",
+          accent2: "#00f0ff",
+          accent3: "#00f0ff",
+          colors: ["#ff007f", "#00f0ff", "#ff007f", "#00f0ff"],
+          edgeRgb: [255, 0, 127],
+          edgeSecondaryRgb: [0, 240, 255]
+        }
+      ];
+
       const NUM_FX = [
         { id: 1, key: "1", label: "HORIZON" },
         { id: 2, key: "2", label: "ORBIT" },
@@ -347,7 +396,6 @@
         { id: 0, key: "0", label: "VORTEX RING" }
       ];
 
-      // MUSIIKKIIN REAGOIVAT MIX-EFEKTIT: MORPH, LIQUID, WAVE
       const MIX_MODES = [
         { id: "morph", label: "MORPH" },
         { id: "liquid", label: "LIQUID" },
@@ -356,11 +404,9 @@
 
       const CAM_FX = [
         { id: "ghost", label: "GHOST" },
-        { id: "smoke", label: "SAVU" },
-        { id: "fire", label: "TULI" },
-        { id: "matrix", label: "MATRIX" },
-        { id: "neon", label: "NEON" },
-        { id: "raw", label: "RAW" }
+        { id: "outline", label: "ÄÄRIVIIVA" },
+        { id: "neon_edge", label: "TUPLA ÄÄRI" },
+        { id: "ghost_trail", label: "GHOST JÄLKI" }
       ];
 
       const TXT_FX = [
@@ -382,8 +428,6 @@
         { label: "SERIF", family: '"Georgia", serif' }
       ];
 
-      const PALETTE = ["#00ff9f", "#00d8ff", "#ff3b8d", "#ffd319", "#9b5de5", "#ffffff"];
-
       const state = {
         width: 1,
         height: 1,
@@ -395,9 +439,10 @@
         bassPulse: 0,
         hudHidden: false,
 
+        palIndex: 0, // 0: BW, 1: MATRIX, 2: CYBER
         effectsEnabled: true,
         numFxId: 1,
-        mixIndex: 0, // 0: MORPH, 1: LIQUID, 2: WAVE
+        mixIndex: 0,
 
         audioEnabled: false,
         audioLevel: 0,
@@ -416,6 +461,7 @@
           devices: [],
           deviceIndex: 0,
           isMirrored: true,
+          zoom: 1.0,
           stream: null,
           lastProcessTime: 0,
           lastError: ""
@@ -430,9 +476,35 @@
         txtFxIndex: 0,
         typingActive: false,
         typeDraft: "LIVE MIX",
+        scrollOffset: 0,
         fontIndex: 0,
         textScale: 1.35
       };
+
+      function currentPalette() {
+        return PALETTES[state.palIndex] || PALETTES[0];
+      }
+
+      function applyPaletteTheme() {
+        const p = currentPalette();
+        document.documentElement.style.setProperty("--bg", p.bg);
+        document.documentElement.style.setProperty("--accent", p.accent);
+        document.documentElement.style.setProperty("--accent-2", p.accent2);
+        document.documentElement.style.setProperty("--accent-3", p.accent3);
+        document.documentElement.style.setProperty("--panel-border", p.accent + "66");
+      }
+
+      function cyclePalette() {
+        state.palIndex = (state.palIndex + 1) % PALETTES.length;
+        applyPaletteTheme();
+        updateUi();
+      }
+
+      function setPalette(idx) {
+        state.palIndex = ((idx % PALETTES.length) + PALETTES.length) % PALETTES.length;
+        applyPaletteTheme();
+        updateUi();
+      }
 
       function resize() {
         const maxDpr = isTouchDevice ? 1.5 : 2;
@@ -448,19 +520,56 @@
         fxBuffer.width = bw;
         fxBuffer.height = bh;
 
-        const gw = isTouchDevice ? 144 : 192;
-        const gh = Math.max(84, Math.round(gw * (state.height / Math.max(1, state.width))));
+        const gw = isTouchDevice ? 160 : 224;
+        const gh = Math.max(96, Math.round(gw * (state.height / Math.max(1, state.width))));
         camInCanvas.width = gw;
         camInCanvas.height = gh;
         camFxCanvas.width = gw;
         camFxCanvas.height = gh;
-        smokeTrailCanvas.width = gw;
-        smokeTrailCanvas.height = gh;
+        ghostTrailCanvas.width = gw;
+        ghostTrailCanvas.height = gh;
       }
 
       window.addEventListener("resize", resize);
       if (window.visualViewport) window.visualViewport.addEventListener("resize", resize);
       resize();
+      applyPaletteTheme();
+
+      // KAMERAZOOM (NIPPIS / RULLA / NAPIT)
+      function setCamZoom(val) {
+        state.cam.zoom = Math.max(1.0, Math.min(3.5, +val.toFixed(2)));
+        updateUi();
+      }
+
+      let pinchStartDist = 0;
+      let pinchStartZoom = 1.0;
+      function touchDistance(t1, t2) {
+        return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      }
+
+      canvas.addEventListener("touchstart", e => {
+        if (e.touches.length === 2) {
+          pinchStartDist = Math.max(20, touchDistance(e.touches[0], e.touches[1]));
+          pinchStartZoom = state.cam.zoom;
+        }
+      }, { passive: true });
+
+      canvas.addEventListener("touchmove", e => {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+          const dist = touchDistance(e.touches[0], e.touches[1]);
+          setCamZoom(pinchStartZoom * (dist / pinchStartDist));
+        }
+      }, { passive: true });
+
+      canvas.addEventListener("touchend", e => {
+        if (e.touches.length < 2) pinchStartDist = 0;
+      }, { passive: true });
+
+      canvas.addEventListener("wheel", e => {
+        if (!state.cam.enabled) return;
+        e.preventDefault();
+        setCamZoom(state.cam.zoom + (e.deltaY < 0 ? 0.15 : -0.15));
+      }, { passive: false });
 
       // AUDIO / MUSIIKKIREAKTIIVISUUS
       async function toggleMicAudio() {
@@ -523,7 +632,6 @@
           state.audioLevel = Math.min(1.4, rawBass * 0.5 + rawMid * 0.35 + rawTreble * 0.25);
           if (rawBass > 0.65 && state.bassPulse < 0.4) state.bassPulse = Math.min(1.2, rawBass);
         } else {
-          // Rytmipulssi BPM + TAP tahdilla kun mikrofoni ei ole päällä
           const kick = Math.pow(Math.max(0, 1 - state.beatPhase * 2.3), 2);
           const mel = 0.35 + 0.35 * Math.sin(state.time * 3.8) * Math.cos(state.time * 1.6);
           const hi = 0.2 + 0.35 * Math.max(0, Math.sin(state.time * 16));
@@ -553,13 +661,47 @@
         return facing === "user" || !isTouchDevice;
       }
 
+      async function attachStreamToVideo(stream) {
+        state.cam.stream = stream;
+        videoEl.srcObject = null;
+        videoEl.srcObject = stream;
+        videoEl.muted = true;
+        videoEl.playsInline = true;
+        videoEl.setAttribute("playsinline", "");
+        videoEl.setAttribute("autoplay", "");
+
+        if (videoEl.readyState < 2) {
+          await new Promise(resolve => {
+            const onReady = () => {
+              videoEl.removeEventListener("loadedmetadata", onReady);
+              videoEl.removeEventListener("canplay", onReady);
+              resolve();
+            };
+            videoEl.addEventListener("loadedmetadata", onReady, { once: true });
+            videoEl.addEventListener("canplay", onReady, { once: true });
+            setTimeout(resolve, 1200);
+          });
+        }
+        try { await videoEl.play(); } catch (_) {}
+      }
+
       async function startCamera(mode = "auto") {
         state.cam.lastError = "";
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          state.cam.lastError = "EI KAMERATUKKEA";
+
+        if (!window.isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+          state.cam.lastError = "VAATII HTTPS/LOCALHOST";
+          state.cam.enabled = false;
           updateUi();
           return;
         }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          state.cam.lastError = "EI GETUSERMEDIA";
+          state.cam.enabled = false;
+          updateUi();
+          return;
+        }
+
         if (state.cam.stream) {
           state.cam.stream.getTracks().forEach(t => t.stop());
           state.cam.stream = null;
@@ -573,15 +715,15 @@
           const dev = devices[state.cam.deviceIndex];
           const mir = inferMirror(dev.label, state.cam.facingMode);
           attempts.push({
-            constraints: { video: { deviceId: { exact: dev.deviceId } }, audio: false },
+            constraints: { video: { deviceId: dev.deviceId }, audio: false },
             mirror: mir,
             facing: mir ? "user" : "environment"
           });
         } else if (mode === "front") {
-          const frontDev = devices.find(d => /front|user|face|etu/i.test(d.label || ""));
+          const frontDev = devices.find(d => /front|user|face|etu|webcam|pc|usb|integrated/i.test(d.label || ""));
           if (frontDev) {
             attempts.push({
-              constraints: { video: { deviceId: { exact: frontDev.deviceId } }, audio: false },
+              constraints: { video: { deviceId: frontDev.deviceId }, audio: false },
               mirror: true,
               facing: "user"
             });
@@ -595,26 +737,25 @@
           const backDev = devices.find(d => /back|rear|environment|taka|world/i.test(d.label || ""));
           if (backDev) {
             attempts.push({
-              constraints: { video: { deviceId: { exact: backDev.deviceId } }, audio: false },
+              constraints: { video: { deviceId: backDev.deviceId }, audio: false },
               mirror: false,
               facing: "environment"
             });
           }
           attempts.push({
-            constraints: { video: { facingMode: { ideal: "environment" } }, audio: false },
+            constraints: { video: { facingMode: "environment" }, audio: false },
             mirror: false,
             facing: "environment"
-          });
-        } else {
-          attempts.push({
-            constraints: { video: true, audio: false },
-            mirror: !isTouchDevice || state.cam.facingMode === "user",
-            facing: state.cam.facingMode
           });
         }
 
         attempts.push({
           constraints: { video: true, audio: false },
+          mirror: !isTouchDevice || state.cam.facingMode === "user",
+          facing: state.cam.facingMode
+        });
+        attempts.push({
+          constraints: { video: { width: { ideal: 640 }, height: { ideal: 480 } }, audio: false },
           mirror: !isTouchDevice,
           facing: "user"
         });
@@ -623,13 +764,13 @@
         for (const att of attempts) {
           try {
             stream = await navigator.mediaDevices.getUserMedia(att.constraints);
-            if (stream) {
+            if (stream && stream.getVideoTracks().length > 0) {
               state.cam.isMirrored = att.mirror;
               state.cam.facingMode = att.facing;
               break;
             }
           } catch (err) {
-            state.cam.lastError = err && err.name ? err.name : "LUPA ESTETTY";
+            state.cam.lastError = (err && err.name) ? err.name : "KAMERAVIRHE";
           }
         }
 
@@ -641,11 +782,7 @@
 
         await refreshVideoDevices();
         state.cam.lastError = "";
-        state.cam.stream = stream;
-        videoEl.srcObject = stream;
-        videoEl.muted = true;
-        videoEl.playsInline = true;
-        try { await videoEl.play(); } catch (_) {}
+        await attachStreamToVideo(stream);
         state.cam.enabled = true;
         updateUi();
       }
@@ -657,7 +794,7 @@
         }
         videoEl.srcObject = null;
         state.cam.enabled = false;
-        smokeTrailCtx.clearRect(0, 0, smokeTrailCanvas.width, smokeTrailCanvas.height);
+        ghostTrailCtx.clearRect(0, 0, ghostTrailCanvas.width, ghostTrailCanvas.height);
         updateUi();
       }
 
@@ -682,8 +819,8 @@
         else switchFrontCamera();
       }
 
-      // 10 NUMERONÄPPÄINEFEKTIÄ (1-9 ja 0)
       function drawNumberEffect(t, id) {
+        const pal = currentPalette().colors;
         const w = state.width;
         const h = state.height;
         const cx = w * 0.5;
@@ -697,39 +834,35 @@
         ctx.globalCompositeOperation = "screen";
 
         if (id === 1) {
-          // 1. HORIZON
           const horY = h * 0.58 + Math.sin(t * 2.2) * 18;
           for (let i = 0; i < 9; i++) {
             const ry = horY - minDim * 0.25 + i * (11 + bass * 8);
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillStyle = pal[i % pal.length];
             ctx.fillRect(cx - minDim * 0.28, ry, minDim * 0.56, 5 + bass * 4);
           }
         } else if (id === 2) {
-          // 2. ORBIT
           for (let i = 0; i < 16; i++) {
             const ang = t * (1.4 + mid * 2.2) + i * 0.4;
             const rad = minDim * (0.14 + (i % 5) * 0.065 + bass * 0.06);
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillStyle = pal[i % pal.length];
             ctx.fillRect(cx + Math.cos(ang) * rad - 8, cy + Math.sin(ang) * rad - 8, 16, 16);
           }
         } else if (id === 3) {
-          // 3. DOT MATRIX
-          const step = 26;
+          const step = 28;
           for (let y = 50; y < h - 90; y += step) {
             for (let x = 16; x < w - 16; x += step) {
               const v = Math.sin(x * 0.02 + y * 0.02 - t * 3.5 + bass * 3.5);
               if (v > 0.15) {
-                ctx.fillStyle = PALETTE[Math.abs(Math.floor((x + y) / step)) % PALETTE.length];
+                ctx.fillStyle = pal[Math.abs(Math.floor((x + y) / step)) % pal.length];
                 ctx.fillRect(x, y, 9 + bass * 5, 9 + bass * 5);
               }
             }
           }
         } else if (id === 4) {
-          // 4. CIRCUIT
           ctx.lineWidth = 3;
           for (let i = 0; i < 8; i++) {
             const y = 70 + ((t * 75 + i * 52) % Math.max(90, h - 160));
-            ctx.strokeStyle = PALETTE[i % PALETTE.length];
+            ctx.strokeStyle = pal[i % pal.length];
             ctx.beginPath();
             ctx.moveTo(16, y);
             ctx.lineTo(w * 0.36, y);
@@ -738,39 +871,35 @@
             ctx.stroke();
           }
         } else if (id === 5) {
-          // 5. ION RINGS
           ctx.lineWidth = 3;
           for (let i = 1; i <= 6; i++) {
             const rad = minDim * (0.08 * i + bass * 0.05);
-            ctx.strokeStyle = PALETTE[i % PALETTE.length];
+            ctx.strokeStyle = pal[i % pal.length];
             ctx.beginPath();
             ctx.arc(cx, cy, rad, t * (0.9 + i * 0.18), t * (0.9 + i * 0.18) + Math.PI * 1.45);
             ctx.stroke();
           }
         } else if (id === 6) {
-          // 6. STARFALL
-          for (let i = 0; i < 34; i++) {
+          for (let i = 0; i < 32; i++) {
             const a = i * 2.39996 + t * 0.4;
             const d = ((t * 110 + i * 28) % (minDim * 0.78)) + 10;
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillStyle = pal[i % pal.length];
             ctx.fillRect(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 4 + treble * 6, 4 + treble * 6);
           }
         } else if (id === 7) {
-          // 7. BASS EQ
           const cols = 18;
           const cw = w / cols;
           for (let i = 0; i < cols; i++) {
             const active = (Math.floor(t * 8) + i) % 4 === 0;
             const bh = active ? 65 + bass * 140 : 20 + mid * 55;
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillStyle = pal[i % pal.length];
             ctx.fillRect(i * cw + 4, cy - bh * 0.5, cw - 8, bh);
           }
         } else if (id === 8) {
-          // 8. LASER FAN
           const rays = 18;
           for (let i = 0; i < rays; i++) {
             const ang = (i / rays) * Math.PI * 2 + t * (1.6 + mid * 2.5);
-            ctx.strokeStyle = PALETTE[i % PALETTE.length];
+            ctx.strokeStyle = pal[i % pal.length];
             ctx.lineWidth = 2.5 + bass * 3.5;
             ctx.beginPath();
             ctx.moveTo(cx, cy);
@@ -778,10 +907,9 @@
             ctx.stroke();
           }
         } else if (id === 9) {
-          // 9. WAVE MESH
           ctx.lineWidth = 2.5;
           for (let row = 0; row < 8; row++) {
-            ctx.strokeStyle = PALETTE[row % PALETTE.length];
+            ctx.strokeStyle = pal[row % pal.length];
             ctx.beginPath();
             for (let x = 0; x <= w; x += 24) {
               const wy = 90 + row * ((h - 180) / 7) + Math.sin(x * 0.02 + t * 3.5 + row * 0.6) * (18 + bass * 28);
@@ -791,11 +919,10 @@
             ctx.stroke();
           }
         } else {
-          // 0. VORTEX RING
           for (let i = 0; i < 24; i++) {
             const ang = (i / 24) * Math.PI * 2 - t * (2.0 + mid * 2.4);
             const rad = minDim * (0.22 + (i % 3) * 0.08 + bass * 0.08);
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
+            ctx.fillStyle = pal[i % pal.length];
             ctx.fillRect(cx + Math.cos(ang) * rad - 7, cy + Math.sin(ang) * rad - 7, 14, 14);
           }
         }
@@ -803,6 +930,7 @@
         ctx.restore();
       }
 
+      // GHOST & ÄÄRIVIIVA KAMERA (ZOOM + PALETTI)
       function renderCameraLayer(t, now) {
         if (!state.cam.enabled) return;
         const w = state.width;
@@ -810,180 +938,102 @@
         const gw = camInCanvas.width;
         const gh = camInCanvas.height;
         const fx = CAM_FX[state.cam.fxIndex].id;
+        const p = currentPalette();
+        const [r1, g1, b1] = p.edgeRgb;
+        const [r2, g2, b2] = p.edgeSecondaryRgb;
+        const z = state.cam.zoom;
 
-        if (videoEl.readyState >= 2 && now - state.cam.lastProcessTime > 32) {
+        if (videoEl.readyState >= 2 && now - state.cam.lastProcessTime > 30) {
           state.cam.lastProcessTime = now;
           camInCtx.save();
-          if (state.cam.isMirrored) {
-            camInCtx.translate(gw, 0);
-            camInCtx.scale(-1, 1);
-          }
+          camInCtx.translate(gw * 0.5, gh * 0.5);
+          camInCtx.scale(state.cam.isMirrored ? -z : z, z);
+          camInCtx.translate(-gw * 0.5, -gh * 0.5);
           camInCtx.drawImage(videoEl, 0, 0, gw, gh);
           camInCtx.restore();
 
-          if (fx === "raw") {
-            camFxCtx.clearRect(0, 0, gw, gh);
-            camFxCtx.drawImage(camInCanvas, 0, 0, gw, gh);
-          } else {
-            const src = camInCtx.getImageData(0, 0, gw, gh);
-            const d = src.data;
-            const outImg = camFxCtx.createImageData(gw, gh);
-            const od = outImg.data;
+          const src = camInCtx.getImageData(0, 0, gw, gh);
+          const d = src.data;
+          const outImg = camFxCtx.createImageData(gw, gh);
+          const od = outImg.data;
+          const thresh = fx === "outline" ? 28 : 36;
 
-            if (fx === "smoke") {
-              smokeTrailCtx.save();
-              smokeTrailCtx.globalCompositeOperation = "source-over";
-              smokeTrailCtx.fillStyle = "rgba(5, 7, 13, 0.14)";
-              smokeTrailCtx.fillRect(0, 0, gw, gh);
-              smokeTrailCtx.restore();
+          for (let y = 1; y < gh - 1; y++) {
+            for (let x = 1; x < gw - 1; x++) {
+              const idx = (y * gw + x) * 4;
+              const idxL = (y * gw + (x - 1)) * 4;
+              const idxR = (y * gw + (x + 1)) * 4;
+              const idxU = ((y - 1) * gw + x) * 4;
+              const idxD = ((y + 1) * gw + x) * 4;
 
-              for (let y = 0; y < gh; y++) {
-                for (let x = 0; x < gw; x++) {
-                  const idx = (y * gw + x) * 4;
-                  const lum = d[idx] * 0.3 + d[idx + 1] * 0.59 + d[idx + 2] * 0.11;
-                  const puff = Math.max(0, (lum - 46) / 209);
-                  const wisp = 0.65 + 0.35 * Math.sin(x * 0.14 + t * 3.0) * Math.cos(y * 0.12 - t * 2.3);
-                  od[idx] = Math.min(255, Math.round(180 + puff * 75));
-                  od[idx + 1] = Math.min(255, Math.round(210 + puff * 45));
-                  od[idx + 2] = Math.min(255, Math.round(235 + puff * 20));
-                  od[idx + 3] = Math.min(215, Math.round(puff * wisp * 195));
-                }
-              }
-              camFxCtx.putImageData(outImg, 0, 0);
+              const lumL = d[idxL] * 0.3 + d[idxL + 1] * 0.59 + d[idxL + 2] * 0.11;
+              const lumR = d[idxR] * 0.3 + d[idxR + 1] * 0.59 + d[idxR + 2] * 0.11;
+              const lumU = d[idxU] * 0.3 + d[idxU + 1] * 0.59 + d[idxU + 2] * 0.11;
+              const lumD = d[idxD] * 0.3 + d[idxD + 1] * 0.59 + d[idxD + 2] * 0.11;
 
-              smokeTrailCtx.save();
-              smokeTrailCtx.globalAlpha = 0.76;
-              smokeTrailCtx.drawImage(camFxCanvas, Math.sin(t * 1.5) * 2.5, -2.0, gw, gh);
-              smokeTrailCtx.restore();
-            } else if (fx === "fire") {
-              for (let y = 0; y < gh; y++) {
-                for (let x = 0; x < gw; x++) {
-                  const idx = (y * gw + x) * 4;
-                  const lum = d[idx] * 0.3 + d[idx + 1] * 0.59 + d[idx + 2] * 0.11;
-                  const flicker = 0.78 + 0.22 * Math.sin(x * 0.22 + t * 15 + y * 0.14);
-                  const heat = Math.min(1, (lum / 215) * flicker + (1 - y / gh) * 0.24);
-                  od[idx] = Math.min(255, Math.round(heat * 255));
-                  od[idx + 1] = Math.min(255, Math.round(Math.pow(heat, 1.65) * 195));
-                  od[idx + 2] = Math.min(255, Math.round(Math.pow(heat, 3.1) * 85));
-                  od[idx + 3] = lum > 30 ? Math.min(235, Math.round(heat * 235)) : 0;
-                }
+              const mag = Math.abs(lumR - lumL) + Math.abs(lumD - lumU);
+              if (mag > thresh) {
+                const strength = Math.min(1, (mag - thresh) / 60);
+                const useAlt = fx === "neon_edge" && (x + y) % 2 === 0;
+                const cr = useAlt ? r2 : r1;
+                const cg = useAlt ? g2 : g1;
+                const cb = useAlt ? b2 : b1;
+                od[idx] = cr;
+                od[idx + 1] = cg;
+                od[idx + 2] = cb;
+                od[idx + 3] = Math.min(250, Math.round(130 + strength * 120));
+              } else {
+                od[idx + 3] = 0;
               }
-              camFxCtx.putImageData(outImg, 0, 0);
-            } else if (fx === "matrix") {
-              for (let y = 0; y < gh; y++) {
-                for (let x = 0; x < gw; x++) {
-                  const idx = (y * gw + x) * 4;
-                  const lum = d[idx] * 0.3 + d[idx + 1] * 0.59 + d[idx + 2] * 0.11;
-                  const scan = (y + Math.floor(t * 28)) % 4 === 0 ? 1.3 : 0.72;
-                  const gVal = Math.min(255, Math.round((lum / 255) * 255 * scan));
-                  od[idx] = Math.round(gVal * 0.12);
-                  od[idx + 1] = gVal;
-                  od[idx + 2] = Math.round(gVal * 0.25);
-                  od[idx + 3] = lum > 25 ? 220 : 40;
-                }
-              }
-              camFxCtx.putImageData(outImg, 0, 0);
-            } else if (fx === "neon") {
-              for (let y = 1; y < gh - 1; y++) {
-                for (let x = 1; x < gw - 1; x++) {
-                  const idx = (y * gw + x) * 4;
-                  const idxL = (y * gw + (x - 1)) * 4;
-                  const idxR = (y * gw + (x + 1)) * 4;
-                  const idxU = ((y - 1) * gw + x) * 4;
-                  const idxD = ((y + 1) * gw + x) * 4;
-                  const lumL = d[idxL] * 0.3 + d[idxL + 1] * 0.59 + d[idxL + 2] * 0.11;
-                  const lumR = d[idxR] * 0.3 + d[idxR + 1] * 0.59 + d[idxR + 2] * 0.11;
-                  const lumU = d[idxU] * 0.3 + d[idxU + 1] * 0.59 + d[idxU + 2] * 0.11;
-                  const lumD = d[idxD] * 0.3 + d[idxD + 1] * 0.59 + d[idxD + 2] * 0.11;
-                  const mag = Math.abs(lumR - lumL) + Math.abs(lumD - lumU);
-                  if (mag > 34) {
-                    od[idx] = 0;
-                    od[idx + 1] = 240;
-                    od[idx + 2] = 255;
-                    od[idx + 3] = Math.min(245, Math.round(mag * 2.3));
-                  } else {
-                    od[idx + 3] = 0;
-                  }
-                }
-              }
-              camFxCtx.putImageData(outImg, 0, 0);
-            } else {
-              // GHOST
-              for (let y = 1; y < gh - 1; y++) {
-                for (let x = 1; x < gw - 1; x++) {
-                  const idx = (y * gw + x) * 4;
-                  const idxL = (y * gw + (x - 1)) * 4;
-                  const idxR = (y * gw + (x + 1)) * 4;
-                  const idxU = ((y - 1) * gw + x) * 4;
-                  const idxD = ((y + 1) * gw + x) * 4;
-                  const lumL = d[idxL] * 0.3 + d[idxL + 1] * 0.59 + d[idxL + 2] * 0.11;
-                  const lumR = d[idxR] * 0.3 + d[idxR + 1] * 0.59 + d[idxR + 2] * 0.11;
-                  const lumU = d[idxU] * 0.3 + d[idxU + 1] * 0.59 + d[idxU + 2] * 0.11;
-                  const lumD = d[idxD] * 0.3 + d[idxD + 1] * 0.59 + d[idxD + 2] * 0.11;
-                  const mag = Math.abs(lumR - lumL) + Math.abs(lumD - lumU);
-                  if (mag > 40) {
-                    od[idx] = 160;
-                    od[idx + 1] = 255;
-                    od[idx + 2] = 225;
-                    od[idx + 3] = Math.min(235, Math.round(120 + Math.min(1, (mag - 40) / 68) * 115));
-                  } else {
-                    od[idx + 3] = 0;
-                  }
-                }
-              }
-              camFxCtx.putImageData(outImg, 0, 0);
             }
+          }
+
+          camFxCtx.putImageData(outImg, 0, 0);
+
+          if (fx === "ghost_trail") {
+            ghostTrailCtx.save();
+            ghostTrailCtx.globalCompositeOperation = "source-over";
+            ghostTrailCtx.fillStyle = "rgba(0, 0, 0, 0.16)";
+            ghostTrailCtx.fillRect(0, 0, gw, gh);
+            ghostTrailCtx.globalAlpha = 0.72;
+            ghostTrailCtx.drawImage(camFxCanvas, Math.sin(t * 2.0) * 2.2, -1.2, gw, gh);
+            ghostTrailCtx.restore();
           }
         }
 
         ctx.save();
-        if (fx === "raw") {
-          ctx.globalCompositeOperation = "source-over";
-          ctx.globalAlpha = 1;
-          ctx.drawImage(camFxCanvas, 0, 0, w, h);
-        } else if (fx === "smoke") {
-          ctx.globalCompositeOperation = "screen";
+        ctx.globalCompositeOperation = "screen";
+
+        if (fx === "ghost_trail") {
           ctx.globalAlpha = 0.78;
-          ctx.drawImage(smokeTrailCanvas, 0, 0, w, h);
-          ctx.globalAlpha = 0.88;
-          ctx.drawImage(camFxCanvas, 0, 0, w, h);
-        } else if (fx === "fire") {
-          ctx.globalCompositeOperation = "screen";
+          ctx.drawImage(ghostTrailCanvas, 0, 0, w, h);
           ctx.globalAlpha = 0.92;
-          ctx.drawImage(camFxCanvas, 0, -Math.abs(Math.sin(t * 8)) * 10, w, h);
-        } else if (fx === "matrix") {
-          ctx.globalCompositeOperation = "screen";
-          ctx.globalAlpha = 0.9;
           ctx.drawImage(camFxCanvas, 0, 0, w, h);
-          ctx.font = 'bold 12px "Courier New", monospace';
-          ctx.fillStyle = "#00ff66";
-          const chars = "01アイウエオカキクケコ#$";
-          for (let c = 0; c < 18; c++) {
-            const mx = ((c + 0.5) / 18) * w;
-            const my = ((t * 145 + c * 63) % Math.max(120, h - 120)) + 40;
-            ctx.fillText(chars[Math.floor(t * 15 + c * 5) % chars.length], mx, my);
-          }
-        } else if (fx === "neon") {
-          ctx.globalCompositeOperation = "screen";
-          ctx.globalAlpha = 0.92;
-          ctx.drawImage(camFxCanvas, -4, 0, w, h);
-          ctx.drawImage(camFxCanvas, 4, 0, w, h);
+        } else if (fx === "neon_edge") {
+          ctx.globalAlpha = 0.48;
+          ctx.drawImage(camFxCanvas, -3, 0, w, h);
+          ctx.drawImage(camFxCanvas, 3, 0, w, h);
+          ctx.globalAlpha = 0.95;
+          ctx.drawImage(camFxCanvas, 0, 0, w, h);
+        } else if (fx === "outline") {
+          ctx.globalAlpha = 0.95;
+          ctx.drawImage(camFxCanvas, 0, 0, w, h);
         } else {
-          ctx.globalCompositeOperation = "screen";
           const dx = Math.sin(t * 1.6) * 7;
           const dy = Math.cos(t * 1.2) * 5;
-          ctx.globalAlpha = 0.42;
+          ctx.globalAlpha = 0.44;
           ctx.drawImage(camFxCanvas, dx - 5, dy - 4, w, h);
           ctx.globalAlpha = 0.92;
           ctx.drawImage(camFxCanvas, dx, dy, w, h);
         }
+
         ctx.restore();
       }
 
-      // MUSIIKKIIN REAGOIVA MORPH, LIQUID JA WAVE MIXAUS
       function applyMusicMorphLiquidWave() {
         if (!state.effectsEnabled) return;
         const mode = MIX_MODES[state.mixIndex].id;
+        const p = currentPalette();
         const w = state.width;
         const h = state.height;
         const t = state.time;
@@ -996,7 +1046,7 @@
         fxBufferCtx.clearRect(0, 0, bw, bh);
         fxBufferCtx.drawImage(canvas, 0, 0, bw, bh);
 
-        const slices = mode === "liquid" ? 28 : 22;
+        const slices = mode === "liquid" ? 26 : 20;
         const sh = bh / slices;
         const outH = h / slices;
 
@@ -1011,56 +1061,24 @@
             const sliceScaleX = 1 + Math.cos(normY * Math.PI * 1.5 + t * 2.0) * (0.04 + bass * 0.09);
             const drawW = w * sliceScaleX * morphScale;
             const drawX = (w - drawW) * 0.5 + curveShift;
-            ctx.drawImage(
-              fxBuffer,
-              0,
-              i * sh,
-              bw,
-              sh + 0.5,
-              drawX,
-              i * outH,
-              drawW,
-              outH + 1.2
-            );
+            ctx.drawImage(fxBuffer, 0, i * sh, bw, sh + 0.5, drawX, i * outH, drawW, outH + 1.2);
           }
         } else if (mode === "liquid") {
           for (let i = 0; i < slices; i++) {
             const liqX = Math.sin(i * 0.45 + t * 4.2 + bass * 4) * (14 + mid * 30 + bass * 24);
             const liqY = Math.cos(i * 0.35 - t * 3.4) * (4 + treble * 10);
-            ctx.drawImage(
-              fxBuffer,
-              0,
-              i * sh,
-              bw,
-              sh + 0.5,
-              liqX,
-              i * outH + liqY,
-              w,
-              outH + 1.4
-            );
+            ctx.drawImage(fxBuffer, 0, i * sh, bw, sh + 0.5, liqX, i * outH + liqY, w, outH + 1.4);
           }
         } else {
-          // WAVE
           for (let i = 0; i < slices; i++) {
             const waveX = Math.sin(t * 5.0 + i * 0.55) * (18 + bass * 34);
-            ctx.drawImage(
-              fxBuffer,
-              0,
-              i * sh,
-              bw,
-              sh + 0.5,
-              waveX,
-              i * outH,
-              w,
-              outH + 1.2
-            );
+            ctx.drawImage(fxBuffer, 0, i * sh, bw, sh + 0.5, waveX, i * outH, w, outH + 1.2);
           }
         }
 
-        // Väri- ja mixauskerros musiikin tahdissa
         ctx.globalCompositeOperation = "screen";
-        ctx.globalAlpha = 0.14 + bass * 0.18 + treble * 0.1;
-        ctx.fillStyle = PALETTE[Math.floor(t * 3 + bass * 4) % PALETTE.length];
+        ctx.globalAlpha = 0.08 + bass * 0.12 + treble * 0.06;
+        ctx.fillStyle = p.colors[Math.floor(t * 3 + bass * 4) % p.colors.length];
         ctx.fillRect(0, 0, w, h);
 
         ctx.restore();
@@ -1095,16 +1113,17 @@
         ctx.restore();
       }
 
-      function renderText() {
+      // PITKÄ TEKSTI RULLAA KOKO NÄYTÖLLÄ + 9 TEKSTIEFEKTIÄ
+      function renderText(dt) {
         const draft = state.typingActive && document.activeElement === hiddenSink ? hiddenSink.value : state.typeDraft;
         const txt = state.typingActive
           ? `${draft}${Math.floor(state.time * 4) % 2 === 0 ? "_" : ""}`
           : state.liveText;
         if ((!state.textVisible && !state.typingActive) || !txt) return;
 
+        const p = currentPalette();
         const w = state.width;
         const h = state.height;
-        const cx = w * 0.5;
         const cy = h * 0.5;
         const t = state.time;
         const fx = TXT_FX[state.txtFxIndex].id;
@@ -1113,87 +1132,113 @@
 
         ctx.save();
         ctx.font = `900 ${fontSize}px ${FONTS[state.fontIndex].family}`;
-        ctx.textAlign = "center";
+        ctx.textAlign = "left";
         ctx.textBaseline = "middle";
 
-        if (!state.effectsEnabled) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(txt, cx, cy);
-          ctx.restore();
-          return;
+        const singleWidth = Math.max(40, ctx.measureText(txt).width);
+        const gap = Math.max(90, fontSize * 1.4);
+        const period = singleWidth + gap;
+        const shouldScroll = singleWidth > w * 0.78 || state.typingActive;
+
+        if (shouldScroll) {
+          const speed = 135 + bass * 90;
+          state.scrollOffset = (state.scrollOffset + dt * speed) % period;
+        } else {
+          state.scrollOffset = 0;
         }
 
-        if (fx === "wave") {
-          const chars = Array.from(txt);
-          const adv = fontSize * 0.62;
-          chars.forEach((ch, i) => {
-            const x = cx - (chars.length * adv) * 0.5 + (i + 0.5) * adv;
-            const y = cy + Math.sin(t * 4.5 + i * 0.65) * (18 + bass * 14);
-            ctx.fillStyle = PALETTE[i % PALETTE.length];
-            ctx.strokeStyle = "#05070d";
+        const drawInstance = (baseX, baseY) => {
+          if (!state.effectsEnabled) {
+            ctx.fillStyle = p.accent;
+            ctx.fillText(txt, baseX, baseY);
+            return;
+          }
+
+          if (fx === "wave") {
+            const chars = Array.from(txt);
+            let cursorX = baseX;
+            chars.forEach((ch, i) => {
+              const cw = ctx.measureText(ch).width;
+              const y = baseY + Math.sin(t * 4.5 + i * 0.65) * (16 + bass * 12);
+              ctx.fillStyle = p.colors[i % p.colors.length];
+              ctx.strokeStyle = p.bg;
+              ctx.lineWidth = 4;
+              ctx.strokeText(ch, cursorX, y);
+              ctx.fillText(ch, cursorX, y);
+              cursorX += cw;
+            });
+          } else if (fx === "jitter") {
+            const jx = Math.sin(t * 45) * (7 + bass * 9);
+            const jy = Math.cos(t * 38) * 5;
+            ctx.fillStyle = p.accent2;
+            ctx.fillText(txt, baseX - jx, baseY - jy);
+            ctx.fillStyle = p.accent;
+            ctx.fillText(txt, baseX + jx, baseY + jy);
+          } else if (fx === "bounce") {
+            const hop = Math.abs(Math.sin(t * 5)) * (24 + bass * 18);
+            ctx.fillStyle = p.accent3;
+            ctx.strokeStyle = p.bg;
             ctx.lineWidth = 4;
-            ctx.strokeText(ch, x, y);
-            ctx.fillText(ch, x, y);
-          });
-        } else if (fx === "jitter") {
-          const jx = Math.sin(t * 45) * (8 + bass * 10);
-          const jy = Math.cos(t * 38) * 6;
-          ctx.fillStyle = "#ff3b8d";
-          ctx.fillText(txt, cx - jx, cy - jy);
-          ctx.fillStyle = "#00d8ff";
-          ctx.fillText(txt, cx + jx, cy + jy);
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(txt, cx, cy);
-        } else if (fx === "bounce") {
-          const hop = Math.abs(Math.sin(t * 5)) * (26 + bass * 20);
-          ctx.fillStyle = "#ffd319";
-          ctx.strokeStyle = "#05070d";
-          ctx.lineWidth = 4;
-          ctx.strokeText(txt, cx, cy - hop);
-          ctx.fillText(txt, cx, cy - hop);
-        } else if (fx === "split") {
-          const off = 8 + Math.sin(t * 4) * 8 + bass * 10;
-          ctx.fillStyle = "#00ff9f";
-          ctx.fillText(txt, cx - off, cy);
-          ctx.fillStyle = "#ff3b8d";
-          ctx.fillText(txt, cx + off, cy);
-        } else if (fx === "glow") {
-          ctx.shadowColor = "#00ff9f";
-          ctx.shadowBlur = 24 + bass * 18;
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(txt, cx, cy);
-        } else if (fx === "box") {
-          const bw = Math.min(w * 0.92, ctx.measureText(txt).width + 36);
-          const bh = fontSize * 1.35;
-          ctx.fillStyle = "rgba(5, 7, 13, 0.72)";
-          ctx.fillRect(cx - bw * 0.5, cy - bh * 0.5, bw, bh);
-          ctx.strokeStyle = "#00ff9f";
-          ctx.lineWidth = 4;
-          ctx.strokeRect(cx - bw * 0.5, cy - bh * 0.5, bw, bh);
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(txt, cx, cy);
-        } else if (fx === "tilt") {
-          ctx.translate(cx, cy);
-          ctx.rotate(Math.sin(t * 2.5) * 0.16);
-          ctx.fillStyle = "#00d8ff";
-          ctx.strokeStyle = "#05070d";
-          ctx.lineWidth = 4;
-          ctx.strokeText(txt, 0, 0);
-          ctx.fillText(txt, 0, 0);
-        } else if (fx === "pulse") {
-          const sc = 1 + Math.sin(t * 7) * 0.16 + bass * 0.2;
-          ctx.translate(cx, cy);
-          ctx.scale(sc, sc);
-          ctx.fillStyle = "#ffd319";
-          ctx.strokeStyle = "#05070d";
-          ctx.lineWidth = 4;
-          ctx.strokeText(txt, 0, 0);
-          ctx.fillText(txt, 0, 0);
+            ctx.strokeText(txt, baseX, baseY - hop);
+            ctx.fillText(txt, baseX, baseY - hop);
+          } else if (fx === "split") {
+            const off = 7 + Math.sin(t * 4) * 7 + bass * 8;
+            ctx.fillStyle = p.accent;
+            ctx.fillText(txt, baseX - off, baseY);
+            ctx.fillStyle = p.accent2;
+            ctx.fillText(txt, baseX + off, baseY);
+          } else if (fx === "glow") {
+            ctx.shadowColor = p.accent;
+            ctx.shadowBlur = 22 + bass * 16;
+            ctx.fillStyle = p.accent;
+            ctx.fillText(txt, baseX, baseY);
+            ctx.shadowBlur = 0;
+          } else if (fx === "box") {
+            const bw = singleWidth + 28;
+            const bh = fontSize * 1.32;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.72)";
+            ctx.fillRect(baseX - 14, baseY - bh * 0.5, bw, bh);
+            ctx.strokeStyle = p.accent;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(baseX - 14, baseY - bh * 0.5, bw, bh);
+            ctx.fillStyle = p.accent;
+            ctx.fillText(txt, baseX, baseY);
+          } else if (fx === "tilt") {
+            ctx.save();
+            ctx.translate(baseX + singleWidth * 0.5, baseY);
+            ctx.rotate(Math.sin(t * 2.5) * 0.14);
+            ctx.fillStyle = p.accent2;
+            ctx.strokeStyle = p.bg;
+            ctx.lineWidth = 4;
+            ctx.strokeText(txt, -singleWidth * 0.5, 0);
+            ctx.fillText(txt, -singleWidth * 0.5, 0);
+            ctx.restore();
+          } else if (fx === "pulse") {
+            const sc = 1 + Math.sin(t * 7) * 0.14 + bass * 0.18;
+            ctx.save();
+            ctx.translate(baseX + singleWidth * 0.5, baseY);
+            ctx.scale(sc, sc);
+            ctx.fillStyle = p.accent3;
+            ctx.strokeStyle = p.bg;
+            ctx.lineWidth = 4;
+            ctx.strokeText(txt, -singleWidth * 0.5, 0);
+            ctx.fillText(txt, -singleWidth * 0.5, 0);
+            ctx.restore();
+          } else {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+            ctx.fillText(txt, baseX + 7, baseY + 7);
+            ctx.fillStyle = p.accent;
+            ctx.fillText(txt, baseX, baseY);
+          }
+        };
+
+        if (shouldScroll) {
+          const startX = w - state.scrollOffset;
+          for (let x = startX - period; x < w + period; x += period) {
+            drawInstance(x, cy);
+          }
         } else {
-          ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-          ctx.fillText(txt, cx + 8, cy + 8);
-          ctx.fillStyle = "#ffffff";
-          ctx.fillText(txt, cx, cy);
+          drawInstance((w - singleWidth) * 0.5, cy);
         }
 
         ctx.restore();
@@ -1237,6 +1282,7 @@
         state.typingActive = true;
         state.typeDraft = "";
         state.textVisible = true;
+        state.scrollOffset = 0;
         hiddenSink.value = "";
         hiddenSink.focus({ preventScroll: true });
         updateUi();
@@ -1247,6 +1293,7 @@
         state.liveText = state.typeDraft;
         state.typingActive = false;
         state.textVisible = state.liveText.trim().length > 0;
+        state.scrollOffset = 0;
         hiddenSink.value = "";
         hiddenSink.blur();
         updateUi();
@@ -1286,7 +1333,15 @@
         reader.readAsDataURL(file);
       });
 
-      // Rakennan paneelin napit
+      const palListEl = document.getElementById("drawer-pal-list");
+      PALETTES.forEach((pl, idx) => {
+        const b = document.createElement("button");
+        b.textContent = pl.label;
+        b.dataset.pal = idx;
+        b.addEventListener("click", () => setPalette(idx));
+        palListEl.appendChild(b);
+      });
+
       const numFxListEl = document.getElementById("drawer-num-fx-list");
       NUM_FX.forEach(nf => {
         const b = document.createElement("button");
@@ -1331,34 +1386,39 @@
       });
 
       function updateUi() {
+        const palLabel = currentPalette().label;
         const numObj = NUM_FX.find(n => n.id === state.numFxId) || NUM_FX[0];
         const mixLabel = MIX_MODES[state.mixIndex].label;
         const camFxLabel = CAM_FX[state.cam.fxIndex].label;
         const txtFxLabel = TXT_FX[state.txtFxIndex].label;
         const sideLabel = state.cam.facingMode === "user" ? "ETU/PC" : "TAKA";
+        const zoomText = `${state.cam.zoom.toFixed(1)}x`;
         const camStatus = state.cam.enabled
-          ? `ON (${sideLabel})`
-          : (state.cam.lastError ? `OFF (${state.cam.lastError})` : "OFF");
+          ? `ON (${sideLabel} ${zoomText})`
+          : (state.cam.lastError ? `OFF (${state.cam.lastError})` : `OFF (${zoomText})`);
 
         document.getElementById("hud-pill").textContent =
-          `FX: ${state.effectsEnabled ? "ON" : "OFF"} · ${numObj.key}:${numObj.label} · ${mixLabel} · CAM: ${camStatus} · TXT: ${state.textVisible ? "ON" : "OFF"} · LOGO: ${state.logoVisible ? "ON" : "OFF"}`;
+          `FX: ${state.effectsEnabled ? "ON" : "OFF"} · ${palLabel} · ${numObj.key}:${numObj.label} · ${mixLabel} · CAM: ${camStatus} · ${camFxLabel} · TXT: ${state.textVisible ? "ON" : "OFF"}`;
 
+        document.getElementById("drawer-pal").textContent = palLabel;
         document.getElementById("drawer-num-fx").textContent = `${numObj.key}. ${numObj.label}`;
         document.getElementById("drawer-mix-fx").textContent = mixLabel;
         document.getElementById("drawer-cam-info").textContent =
-          state.cam.enabled ? `${sideLabel} · ${state.cam.devices.length || 1} KAM` : (state.cam.lastError || "EI AKTIIVINEN");
+          `${state.cam.enabled ? sideLabel : "OFF"} · ${zoomText}`;
         document.getElementById("drawer-txt-fx").textContent = txtFxLabel;
         document.getElementById("bpm-val").textContent = state.bpm;
         document.getElementById("font-val").textContent = FONTS[state.fontIndex].label;
 
         document.getElementById("dock-fx").textContent = `FX: ${state.effectsEnabled ? "ON" : "OFF"}`;
         document.getElementById("dock-fx").classList.toggle("active", state.effectsEnabled);
+        document.getElementById("dock-pal").textContent = `VÄRI: ${palLabel}`;
         document.getElementById("dock-numfx").textContent = `NUM ${numObj.key}: ${numObj.label}`;
         document.getElementById("dock-mix").textContent = `MIX: ${mixLabel}`;
         document.getElementById("dock-cam").classList.toggle("active", state.cam.enabled);
         document.getElementById("dock-front").classList.toggle("active", state.cam.facingMode === "user");
         document.getElementById("dock-back").classList.toggle("active", state.cam.facingMode === "environment");
-        document.getElementById("dock-camfx").textContent = `CAM FX: ${camFxLabel}`;
+        document.getElementById("dock-camfx").textContent = `CAM: ${camFxLabel}`;
+        document.getElementById("dock-zoom").textContent = `ZOOM: ${zoomText}`;
         document.getElementById("dock-logo").classList.toggle("active", state.logoVisible);
         document.getElementById("dock-txt").classList.toggle("active", state.textVisible);
         document.getElementById("dock-txtfx").textContent = `TXT: ${txtFxLabel}`;
@@ -1372,6 +1432,9 @@
         document.getElementById("btn-logo-toggle").classList.toggle("active", state.logoVisible);
         document.getElementById("btn-txt-toggle").classList.toggle("active", state.textVisible);
 
+        palListEl.querySelectorAll("button").forEach(b =>
+          b.classList.toggle("active", Number(b.dataset.pal) === state.palIndex)
+        );
         numFxListEl.querySelectorAll("button").forEach(b =>
           b.classList.toggle("active", state.effectsEnabled && Number(b.dataset.num) === state.numFxId)
         );
@@ -1398,6 +1461,7 @@
         state.effectsEnabled = !state.effectsEnabled;
         updateUi();
       });
+      document.getElementById("dock-pal").addEventListener("click", cyclePalette);
       document.getElementById("dock-numfx").addEventListener("click", cycleNumFx);
       document.getElementById("dock-mix").addEventListener("click", cycleMixMode);
       document.getElementById("dock-cam").addEventListener("click", toggleCamera);
@@ -1406,6 +1470,9 @@
       document.getElementById("dock-camfx").addEventListener("click", () => {
         state.cam.fxIndex = (state.cam.fxIndex + 1) % CAM_FX.length;
         updateUi();
+      });
+      document.getElementById("dock-zoom").addEventListener("click", () => {
+        setCamZoom(state.cam.zoom >= 3.0 ? 1.0 : state.cam.zoom + 0.5);
       });
       document.getElementById("dock-logo").addEventListener("click", () => {
         state.logoVisible = !state.logoVisible;
@@ -1435,6 +1502,9 @@
       document.getElementById("btn-cam-front").addEventListener("click", switchFrontCamera);
       document.getElementById("btn-cam-back").addEventListener("click", switchBackCamera);
       document.getElementById("btn-cam-cycle").addEventListener("click", flipCameraDevice);
+      document.getElementById("btn-zoom-dn").addEventListener("click", () => setCamZoom(state.cam.zoom - 0.25));
+      document.getElementById("btn-zoom-up").addEventListener("click", () => setCamZoom(state.cam.zoom + 0.25));
+      document.getElementById("btn-zoom-reset").addEventListener("click", () => setCamZoom(1.0));
       document.getElementById("btn-logo-toggle").addEventListener("click", () => {
         state.logoVisible = !state.logoVisible;
         updateUi();
@@ -1469,6 +1539,9 @@
         if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(k)) {
           e.preventDefault();
           setNumFx(Number(k));
+        } else if (k === "p") {
+          e.preventDefault();
+          cyclePalette();
         } else if (k === "e") {
           e.preventDefault();
           state.effectsEnabled = !state.effectsEnabled;
@@ -1489,6 +1562,9 @@
           e.preventDefault();
           state.cam.fxIndex = (state.cam.fxIndex + 1) % CAM_FX.length;
           updateUi();
+        } else if (k === "z") {
+          e.preventDefault();
+          setCamZoom(state.cam.zoom + 0.25);
         } else if (k === "t") {
           e.preventDefault();
           state.textVisible = !state.textVisible;
@@ -1526,7 +1602,7 @@
         state.bassPulse = Math.max(0, state.bassPulse - dt * 3.5);
         sampleMusicEnergy(dt);
 
-        ctx.fillStyle = "#05070d";
+        ctx.fillStyle = currentPalette().bg;
         ctx.fillRect(0, 0, state.width, state.height);
 
         renderCameraLayer(state.time, now);
@@ -1534,7 +1610,7 @@
           drawNumberEffect(state.time, state.numFxId);
         }
         renderLogo();
-        renderText();
+        renderText(dt);
         applyMusicMorphLiquidWave();
 
         requestAnimationFrame(frame);
